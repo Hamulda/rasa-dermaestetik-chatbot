@@ -97,8 +97,7 @@ actions:
   # Vlastní akce
   - action_recommend_product
   # Formuláře jsou také akce
-  - product_recommendation_form # Přesný název tvého formuláře musí být zde
-  # Odpovědi (utterances)
+  - product_recommendation_form  # Odpovědi (utterances)
   - utter_greet
   - utter_cheer_up
   - utter_did_that_help
