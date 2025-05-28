@@ -1,0 +1,16 @@
+# Rasa specifické
+models/
+.rasa/
+results/
+*.db
+
+# Python specifické
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtuální prostředí (pokud ho máš ve složce projektu)
+.venv/
+venv/
+ENV/
+env/

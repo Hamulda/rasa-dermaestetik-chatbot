@@ -1,0 +1,221 @@
+version: "3.1"
+
+intents:
+  - greet
+  - goodbye
+  - affirm
+  - deny
+  - mood_great
+  - mood_unhappy
+  - bot_challenge
+  - faq_payment_options
+  - faq_product_ingredients_sensitive_skin
+  - faq_returns
+  - faq_vegan_products
+  - faq_hypoallergenic
+  - faq_order_status_delivery_time
+  - faq_skin_cleansing
+  - faq_product_application_order
+  - faq_spf_usage
+  - faq_combining_actives
+  - faq_online_consultation
+  - ask_product_recommendation
+  - inform
+  - stop_form
+  - faq_eshop_payment_options_detail
+  - faq_eshop_shipping_cost
+  - faq_eshop_returns_procedure
+  - faq_parabens
+  - faq_animal_testing
+  - faq_store_pickup
+  - faq_eshop_complaint_procedure
+  - faq_eshop_product_ingredients
+  - faq_clinic_botox_duration
+  - faq_clinic_laser_epilation_sessions
+  - faq_clinic_laser_epilation_preparation
+  - faq_clinic_chemical_peel_summer
+
+entities:
+  - skin_type
+  - skin_concern
+  - product_category
+  - product_attribute
+  - brand
+  - skin_area
+
+slots:
+  skin_type:
+    type: list
+    influence_conversation: true
+    mappings:
+    - type: from_entity
+      entity: skin_type
+  skin_concern:
+    type: list
+    influence_conversation: true
+    mappings:
+    - type: from_entity
+      entity: skin_concern
+  product_category:
+    type: text
+    influence_conversation: true
+    mappings:
+    - type: from_entity
+      entity: product_category
+  product_attribute:
+    type: list
+    influence_conversation: true
+    mappings:
+    - type: from_entity
+      entity: product_attribute
+  brand:
+    type: text
+    influence_conversation: true
+    mappings:
+    - type: from_entity
+      entity: brand
+  skin_area:
+    type: text
+    influence_conversation: true
+    mappings:
+    - type: from_entity
+      entity: skin_area
+  requested_slot: # DŮLEŽITÉ: Tento slot je používán FormPolicy
+    type: text
+    influence_conversation: false # Neovlivňuje konverzaci mimo formulář
+    mappings:
+    - type: custom
+
+forms:
+  product_recommendation_form: # Přesný název tvého formuláře
+    required_slots:
+      - skin_type
+      - skin_concern
+      # Zde můžeš později přidat další povinné sloty jako product_category, skin_area
+
+actions:
+  # Vlastní akce
+  - action_recommend_product
+  # Formuláře jsou také akce
+  - product_recommendation_form # Přesný název tvého formuláře musí být zde
+  # Odpovědi (utterances)
+  - utter_greet
+  - utter_cheer_up
+  - utter_did_that_help
+  - utter_happy
+  - utter_goodbye
+  - utter_iamabot
+  - utter_ask_skin_type
+  - utter_ask_skin_concern
+  - utter_ask_product_category
+  - utter_ask_skin_area
+  - utter_submit_form
+  - utter_form_cancelled
+  # Všechny tvé FAQ odpovědi
+  - utter_faq_payment_options
+  - utter_faq_product_ingredients_sensitive_skin
+  - utter_faq_returns
+  - utter_faq_vegan_products
+  - utter_faq_hypoallergenic
+  - utter_faq_order_status_delivery_time
+  - utter_faq_skin_cleansing
+  - utter_faq_product_application_order
+  - utter_faq_spf_usage
+  - utter_faq_combining_actives
+  - utter_faq_online_consultation
+  - utter_faq_eshop_payment_options_detail
+  - utter_faq_eshop_shipping_cost
+  - utter_faq_eshop_returns_procedure
+  - utter_faq_parabens
+  - utter_faq_animal_testing
+  - utter_faq_store_pickup
+  - utter_faq_eshop_complaint_procedure
+  - utter_faq_eshop_product_ingredients
+  - utter_faq_clinic_botox_duration
+  - utter_faq_clinic_laser_epilation_sessions
+  - utter_faq_clinic_laser_epilation_preparation
+  - utter_faq_clinic_chemical_peel_summer
+
+responses:
+  utter_greet:
+    - text: "Dobrý den, vítám Vás na chatu e-shopu DermaEstetik.cz. Jsem Vaše virtuální asistentka. S čím Vám dnes mohu pomoci?"
+    - text: "Krásný den! Jsem tu pro Vás, abych odpověděla na Vaše dotazy ohledně našich produktů a služeb. Co pro Vás mohu udělat?"
+    - text: "Vítejte na DermaEstetik.cz! Potřebujete poradit s výběrem kosmetiky nebo máte jiný dotaz? Jsem tu pro Vás."
+  utter_cheer_up:
+    - text: "Here is something to cheer you up:"
+      image: "https://i.imgur.com/nGF1K8f.jpg"
+  utter_did_that_help:
+    - text: "Did that help you?"
+  utter_happy:
+    - text: "Great, carry on!"
+  utter_goodbye:
+    - text: "Mějte se krásně a děkujeme za Váš zájem!"
+    - text: "Pokud budete mít další otázky, neváhejte se na mě znovu obrátit. Přeji Vám hezký den!"
+    - text: "Nashledanou a těšíme se na Vaši případnou objednávku!"
+  utter_iamabot:
+    - text: "Jsem virtuální asistentka e-shopu DermaEstetik.cz, vytvořená, abych Vám pomohla s Vašimi dotazy."
+  utter_ask_skin_type:
+    - text: "Abych vám mohla lépe poradit, jaký máte typ pleti? (např. suchá, mastná, smíšená, citlivá, normální)"
+    - text: "Pro upřesnění doporučení, mohl(a) byste mi prosím popsat váš typ pleti?"
+  utter_ask_skin_concern:
+    - text: "Řešíte nějaký konkrétní problém s pletí? (např. akné, vrásky, pigmentace, zarudnutí, póry)"
+    - text: "Máte nějaké specifické problémy s pletí, na které bychom se měli zaměřit?"
+  utter_ask_product_category:
+    - text: "Hledáte nějaký konkrétní typ produktu? (např. krém, sérum, čistič, SPF)"
+  utter_ask_skin_area:
+    - text: "Pro jakou oblast produkt hledáte? (např. obličej, oční okolí, tělo, ruce)"
+  utter_submit_form:
+    - text: "Děkuji za informace, podívám se na vhodné produkty pro vás."
+  utter_form_cancelled:
+    - text: "Dobře, formulář byl zrušen. Mohu vám pomoci s něčím jiným?"
+  # Zde doplň všechny své FAQ odpovědi, jak jsi je měl
+  utter_faq_payment_options:
+    - text: "Přijímáme platby kartou online, bankovním převodem a také na dobírku. U dobírky je poplatek 30 Kč."
+  utter_faq_product_ingredients_sensitive_skin:
+    - text: "Složení každého produktu najdete v jeho detailu na našem e-shopu. Všechny produkty jsou formulovány s ohledem na citlivou pleť, ale doporučujeme prostudovat konkrétní složení."
+  utter_faq_returns:
+    - text: "Nepoužité zboží v originálním obalu můžete vrátit do 14 dnů. Více informací najdete v obchodních podmínkách."
+  utter_faq_vegan_products:
+    - text: "Ano, máme širokou nabídku veganských produktů. Hledejte označení u jednotlivých položek nebo se mě zeptejte na konkrétní veganský produkt."
+  utter_faq_hypoallergenic:
+    - text: "Označení 'hypoalergenní' znamená minimalizované riziko alergických reakcí. Přesto doporučujeme u velmi citlivé pleti provést patch test."
+  utter_faq_order_status_delivery_time:
+    - text: "Stav své objednávky a předpokládaný čas doručení najdete v potvrzovacím e-mailu, který jste obdrželi po objednání. Případně se na mě obraťte s číslem objednávky."
+  utter_faq_skin_cleansing:
+    - text: "Pleť doporučujeme čistit dvakrát denně, ráno a večer. Večer je ideální dvoufázové čištění, pokud používáte make-up nebo SPF."
+  utter_faq_product_application_order:
+    - text: "Obecně platí postup od nejlehčí textury po nejtěžší: čištění, tonikum, sérum, oční krém, hydratační krém a nakonec SPF ráno. Večer podobně, bez SPF."
+  utter_faq_spf_usage:
+    - text: "SPF by měl být posledním krokem vaší ranní rutiny, po krému a před make-upem. Používejte ho každý den, po celý rok."
+  utter_faq_combining_actives:
+    - text: "Při kombinování aktivních látek jako retinol, vitamín C, AHA/BHA kyseliny buďte opatrní. Obecně je lepší je nestřídat v jedné rutině nebo se poradit."
+  utter_faq_online_consultation:
+    - text: "Ano, ráda vám poradím online zde v chatu, nebo můžete využít naši Poradnu na webu eshop.dermaestetik.cz."
+  utter_faq_eshop_payment_options_detail:
+    - text: "Na našem e-shopu můžete platit online platební kartou (Visa, Mastercard), bankovním převodem, nebo na dobírku při převzetí zboží. Platba na dobírku je zpoplatněna částkou 30 Kč."
+  utter_faq_eshop_shipping_cost:
+    - text: "Cena dopravy se odvíjí od zvoleného dopravce a hodnoty objednávky. Nabízíme Zásilkovnu za 69 Kč a Balík Do ruky od České pošty za 99 Kč. Při objednávce nad 1500 Kč je doprava zdarma."
+  utter_faq_eshop_returns_procedure:
+    - text: "Pokud chcete zboží vrátit, můžete tak učinit do 14 dnů od převzetí, za předpokladu, že je nepoužité a v originálním obalu. Prosím, kontaktujte nás na e-mailu eshop@dermaestetik.cz pro domluvení detailů vrácení. Více informací naleznete také v našich obchodních podmínkách."
+  utter_faq_parabens:
+    - text: "Většina produktů v naší nabídce je formulována bez parabenů, jelikož si uvědomujeme, že mnoho zákazníků preferuje kosmetiku bez těchto konzervačních látek. Například produkty značky Medik8 se snaží minimalizovat použití kontroverzních konzervantů. Přesné informace o složení, včetně obsahu parabenů, naleznete vždy v detailu každého produktu na našem e-shopu eshop.dermaestetik.cz, nebo se na nás neváhejte obrátit s dotazem na konkrétní produkt."
+  utter_faq_animal_testing:
+    - text: "Netestování na zvířatech je pro nás klíčové. Všechny produkty prodávané v EU musí splňovat legislativu zakazující testování kosmetiky na zvířatech. Značky jako Medik8 a Heliocare (Cantabria Labs), které u nás najdete, aktivně deklarují, že své produkty ani jejich složky na zvířatech netestují. Medik8 je navíc certifikována jako cruelty-free relevantními organizacemi. Více informací o politice jednotlivých značek můžete nalézt také v detailech produktů na našem e-shopu eshop.dermaestetik.cz."
+  utter_faq_store_pickup:
+    - text: "Ano, produkty si můžete osobně prohlédnout, zakoupit, nebo po předchozí domluvě vyzvednout objednávku z e-shopu v naší prodejně. Najdete nás na adrese kliniky DermaEstetik, Jana Palacha 2923/21, 690 02 Břeclav. Doporučujeme si předem ověřit otevírací dobu a případně se domluvit na detailech vyzvednutí vaší online objednávky."
+  utter_faq_eshop_complaint_procedure:
+    - text: "V případě, že potřebujete produkt reklamovat, nás prosím nejprve kontaktujte na e-mailu eshop@dermaestetik.cz nebo telefonicky na čísle uvedeném na našem webu. Popište nám prosím vadu produktu. Detailní informace o reklamačním postupu a Vašich právech naleznete v našich Obchodních podmínkách, které jsou dostupné na stránkách e-shopu."
+  utter_faq_eshop_product_ingredients:
+    - text: "Detailní složení (INCI) každého produktu naleznete přímo na stránce daného produktu v našem e-shopu eshop.dermaestetik.cz, obvykle v záložce 'Složení' nebo 'Popis produktu'. Pokud byste tam informaci náhodou nenašli, nebo máte doplňující dotaz ke složení, neváhejte nás kontaktovat."
+  utter_faq_clinic_botox_duration:
+    - text: "Účinek botulotoxinu obvykle trvá 4-6 měsíců. Po této době je možné aplikaci opakovat. Při pravidelných opakovaných aplikacích se může doba účinku postupně prodlužovat, někdy až na 12 měsíců. Vždy je to však individuální."
+  utter_faq_clinic_laser_epilation_sessions:
+    - text: "Počet potřebných ošetření laserové epilace je velmi individuální a závisí na typu chloupků a ošetřované oblasti. Obvykle se doporučuje série přibližně 6 až 8 ošetření, která se provádějí v intervalech 1 měsíce až 6 týdnů pro dosažení optimálního výsledku."
+  utter_faq_clinic_laser_epilation_preparation:
+    - text: "Před laserovou epilací je důležité chloupky pravidelně stříhat nebo holit žiletkou – nesmí se vytrhávat voskem, epilátorem ani pinzetou alespoň 4-6 týdnů před zákrokem. Den před ošetřením nebo v den ošetření je vhodné chloupky oholit. Na samotné ošetření přijďte s čistou pokožkou bez krémů či deodorantů v dané oblasti."
+  utter_faq_clinic_chemical_peel_summer:
+    - text: "Standardní chemické peelingy se obvykle doporučují provádět od podzimu do jara, kdy je nižší intenzita slunečního záření. Naše klinika však může nabízet i speciální typy tzv. 'letních peelingů', které jsou pro toto období vhodnější. Pro posouzení vhodnosti a výběr správného typu peelingu pro vaši pleť doporučujeme vždy osobní konzultaci s naším odborníkem."
+
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true
