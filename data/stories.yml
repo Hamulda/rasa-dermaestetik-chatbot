@@ -2,81 +2,243 @@ version: "3.1"
 
 stories:
 
-- story: Formular - uzivatel se pta obecne, pak poskytuje pozadovane sloty jeden po druhem
+# --- Základní scénáře úspěšného vyplnění formuláře ---
+- story: Formular - uzivatel se pta obecne, pak poskytuje pozadovane sloty jeden po druhem (sucha, vrasky)
+  metadata: {rasa_training_data_type: story}
   steps:
   - intent: greet
   - action: utter_greet
   - intent: ask_product_recommendation
-  - action: product_recommendation_form    # Pravidlo aktivuje formular, FormPolicy se zeptá na skin_type
+  - action: product_recommendation_form    # Formulář se aktivuje, FormPolicy se zeptá na skin_type
   - active_loop: product_recommendation_form
+  # Bot se zeptal na skin_type
   - intent: inform
     entities:
     - skin_type: "suchá"
-  - action: product_recommendation_form    # Formular zpracuje skin_type, FormPolicy se zepta na skin_concern
-  - active_loop: product_recommendation_form
+  - slot_was_set:
+    - skin_type: "suchá"
+  - action: product_recommendation_form    # Formulář zpracuje skin_type, FormPolicy se zeptá na skin_concern
+  - active_loop: product_recommendation_form # Loop stále aktivní
+  # Bot se zeptal na skin_concern
   - intent: inform
     entities:
     - skin_concern: "vrásky"
-  - action: product_recommendation_form    # Formular zpracuje skin_concern, FormPolicy deaktivuje loop
+  - slot_was_set:
+    - skin_concern: "vrásky"
+  - action: product_recommendation_form    # Formulář zpracuje skin_concern. Oba povinné sloty jsou vyplněny, FormPolicy deaktivuje loop.
   - active_loop: null
   - action: utter_submit_form
   - action: action_recommend_product
 
-- story: Formular - uzivatel poskytne jeden pozadovany slot s ask_product_recommendation, pak druhy
+- story: Formular - uzivatel poskytne skin_type s ask_product_recommendation, pak skin_concern (mastna, pory)
+  metadata: {rasa_training_data_type: story}
   steps:
   - intent: greet
   - action: utter_greet
-  - intent: ask_product_recommendation
+  - intent: ask_product_recommendation # Uživatel hned poskytne skin_type
     entities:
     - skin_type: "mastná"
-  - action: product_recommendation_form
+  - action: product_recommendation_form # Formulář se aktivuje
   - active_loop: product_recommendation_form
-  - slot_was_set:
+  - slot_was_set: # Slot skin_type je vyplněn z úvodního intentu
     - skin_type: "mastná"
+  - action: product_recommendation_form # Formulář zpracuje předvyplněný skin_type a zeptá se na skin_concern
+  - active_loop: product_recommendation_form
+  # Bot se zeptal na skin_concern
   - intent: inform
     entities:
     - skin_concern: "póry"
-  - action: product_recommendation_form
-  - active_loop: null
   - slot_was_set:
     - skin_concern: "póry"
+  - action: product_recommendation_form # Formulář zpracuje skin_concern, deaktivuje loop
+  - active_loop: null
   - action: utter_submit_form
   - action: action_recommend_product
 
-- story: Formular - uzivatel poskytne vsechny pozadovane sloty (a jeden volitelny) s ask_product_recommendation
+- story: Formular - uzivatel poskytne vsechny pozadovane sloty (a jeden volitelny) s ask_product_recommendation (citliva, zarudnuti, krem)
+  metadata: {rasa_training_data_type: story}
   steps:
   - intent: greet
   - action: utter_greet
-  - intent: ask_product_recommendation
+  - intent: ask_product_recommendation # Uživatel poskytne všechny informace najednou
     entities:
     - skin_type: "citlivá"
     - skin_concern: "zarudnutí"
     - product_category: "krém"
-  - action: product_recommendation_form
+  - action: product_recommendation_form # Formulář se aktivuje
   - active_loop: product_recommendation_form
-  - slot_was_set:
+  - slot_was_set: # Sloty jsou vyplněny z úvodního intentu
     - skin_type: "citlivá"
   - slot_was_set:
     - skin_concern: "zarudnutí"
-  - slot_was_set:
+  - slot_was_set: # I nepovinný slot se vyplní, pokud ho NLU rozpozná
     - product_category: "krém"
-  - action: product_recommendation_form
+  - action: product_recommendation_form # Formulář zpracuje sloty, zjistí, že všechny povinné jsou vyplněny, a deaktivuje loop
   - active_loop: null
   - action: utter_submit_form
   - action: action_recommend_product
 
-- story: Zastaveni formulare v prubehu
+# --- Scénáře s alternativním průběhem vyplňování ---
+- story: Formular - uzivatel poskytne informaci pro jiny slot, nez na ktery se bot pta (akne, pak mastna)
+  metadata: {rasa_training_data_type: story}
+  steps:
+  - intent: ask_product_recommendation
+  - action: product_recommendation_form    # Formulář se aktivuje, FormPolicy se zeptá na skin_type
+  - active_loop: product_recommendation_form
+  # Bot se zeptal na skin_type
+  - intent: inform # Uživatel odpoví informací pro skin_concern
+    entities:
+    - skin_concern: "akné"
+  - slot_was_set: # Slot skin_concern se vyplní
+    - skin_concern: "akné"
+  - action: product_recommendation_form    # Formulář zpracuje skin_concern, ale stále požaduje skin_type
+  - active_loop: product_recommendation_form # Loop stále aktivní
+  # Bot by se měl znovu zeptat na skin_type
+  - intent: inform # Uživatel konečně poskytne skin_type
+    entities:
+    - skin_type: "mastná"
+  - slot_was_set:
+    - skin_type: "mastná"
+  - action: product_recommendation_form    # Formulář zpracuje skin_type. Oba povinné sloty jsou vyplněny, FormPolicy deaktivuje loop.
+  - active_loop: null
+  - action: utter_submit_form
+  - action: action_recommend_product
+
+- story: Formular - uzivatel poskytne vice informaci najednou behem vyplnovani
+  metadata: {rasa_training_data_type: story}
   steps:
   - intent: ask_product_recommendation
   - action: product_recommendation_form
   - active_loop: product_recommendation_form
-  - intent: stop_form
-  - action: action_deactivate_loop
+  # Bot se zeptal na skin_type
+  - intent: inform # Uživatel poskytne skin_type i skin_concern najednou
+    entities:
+      - skin_type: "smíšená"
+      - skin_concern: "černé tečky"
+  - slot_was_set:
+    - skin_type: "smíšená"
+  - slot_was_set:
+    - skin_concern: "černé tečky"
+  - action: product_recommendation_form # Formulář zpracuje oba sloty, povinné jsou vyplněny, deaktivuje loop
+  - active_loop: null
+  - action: utter_submit_form
+  - action: action_recommend_product
+
+- story: Formular - uzivatel poskytne nepovinny slot behem vyplnovani povinnych
+  metadata: {rasa_training_data_type: story}
+  steps:
+  - intent: ask_product_recommendation
+  - action: product_recommendation_form
+  - active_loop: product_recommendation_form
+  # Bot se zeptal na skin_type
+  - intent: inform
+    entities:
+    - skin_type: "normální"
+    - brand: "Medik8" # Poskytne i nepovinný slot
+  - slot_was_set:
+    - skin_type: "normální"
+  - slot_was_set:
+    - brand: "Medik8"
+  - action: product_recommendation_form # Formulář zpracuje, zeptá se na skin_concern
+  - active_loop: product_recommendation_form
+  # Bot se zeptal na skin_concern
+  - intent: inform
+    entities:
+    - skin_concern: "hydratace"
+  - slot_was_set:
+    - skin_concern: "hydratace"
+  - action: product_recommendation_form # Formulář zpracuje, povinné jsou vyplněny, deaktivuje loop
+  - active_loop: null
+  - action: utter_submit_form
+  - action: action_recommend_product
+
+- story: Formular - uzivatel opravi drive zadany slot
+  metadata: {rasa_training_data_type: story}
+  steps:
+  - intent: ask_product_recommendation
+  - action: product_recommendation_form
+  - active_loop: product_recommendation_form
+  # Bot se zeptal na skin_type
+  - intent: inform
+    entities:
+    - skin_type: "suchá"
+  - slot_was_set:
+    - skin_type: "suchá"
+  - action: product_recommendation_form # Formulář zpracuje, zeptá se na skin_concern
+  - active_loop: product_recommendation_form
+  # Bot se zeptal na skin_concern
+  - intent: inform # Uživatel si uvědomí chybu a opraví skin_type
+    entities:
+    - skin_type: "velmi suchá"
+  - slot_was_set:
+    - skin_type: "velmi suchá" # Původní skin_type "suchá" se přepíše
+  - action: product_recommendation_form # Formulář zpracuje opravu, stále se ptá na skin_concern
+  - active_loop: product_recommendation_form
+  # Bot se (znovu) zeptal na skin_concern
+  - intent: inform
+    entities:
+    - skin_concern: "šupinatá pleť"
+  - slot_was_set:
+    - skin_concern: "šupinatá pleť"
+  - action: product_recommendation_form # Formulář zpracuje, povinné jsou vyplněny, deaktivuje loop
+  - active_loop: null
+  - action: utter_submit_form
+  - action: action_recommend_product
+
+# --- Scénář přerušení a zrušení formuláře ---
+- story: Formular - preruseni FAQ otazkou a navrat k formulari
+  metadata: {rasa_training_data_type: story}
+  steps:
+  - intent: ask_product_recommendation
+  - action: product_recommendation_form
+  - active_loop: product_recommendation_form
+  # Bot se zeptal na skin_type
+  - intent: faq_payment_options # Uživatel se zeptá na něco jiného
+  - action: utter_faq_payment_options
+  - action: product_recommendation_form # Formulář by měl znovu vyzvat k vyplnění skin_type
+  - active_loop: product_recommendation_form # Loop je stále aktivní
+  # Bot se znovu zeptal na skin_type
+  - intent: inform
+    entities:
+    - skin_type: "citlivá"
+  - slot_was_set:
+    - skin_type: "citlivá"
+  - action: product_recommendation_form # Formulář zpracuje, zeptá se na skin_concern
+  - active_loop: product_recommendation_form
+  # Bot se zeptal na skin_concern
+  - intent: inform
+    entities:
+    - skin_concern: "zarudnutí"
+  - slot_was_set:
+    - skin_concern: "zarudnutí"
+  - action: product_recommendation_form # Formulář zpracuje, povinné jsou vyplněny, deaktivuje loop
+  - active_loop: null
+  - action: utter_submit_form
+  - action: action_recommend_product
+
+- story: Zastaveni formulare v prubehu po vyplneni jednoho slotu
+  metadata: {rasa_training_data_type: story}
+  steps:
+  - intent: ask_product_recommendation
+  - action: product_recommendation_form
+  - active_loop: product_recommendation_form
+  # Bot se zeptal na skin_type
+  - intent: inform
+    entities:
+    - skin_type: "suchá"
+  - slot_was_set:
+    - skin_type: "suchá"
+  - action: product_recommendation_form # Formulář zpracuje a zeptá se na skin_concern
+  - active_loop: product_recommendation_form
+  # Bot se zeptal na skin_concern
+  - intent: stop_form # Uživatel chce formulář zrušit
+  - action: action_deactivate_loop # Standardní akce pro deaktivaci smyčky
   - active_loop: null
   - action: utter_form_cancelled
 
 # --- Tvoje existujici jednoduche pribehy (beze zmeny) ---
 - story: happy path (basic greet and mood)
+  metadata: {rasa_training_data_type: story}
   steps:
   - intent: greet
   - action: utter_greet
@@ -84,6 +246,7 @@ stories:
   - action: utter_happy
 
 - story: sad path 1 (basic greet and unhappy mood)
+  metadata: {rasa_training_data_type: story}
   steps:
   - intent: greet
   - action: utter_greet
@@ -94,6 +257,7 @@ stories:
   - action: utter_happy
 
 - story: sad path 2 (greet, unhappy, deny help)
+  metadata: {rasa_training_data_type: story}
   steps:
   - intent: greet
   - action: utter_greet
@@ -104,77 +268,92 @@ stories:
   - action: utter_goodbye
 
 - story: bot challenge
+  metadata: {rasa_training_data_type: story}
   steps:
   - intent: bot_challenge
   - action: utter_iamabot
 
-# --- Pribehy pro nektere FAQ (beze zmeny, pouze příklady) ---
+# --- Pribehy pro nektere FAQ (opravena chyba v intentu a poslední akci) ---
 - story: user asks about payment options
+  metadata: {rasa_training_data_type: story}
   steps:
   - intent: faq_payment_options
   - action: utter_faq_payment_options
 
 - story: user asks about vegan products
+  metadata: {rasa_training_data_type: story}
   steps:
   - intent: faq_vegan_products
   - action: utter_faq_vegan_products
 
 - story: user asks about eshop payment options detail
+  metadata: {rasa_training_data_type: story}
   steps:
   - intent: faq_eshop_payment_options_detail
   - action: utter_faq_eshop_payment_options_detail
 
 - story: user asks about eshop shipping cost
+  metadata: {rasa_training_data_type: story}
   steps:
   - intent: faq_eshop_shipping_cost
   - action: utter_faq_eshop_shipping_cost
 
 - story: user asks about eshop returns procedure
+  metadata: {rasa_training_data_type: story}
   steps:
   - intent: faq_eshop_returns_procedure
   - action: utter_faq_eshop_returns_procedure
 
 - story: user asks about parabens
+  metadata: {rasa_training_data_type: story}
   steps:
   - intent: faq_parabens
   - action: utter_faq_parabens
 
 - story: user asks about animal_testing
+  metadata: {rasa_training_data_type: story}
   steps:
   - intent: faq_animal_testing
   - action: utter_faq_animal_testing
 
 - story: user asks about store_pickup
+  metadata: {rasa_training_data_type: story}
   steps:
   - intent: faq_store_pickup
   - action: utter_faq_store_pickup
 
 - story: user asks about eshop_complaint_procedure
+  metadata: {rasa_training_data_type: story}
   steps:
   - intent: faq_eshop_complaint_procedure
   - action: utter_faq_eshop_complaint_procedure
 
 - story: user asks about eshop_product_ingredients
+  metadata: {rasa_training_data_type: story}
   steps:
   - intent: faq_eshop_product_ingredients
   - action: utter_faq_eshop_product_ingredients
 
 - story: user asks about clinic_botox_duration
+  metadata: {rasa_training_data_type: story}
   steps:
   - intent: faq_clinic_botox_duration
   - action: utter_faq_clinic_botox_duration
 
 - story: user asks about clinic_laser_epilation_sessions
+  metadata: {rasa_training_data_type: story}
   steps:
   - intent: faq_clinic_laser_epilation_sessions
   - action: utter_faq_clinic_laser_epilation_sessions
 
 - story: user asks about clinic_laser_epilation_preparation
+  metadata: {rasa_training_data_type: story}
   steps:
   - intent: faq_clinic_laser_epilation_preparation
   - action: utter_faq_clinic_laser_epilation_preparation
 
 - story: user asks about clinic_chemical_peel_summer
+  metadata: {rasa_training_data_type: story}
   steps:
   - intent: faq_clinic_chemical_peel_summer
   - action: utter_faq_clinic_chemical_peel_summer

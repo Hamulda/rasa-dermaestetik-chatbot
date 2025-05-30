@@ -94,10 +94,11 @@ forms:
       # Zde můžeš později přidat další povinné sloty jako product_category, skin_area
 
 actions:
-  # Vlastní akce
+  # Vlastní akce (Custom Actions)
   - action_recommend_product
-  # Formuláře jsou také akce
-  - product_recommendation_form  # Odpovědi (utterances)
+  # Validační akce formulářů (Form Validation Actions)
+  - validate_product_recommendation_form # <-- Přidáno
+  # Odpovědi (Utterances)
   - utter_greet
   - utter_cheer_up
   - utter_did_that_help
@@ -167,7 +168,6 @@ responses:
     - text: "Děkuji za informace, podívám se na vhodné produkty pro vás."
   utter_form_cancelled:
     - text: "Dobře, formulář byl zrušen. Mohu vám pomoci s něčím jiným?"
-  # Zde doplň všechny své FAQ odpovědi, jak jsi je měl
   utter_faq_payment_options:
     - text: "Přijímáme platby kartou online, bankovním převodem a také na dobírku. U dobírky je poplatek 30 Kč."
   utter_faq_product_ingredients_sensitive_skin:

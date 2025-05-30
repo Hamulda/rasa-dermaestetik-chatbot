@@ -5,18 +5,23 @@ rules:
 - rule: Activate product_recommendation_form
   steps:
   - intent: ask_product_recommendation
-  - action: product_recommendation_form   # Spustí se akce formuláře
-  - active_loop: product_recommendation_form # Explicitně říkáme, že formulář bude aktivní
+  - action: product_recommendation_form
+  - active_loop: product_recommendation_form
 
-# PRAVIDLO PRO ODESLÁNÍ FORMULÁŘE JE ODSTRANĚNO - spoléháme na stories a FormPolicy
+- rule: Handle user providing information while product_recommendation_form is active
+  condition:
+  - active_loop: product_recommendation_form
+  steps:
+  - intent: inform
+  - action: product_recommendation_form
 
 - rule: User wants to stop the product_recommendation_form
   condition:
   - active_loop: product_recommendation_form
   steps:
   - intent: stop_form
-  - action: action_deactivate_loop # Tato akce deaktivuje smyčku
-  - active_loop: null # Explicitně nastavíme, že smyčka již není aktivní
+  - action: action_deactivate_loop
+  - active_loop: null
   - action: utter_form_cancelled
 
 # --- Ostatní tvá pravidla (pozdravy, FAQ atd.) ---
