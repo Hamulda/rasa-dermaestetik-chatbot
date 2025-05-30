@@ -16,7 +16,7 @@ stories:
     entities:
     - skin_type: "suchá"
   - slot_was_set:
-    - skin_type: "suchá"
+    - skin_type: ["suchá"] # Validační metoda vrací list
   - action: product_recommendation_form    # Formulář zpracuje skin_type, FormPolicy se zeptá na skin_concern
   - active_loop: product_recommendation_form # Loop stále aktivní
   # Bot se zeptal na skin_concern
@@ -24,7 +24,7 @@ stories:
     entities:
     - skin_concern: "vrásky"
   - slot_was_set:
-    - skin_concern: "vrásky"
+    - skin_concern: ["vrásky"] # Validační metoda vrací list
   - action: product_recommendation_form    # Formulář zpracuje skin_concern. Oba povinné sloty jsou vyplněny, FormPolicy deaktivuje loop.
   - active_loop: null
   - action: utter_submit_form
@@ -41,7 +41,7 @@ stories:
   - action: product_recommendation_form # Formulář se aktivuje
   - active_loop: product_recommendation_form
   - slot_was_set: # Slot skin_type je vyplněn z úvodního intentu
-    - skin_type: "mastná"
+    - skin_type: ["mastná"]
   - action: product_recommendation_form # Formulář zpracuje předvyplněný skin_type a zeptá se na skin_concern
   - active_loop: product_recommendation_form
   # Bot se zeptal na skin_concern
@@ -49,7 +49,7 @@ stories:
     entities:
     - skin_concern: "póry"
   - slot_was_set:
-    - skin_concern: "póry"
+    - skin_concern: ["póry"]
   - action: product_recommendation_form # Formulář zpracuje skin_concern, deaktivuje loop
   - active_loop: null
   - action: utter_submit_form
@@ -67,13 +67,42 @@ stories:
     - product_category: "krém"
   - action: product_recommendation_form # Formulář se aktivuje
   - active_loop: product_recommendation_form
-  - slot_was_set: # Sloty jsou vyplněny z úvodního intentu
-    - skin_type: "citlivá"
   - slot_was_set:
-    - skin_concern: "zarudnutí"
-  - slot_was_set: # I nepovinný slot se vyplní, pokud ho NLU rozpozná
-    - product_category: "krém"
+    - skin_type: ["citlivá"]
+  - slot_was_set:
+    - skin_concern: ["zarudnutí"]
+  - slot_was_set:
+    - product_category: "krém" # Textový slot
   - action: product_recommendation_form # Formulář zpracuje sloty, zjistí, že všechny povinné jsou vyplněny, a deaktivuje loop
+  - active_loop: null
+  - action: utter_submit_form
+  - action: action_recommend_product
+
+- story: Formular - jina kombinace slotu, uspesne dokonceni (smisena, akne, serum)
+  metadata: {rasa_training_data_type: story}
+  steps:
+  - intent: ask_product_recommendation
+    entities:
+      - product_category: "sérum" # Uživatel začne s kategorií
+  - action: product_recommendation_form
+  - active_loop: product_recommendation_form
+  - slot_was_set:
+      - product_category: "sérum"
+  - action: product_recommendation_form # Formulář se zeptá na skin_type
+  - active_loop: product_recommendation_form
+  - intent: inform
+    entities:
+    - skin_type: "smíšená"
+  - slot_was_set:
+    - skin_type: ["smíšená"]
+  - action: product_recommendation_form # Formulář se zeptá na skin_concern
+  - active_loop: product_recommendation_form
+  - intent: inform
+    entities:
+    - skin_concern: "akné"
+  - slot_was_set:
+    - skin_concern: ["akné"]
+  - action: product_recommendation_form # Deaktivace formuláře
   - active_loop: null
   - action: utter_submit_form
   - action: action_recommend_product
@@ -90,7 +119,7 @@ stories:
     entities:
     - skin_concern: "akné"
   - slot_was_set: # Slot skin_concern se vyplní
-    - skin_concern: "akné"
+    - skin_concern: ["akné"]
   - action: product_recommendation_form    # Formulář zpracuje skin_concern, ale stále požaduje skin_type
   - active_loop: product_recommendation_form # Loop stále aktivní
   # Bot by se měl znovu zeptat na skin_type
@@ -98,13 +127,13 @@ stories:
     entities:
     - skin_type: "mastná"
   - slot_was_set:
-    - skin_type: "mastná"
+    - skin_type: ["mastná"]
   - action: product_recommendation_form    # Formulář zpracuje skin_type. Oba povinné sloty jsou vyplněny, FormPolicy deaktivuje loop.
   - active_loop: null
   - action: utter_submit_form
   - action: action_recommend_product
 
-- story: Formular - uzivatel poskytne vice informaci najednou behem vyplnovani
+- story: Formular - uzivatel poskytne vice informaci najednou behem vyplnovani (smisena, cerne tecky)
   metadata: {rasa_training_data_type: story}
   steps:
   - intent: ask_product_recommendation
@@ -116,15 +145,15 @@ stories:
       - skin_type: "smíšená"
       - skin_concern: "černé tečky"
   - slot_was_set:
-    - skin_type: "smíšená"
+    - skin_type: ["smíšená"]
   - slot_was_set:
-    - skin_concern: "černé tečky"
+    - skin_concern: ["černé tečky"]
   - action: product_recommendation_form # Formulář zpracuje oba sloty, povinné jsou vyplněny, deaktivuje loop
   - active_loop: null
   - action: utter_submit_form
   - action: action_recommend_product
 
-- story: Formular - uzivatel poskytne nepovinny slot behem vyplnovani povinnych
+- story: Formular - uzivatel poskytne nepovinny slot behem vyplnovani povinnych (normalni, Medik8, hydratace)
   metadata: {rasa_training_data_type: story}
   steps:
   - intent: ask_product_recommendation
@@ -136,9 +165,9 @@ stories:
     - skin_type: "normální"
     - brand: "Medik8" # Poskytne i nepovinný slot
   - slot_was_set:
-    - skin_type: "normální"
+    - skin_type: ["normální"]
   - slot_was_set:
-    - brand: "Medik8"
+    - brand: "medik8" # Normalizovaná hodnota
   - action: product_recommendation_form # Formulář zpracuje, zeptá se na skin_concern
   - active_loop: product_recommendation_form
   # Bot se zeptal na skin_concern
@@ -146,13 +175,13 @@ stories:
     entities:
     - skin_concern: "hydratace"
   - slot_was_set:
-    - skin_concern: "hydratace"
+    - skin_concern: ["hydratace"]
   - action: product_recommendation_form # Formulář zpracuje, povinné jsou vyplněny, deaktivuje loop
   - active_loop: null
   - action: utter_submit_form
   - action: action_recommend_product
 
-- story: Formular - uzivatel opravi drive zadany slot
+- story: Formular - uzivatel opravi drive zadany slot (sucha -> velmi sucha, pak supinata plet)
   metadata: {rasa_training_data_type: story}
   steps:
   - intent: ask_product_recommendation
@@ -163,7 +192,7 @@ stories:
     entities:
     - skin_type: "suchá"
   - slot_was_set:
-    - skin_type: "suchá"
+    - skin_type: ["suchá"]
   - action: product_recommendation_form # Formulář zpracuje, zeptá se na skin_concern
   - active_loop: product_recommendation_form
   # Bot se zeptal na skin_concern
@@ -171,22 +200,22 @@ stories:
     entities:
     - skin_type: "velmi suchá"
   - slot_was_set:
-    - skin_type: "velmi suchá" # Původní skin_type "suchá" se přepíše
-  - action: product_recommendation_form # Formulář zpracuje opravu, stále se ptá na skin_concern
+    - skin_type: ["velmi suchá"] # Původní skin_type "suchá" se přepíše
+  - action: product_recommendation_form # Formulář zpracuje opravu, stále se ptá na skin_concern (pokud ještě nebyl vyplněn)
   - active_loop: product_recommendation_form
   # Bot se (znovu) zeptal na skin_concern
   - intent: inform
     entities:
     - skin_concern: "šupinatá pleť"
   - slot_was_set:
-    - skin_concern: "šupinatá pleť"
+    - skin_concern: ["šupinatá pleť"]
   - action: product_recommendation_form # Formulář zpracuje, povinné jsou vyplněny, deaktivuje loop
   - active_loop: null
   - action: utter_submit_form
   - action: action_recommend_product
 
 # --- Scénář přerušení a zrušení formuláře ---
-- story: Formular - preruseni FAQ otazkou a navrat k formulari
+- story: Formular - preruseni FAQ otazkou a navrat k formulari (robustnejsi)
   metadata: {rasa_training_data_type: story}
   steps:
   - intent: ask_product_recommendation
@@ -195,23 +224,58 @@ stories:
   # Bot se zeptal na skin_type
   - intent: faq_payment_options # Uživatel se zeptá na něco jiného
   - action: utter_faq_payment_options
-  - action: product_recommendation_form # Formulář by měl znovu vyzvat k vyplnění skin_type
+  # DŮLEŽITÉ: Po odpovědi na FAQ by se měl formulář znovu aktivovat a zopakovat otázku na chybějící slot
+  - action: product_recommendation_form # Toto by mělo způsobit, že FormPolicy znovu vyhodnotí stav a zeptá se na 'requested_slot'
   - active_loop: product_recommendation_form # Loop je stále aktivní
-  # Bot se znovu zeptal na skin_type
+  # Bot by se měl znovu zeptat na skin_type (nebo na ten slot, který byl 'requested_slot')
   - intent: inform
     entities:
     - skin_type: "citlivá"
   - slot_was_set:
-    - skin_type: "citlivá"
+    - skin_type: ["citlivá"]
+  - action: product_recommendation_form
+  - active_loop: product_recommendation_form
+  - intent: inform
+    entities:
+    - skin_concern: "zarudnutí"
+  - slot_was_set:
+    - skin_concern: ["zarudnutí"]
+  - action: product_recommendation_form
+  - active_loop: null
+  - action: utter_submit_form
+  - action: action_recommend_product
+
+- story: Formular - test dynamickych required_slots (rust ras, pak pece o rasy)
+  metadata: {rasa_training_data_type: story}
+  steps:
+  - intent: ask_product_recommendation
+  - action: product_recommendation_form
+  - active_loop: product_recommendation_form
+  # Bot se zeptal na skin_type
+  - intent: inform
+    entities:
+    - skin_type: "normální"
+  - slot_was_set:
+    - skin_type: ["normální"]
   - action: product_recommendation_form # Formulář zpracuje, zeptá se na skin_concern
   - active_loop: product_recommendation_form
   # Bot se zeptal na skin_concern
-  - intent: inform
+  - intent: inform # Uživatel zmíní růst řas
     entities:
-    - skin_concern: "zarudnutí"
+    - skin_concern: "růst řas"
   - slot_was_set:
-    - skin_concern: "zarudnutí"
-  - action: product_recommendation_form # Formulář zpracuje, povinné jsou vyplněny, deaktivuje loop
+    - skin_concern: ["růst řas"]
+  - action: product_recommendation_form # Formulář zpracuje, a protože skin_concern je "růst řas",
+                                      # metoda required_slots by měla přidat product_category jako povinný.
+                                      # FormPolicy by se nyní měla zeptat na product_category.
+  - active_loop: product_recommendation_form
+  # Bot by se měl zeptat na product_category (např. utter_ask_product_category)
+  - intent: inform # Uživatel poskytne kategorii
+    entities:
+    - product_category: "péče o řasy"
+  - slot_was_set:
+    - product_category: "péče o řasy"
+  - action: product_recommendation_form # Formulář zpracuje, všechny (i dynamicky přidané) povinné sloty jsou vyplněny
   - active_loop: null
   - action: utter_submit_form
   - action: action_recommend_product
@@ -227,7 +291,7 @@ stories:
     entities:
     - skin_type: "suchá"
   - slot_was_set:
-    - skin_type: "suchá"
+    - skin_type: ["suchá"]
   - action: product_recommendation_form # Formulář zpracuje a zeptá se na skin_concern
   - active_loop: product_recommendation_form
   # Bot se zeptal na skin_concern
