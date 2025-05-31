@@ -91,7 +91,7 @@ nlu:
     - kdo jsi?
     - jsi jenom program?
 
-- intent: ask_product_recommendation
+- intent: ask_product_recommendation # Intent pro spuštění formuláře nebo obecnou žádost o radu
   examples: |
     - Chtěl bych poradit.
     - Poradíte mi?
@@ -129,8 +129,10 @@ nlu:
     - Hledám [veganské](product_attribute:veganské) [sérum](product_category:sérum) od [Medik8](brand) pro [citlivou pleť](skin_type:citlivá) na [hydrataci](skin_concern:hydratace).
     - Jaký [krém](product_category:krém) od [Heliocare](brand) [s SPF](product_attribute:s spf) je vhodný pro [mastnou](skin_type:mastná) a [problematickou pleť](skin_type:problematická)?
     - Doporučte mi od značky [FacEvolution](brand) něco na [vrásky](skin_concern:vrásky) [kolem očí](skin_area:oční okolí).
+    - Chci poradit s výběrem [očního krému](product_category:oční krém) na [hydrataci](skin_concern:hydratace) a [proti otokům](skin_concern:otoky očí).
+    - Doporučte mi [cokoli](product_category) od [Medik8](brand) co je [veganské](product_attribute:veganské) a na [akné](skin_concern:akné).
 
-- intent: inform
+- intent: inform # Intent pro poskytování informací, typicky jako odpověď na otázku formuláře
   examples: |
     - mám [suchou pleť](skin_type:suchá)
     - [suchá](skin_type:suchá)
@@ -219,6 +221,8 @@ nlu:
     - jen [krém](product_category:krém)
     - pouze [sérum](product_category:sérum)
     - chci jen [oční krém](product_category:oční krém)
+    - [péče o řasy](product_category:péče o řasy)
+    - [sérum na řasy](product_category:péče o řasy)
 
 - intent: stop_form
   examples: |
@@ -238,7 +242,7 @@ nlu:
     - chci něco jiného
     - nevadí, zkusíme to jinak
 
-# --- Zde začínají FAQ intenty (beze změny) ---
+# --- FAQ intenty (ponechány jak máš, jen zkontrolovány) ---
 - intent: faq_payment_options
   examples: |
     - Jaké jsou u vás způsoby platby?
@@ -497,12 +501,15 @@ nlu:
     - Dá se dělat peeling v létě?
 
 # --- Synonyma ---
-- synonym: suchá
+# Normalizují různé tvary slov na jednu základní hodnotu pro entity
+- synonym: suchá # Základní hodnota
   examples: |
     - suchou
     - suché
     - vysušená
     - vysušenou
+    - velmi suchá 
+    - extra suchou
 
 - synonym: mastná
   examples: |
@@ -510,6 +517,7 @@ nlu:
     - mastné
     - lesklá
     - leskne se mi
+    - mastný typ pleti
 
 - synonym: smíšená
   examples: |
@@ -520,10 +528,12 @@ nlu:
   examples: |
     - citlivou
     - citlivé
+    - citlivá pleť
+    - citlivou pokožku
 
 - synonym: normální
   examples: |
-    - normální
+    - normální pleť
 
 - synonym: problematická
   examples: |
@@ -545,11 +555,15 @@ nlu:
     - aknózní
     - pupínky
     - pupínků
+    - na pupínky
 
 - synonym: vrásky
   examples: |
     - vráskám
     - vrásky oční
+    - proti vráskám
+    - hluboké vrásky
+    - redukci vrásek
 
 - synonym: pigmentace
   examples: |
@@ -560,33 +574,66 @@ nlu:
   examples: |
     - rozšířené póry
     - ucpané póry
+    - čištění pórů
+    - redukci pórů
 
-- synonym: krém
+- synonym: krém # Základní hodnota pro kategorii
   examples: |
     - krému
     - krémy
+    - denní krém
+    - noční krém
+    - noční péči
+    - hydratační krém
+    - výživný krém
+    - lehký krém
+    - gelový krém
+    - pleťový krém
 
 - synonym: sérum
   examples: |
     - séra
     - oční sérum
+    - olejové sérum
+    - noční sérum
+    - retinol sérum
+    - niacinamidové sérum
 
-- synonym: spf
+- synonym: spf # Kategorie pro produkty s ochranným faktorem
   examples: |
     - opalovací krém
     - ochrana proti slunci
     - opalovák
     - SPF50
-    - s ochranným faktorem
+    - krém s vysokým faktorem
+    - tónovaný krém s SPF
+    - krém s ochranným faktorem
 
-- synonym: čistící gel
+- synonym: čistič # Všeobecná kategorie pro čisticí produkty
   examples: |
-    - čistič
+    - čistící gel
     - čistící pěna
     - čistící olej
     - čistící přípravek
 
+- synonym: péče o řasy # Kategorie pro produkty na řasy
+  examples: |
+    - sérum na řasy
+
+- synonym: zarudnutí
+  examples: |
+    - červená pleť
+
+- synonym: hydratace
+  examples: |
+    - pro hydrataci
+
+- synonym: s vitamínem C # Atribut
+  examples: |
+    - s vitaminem C 
+
 # --- Lookup Tables ---
+# Pomáhají NLU lépe rozpoznávat konkrétní hodnoty entit
 - lookup: skin_type
   examples: |
     - suchá
@@ -640,14 +687,20 @@ nlu:
     - báze
     - krém na ruce
     - oční sérum
+    - péče o řasy
+    - čistící pěna
+    - čistící olej
+    - gelový krém
+    - olejové sérum
 
 - lookup: brand
   examples: |
     - Medik8
     - Heliocare
     - FacEvolution
+    # Doplň další značky, které nabízíš
 
-- lookup: product_attribute
+- lookup: product_attribute # Klíčové atributy
   examples: |
     - veganské
     - bez parabenů
@@ -669,6 +722,8 @@ nlu:
     - bez sulfátů (sls/sles)
     - s bakuchiolem
     - s peptidy
+    - jemný
+    - PHA kyseliny
 
 - lookup: skin_area
   examples: |

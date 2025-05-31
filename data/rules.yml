@@ -35,6 +35,7 @@ rules:
   - intent: bot_challenge
   - action: utter_iamabot
 
+# --- Pravidla pro FAQ ---
 - rule: Respond to payment options inquiry
   steps:
   - intent: faq_payment_options

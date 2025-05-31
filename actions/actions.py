@@ -339,44 +339,31 @@ class ValidateProductRecommendationForm(FormValidationAction):
 
     async def required_slots(
         self,
-        slots_mapped_in_domain: List[Text], # Seznam všech slotů, které může formulář vyplnit (z domain.yml)
+        slots_mapped_in_domain: List[Text], 
         dispatcher: CollectingDispatcher,
         tracker: Tracker,
-        domain: DomainDict, # Celá načtená doména
+        domain: DomainDict, 
     ) -> List[Text]:
         """Dynamicky určuje, které sloty jsou povinné."""
         
-        # Získáme definici formuláře z domény, abychom znali původně povinné sloty
-        form_name = self.form_name() # Název aktuálního formuláře
+        form_name = self.form_name()
         form_definition = domain.get("forms", {}).get(form_name, {})
-        
-        # Získáme sloty definované jako 'required_slots' v domain.yml pro tento formulář
-        # Pokud v domain.yml nejsou 'required_slots' pro formulář, použijeme prázdný seznam jako základ
         base_required_slots_from_domain = form_definition.get("required_slots", [])
         
-        # Pokud by se náhodou stalo, že v domain.yml nejsou žádné, můžeme mít fallback
-        # nebo se spolehnout, že FormPolicy bude vyžadovat alespoň jeden, pokud je formulář aktivován.
-        # Pro robustnost je lepší mít základní povinné sloty definované v domain.yml.
-        # Pokud base_required_slots_from_domain je prázdný, můžeme použít výchozí:
         if not base_required_slots_from_domain:
              print(f"VAROVÁNÍ (required_slots): Pro formulář '{form_name}' nejsou v domain.yml definovány žádné 'required_slots'. Používám fallback: ['skin_type', 'skin_concern']")
              base_required_slots_from_domain = ["skin_type", "skin_concern"]
 
-        current_required_slots = list(base_required_slots_from_domain) # Vytvoříme kopii pro modifikaci
+        current_required_slots = list(base_required_slots_from_domain) 
         
-        skin_concern_values = tracker.get_slot("skin_concern") # Získáme aktuální hodnotu slotu
+        skin_concern_values = tracker.get_slot("skin_concern")
         
-        # Příklad dynamické logiky: Pokud je problém "růst řas", udělej "kategorii produktu" povinnou.
         if isinstance(skin_concern_values, list):
-            # Normalizujeme hodnoty ze slotu pro porovnání
             normalized_skin_concerns = [sc.lower() for sc in skin_concern_values if isinstance(sc, str)]
             if "růst řas" in normalized_skin_concerns:
-                # Pokud product_category ještě není vyplněn A není mezi aktuálně povinnými
                 if tracker.get_slot("product_category") is None and "product_category" not in current_required_slots:
                     current_required_slots.append("product_category")
                     print(f"VALIDATE_FORM: Dynamicky přidán 'product_category' jako povinný slot kvůli 'růst řas'.")
         
         print(f"VALIDATE_FORM: Metoda required_slots určila tyto povinné sloty pro formulář '{form_name}': {current_required_slots}")
-        # FormPolicy se sama postará o to, aby se zeptala na ty z tohoto seznamu, které ještě nejsou vyplněny,
-        # v pořadí, v jakém jsou v tomto vráceném seznamu.
         return current_required_slots

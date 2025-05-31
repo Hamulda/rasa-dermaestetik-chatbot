@@ -8,6 +8,10 @@ intents:
   - mood_great
   - mood_unhappy
   - bot_challenge
+  - ask_product_recommendation # Spuštění formuláře nebo požadavek na radu
+  - inform                     # Poskytnutí informace (často jako odpověď na otázku formuláře)
+  - stop_form                  # Explicitní zrušení formuláře
+  # FAQ intenty (ponechány jak máš)
   - faq_payment_options
   - faq_product_ingredients_sensitive_skin
   - faq_returns
@@ -19,9 +23,6 @@ intents:
   - faq_spf_usage
   - faq_combining_actives
   - faq_online_consultation
-  - ask_product_recommendation
-  - inform
-  - stop_form
   - faq_eshop_payment_options_detail
   - faq_eshop_shipping_cost
   - faq_eshop_returns_procedure
@@ -57,7 +58,7 @@ slots:
     - type: from_entity
       entity: skin_concern
   product_category:
-    type: text
+    type: text # Kategorie je obvykle jedna, ale validace v actions.py ji může zpracovat
     influence_conversation: true
     mappings:
     - type: from_entity
@@ -80,37 +81,46 @@ slots:
     mappings:
     - type: from_entity
       entity: skin_area
-  requested_slot: # DŮLEŽITÉ: Tento slot je používán FormPolicy
+  requested_slot: # Tento slot je automaticky používán FormPolicy
     type: text
-    influence_conversation: false # Neovlivňuje konverzaci mimo formulář
+    influence_conversation: false # Neměl by ovlivňovat konverzaci mimo aktivní formulář
     mappings:
-    - type: custom
+    - type: custom # Mapování je řízeno FormPolicy
 
 forms:
-  product_recommendation_form: # Přesný název tvého formuláře
+  product_recommendation_form:
+    # `required_slots` zde definuje základní povinné sloty.
+    # Metoda `required_slots` v `ValidateProductRecommendationForm` je může dynamicky měnit/rozšiřovat.
     required_slots:
       - skin_type
       - skin_concern
-      # Zde můžeš později přidat další povinné sloty jako product_category, skin_area
+    # ignored_intents může být užitečné, pokud chceš, aby formulář ignoroval určité intenty
+    # a nepřerušoval se jimi, pokud to není explicitně řešeno (např. stop_form).
+    # ignored_intents:
+    #   - mood_great
+    #   - mood_unhappy
 
 actions:
   # Vlastní akce (Custom Actions)
   - action_recommend_product
   # Validační akce formulářů (Form Validation Actions)
-  - validate_product_recommendation_form # <-- Přidáno
-  # Odpovědi (Utterances)
+  - validate_product_recommendation_form # Důležité pro FormPolicy
+  # Odpovědi (Utterances) - zde jsou jen ty, které nejsou přímo otázkami formuláře
   - utter_greet
   - utter_cheer_up
   - utter_did_that_help
   - utter_happy
   - utter_goodbye
   - utter_iamabot
+  - utter_submit_form     # Potvrzení před spuštěním action_recommend_product
+  - utter_form_cancelled  # Potvrzení zrušení formuláře
+  # Otázky pro sloty formuláře (Form questions) - FormPolicy je použije k dotazování
   - utter_ask_skin_type
   - utter_ask_skin_concern
-  - utter_ask_product_category
-  - utter_ask_skin_area
-  - utter_submit_form
-  - utter_form_cancelled
+  - utter_ask_product_category # Přidáno, pokud by se stal dynamicky povinným
+  - utter_ask_product_attribute # Přidáno pro konzistenci, pokud by byl potřebný
+  - utter_ask_brand             # Přidáno pro konzistenci
+  - utter_ask_skin_area         # Přidáno pro konzistenci
   # Všechny tvé FAQ odpovědi
   - utter_faq_payment_options
   - utter_faq_product_ingredients_sensitive_skin
@@ -135,41 +145,57 @@ actions:
   - utter_faq_clinic_laser_epilation_sessions
   - utter_faq_clinic_laser_epilation_preparation
   - utter_faq_clinic_chemical_peel_summer
+  # Fallback akce (pokud ji používáš v RulePolicy a config.yml)
+  - action_default_fallback # Přidáno pro explicitnost, pokud je definována v config.yml
 
 responses:
   utter_greet:
     - text: "Dobrý den, vítám Vás na chatu e-shopu DermaEstetik.cz. Jsem Vaše virtuální asistentka. S čím Vám dnes mohu pomoci?"
     - text: "Krásný den! Jsem tu pro Vás, abych odpověděla na Vaše dotazy ohledně našich produktů a služeb. Co pro Vás mohu udělat?"
-    - text: "Vítejte na DermaEstetik.cz! Potřebujete poradit s výběrem kosmetiky nebo máte jiný dotaz? Jsem tu pro Vás."
   utter_cheer_up:
     - text: "Here is something to cheer you up:"
       image: "https://i.imgur.com/nGF1K8f.jpg"
   utter_did_that_help:
-    - text: "Did that help you?"
+    - text: "Pomohlo Vám to?"
   utter_happy:
-    - text: "Great, carry on!"
+    - text: "Skvělé, pokračujme!"
   utter_goodbye:
     - text: "Mějte se krásně a děkujeme za Váš zájem!"
     - text: "Pokud budete mít další otázky, neváhejte se na mě znovu obrátit. Přeji Vám hezký den!"
-    - text: "Nashledanou a těšíme se na Vaši případnou objednávku!"
   utter_iamabot:
     - text: "Jsem virtuální asistentka e-shopu DermaEstetik.cz, vytvořená, abych Vám pomohla s Vašimi dotazy."
+  
+  # Otázky pro sloty formuláře
   utter_ask_skin_type:
-    - text: "Abych vám mohla lépe poradit, jaký máte typ pleti? (např. suchá, mastná, smíšená, citlivá, normální)"
+    - text: "Abych vám mohla lépe poradit, jaký máte typ pleti? Například suchá, mastná, smíšená, citlivá nebo normální."
     - text: "Pro upřesnění doporučení, mohl(a) byste mi prosím popsat váš typ pleti?"
   utter_ask_skin_concern:
-    - text: "Řešíte nějaký konkrétní problém s pletí? (např. akné, vrásky, pigmentace, zarudnutí, póry)"
+    - text: "Řešíte nějaký konkrétní problém s pletí? Například akné, vrásky, pigmentace, zarudnutí nebo rozšířené póry."
     - text: "Máte nějaké specifické problémy s pletí, na které bychom se měli zaměřit?"
   utter_ask_product_category:
-    - text: "Hledáte nějaký konkrétní typ produktu? (např. krém, sérum, čistič, SPF)"
-  utter_ask_skin_area:
-    - text: "Pro jakou oblast produkt hledáte? (např. obličej, oční okolí, tělo, ruce)"
+    - text: "Hledáte nějaký konkrétní typ produktu? Například krém, sérum, čistič, SPF, nebo třeba péči o řasy?"
+    - text: "Máte představu o kategorii produktu, kterou hledáte?"
+  utter_ask_product_attribute: 
+    - text: "Máte nějaké specifické požadavky na vlastnosti produktu? Například veganské, bez parfemace, s SPF..."
+  utter_ask_brand: 
+    - text: "Preferujete nějakou konkrétní značku? Například Medik8, Heliocare..."
+  utter_ask_skin_area: 
+    - text: "Pro jakou oblast těla produkt hledáte? Například obličej, oční okolí, tělo..."
+
+  # Odpovědi související s formulářem
   utter_submit_form:
-    - text: "Děkuji za informace, podívám se na vhodné produkty pro vás."
+    - text: "Děkuji za informace! Hned se podívám, co bych Vám mohla doporučit."
   utter_form_cancelled:
-    - text: "Dobře, formulář byl zrušen. Mohu vám pomoci s něčím jiným?"
+    - text: "Rozumím, formulář byl zrušen. Mohu vám pomoci s něčím jiným?"
+
+  # Fallback odpověď (pokud používáš action_default_fallback a chceš mít pro ni specifickou odpověď)
+  utter_default: # Musí odpovídat názvu akce v config.yml (core_fallback_action_name)
+   - text: "Omlouvám se, úplně jsem nerozuměl(a). Můžete to prosím zkusit formulovat jinak?"
+
+  # FAQ odpovědi (ponechány jak máš)
   utter_faq_payment_options:
     - text: "Přijímáme platby kartou online, bankovním převodem a také na dobírku. U dobírky je poplatek 30 Kč."
+  # ... (všechny ostatní tvé FAQ odpovědi, zkontroluj, zda jsou zde všechny uvedeny) ...
   utter_faq_product_ingredients_sensitive_skin:
     - text: "Složení každého produktu najdete v jeho detailu na našem e-shopu. Všechny produkty jsou formulovány s ohledem na citlivou pleť, ale doporučujeme prostudovat konkrétní složení."
   utter_faq_returns:
@@ -216,5 +242,5 @@ responses:
     - text: "Standardní chemické peelingy se obvykle doporučují provádět od podzimu do jara, kdy je nižší intenzita slunečního záření. Naše klinika však může nabízet i speciální typy tzv. 'letních peelingů', které jsou pro toto období vhodnější. Pro posouzení vhodnosti a výběr správného typu peelingu pro vaši pleť doporučujeme vždy osobní konzultaci s naším odborníkem."
 
 session_config:
-  session_expiration_time: 60
-  carry_over_slots_to_new_session: true
+  session_expiration_time: 60 # Doba v minutách, po které session vyprší
+  carry_over_slots_to_new_session: true # Zda se mají sloty přenést do nové session
