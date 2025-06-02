@@ -3,6 +3,8 @@ version: "3.1"
 rules:
 
 - rule: Activate product_recommendation_form
+  condition:
+  - active_loop: null
   steps:
   - intent: ask_product_recommendation
   - action: product_recommendation_form
@@ -12,8 +14,9 @@ rules:
   condition:
   - active_loop: product_recommendation_form
   steps:
-  - intent: inform
-  - action: product_recommendation_form
+  - intent: inform # User provides info for a slot
+  - action: product_recommendation_form # Form processes it
+  - active_loop: product_recommendation_form # Loop remains active if more slots needed
 
 - rule: User wants to stop the product_recommendation_form
   condition:
@@ -23,130 +26,187 @@ rules:
   - action: action_deactivate_loop
   - active_loop: null
   - action: utter_form_cancelled
+  - action: utter_anything_else
 
-# --- Ostatní tvá pravidla (pozdravy, FAQ atd.) ---
+# --- Obecná pravidla ---
 - rule: Say goodbye anytime the user says goodbye
   steps:
   - intent: goodbye
   - action: utter_goodbye
 
-- rule: Say 'I am a bot' anytime the user challenges
+- rule: Respond to bot challenge
   steps:
   - intent: bot_challenge
-  - action: utter_iamabot
+  - action: utter_iamabot # Bot answers and listens
 
-# --- Pravidla pro FAQ ---
-- rule: Respond to payment options inquiry
+# --- Pravidla pro FAQ - aktivují se jen když NENÍ aktivní žádná smyčka (např. formulář) ---
+# A po odpovědi nabídnou další pomoc.
+- rule: Standalone Respond to payment options
+  condition:
+  - active_loop: null
   steps:
   - intent: faq_payment_options
   - action: utter_faq_payment_options
+  - action: utter_anything_else
 
-- rule: Respond to product ingredients/sensitive skin inquiry
+- rule: Standalone Respond to product ingredients
+  condition:
+  - active_loop: null
   steps:
-  - intent: faq_product_ingredients_sensitive_skin
-  - action: utter_faq_product_ingredients_sensitive_skin
+  - intent: faq_product_ingredients
+  - action: utter_faq_product_ingredients
+  - action: utter_anything_else
 
-- rule: Respond to returns inquiry
+- rule: Standalone Respond to returns
+  condition:
+  - active_loop: null
   steps:
   - intent: faq_returns
   - action: utter_faq_returns
+  - action: utter_anything_else
 
-- rule: Respond to vegan products inquiry
+- rule: Standalone Respond to vegan products
+  condition:
+  - active_loop: null
   steps:
   - intent: faq_vegan_products
   - action: utter_faq_vegan_products
+  - action: utter_anything_else
 
-- rule: Respond to hypoallergenic inquiry
+- rule: Standalone Respond to hypoallergenic products
+  condition:
+  - active_loop: null
   steps:
   - intent: faq_hypoallergenic
   - action: utter_faq_hypoallergenic
+  - action: utter_anything_else
 
-- rule: Respond to order status or delivery time inquiry
+- rule: Standalone Respond to order status or delivery time
+  condition:
+  - active_loop: null
   steps:
   - intent: faq_order_status_delivery_time
   - action: utter_faq_order_status_delivery_time
+  - action: utter_anything_else
 
-- rule: Respond to skin cleansing inquiry
+- rule: Standalone Respond to skin cleansing
+  condition:
+  - active_loop: null
   steps:
   - intent: faq_skin_cleansing
   - action: utter_faq_skin_cleansing
+  - action: utter_anything_else
 
-- rule: Respond to product application order inquiry
+- rule: Standalone Respond to product application order
+  condition:
+  - active_loop: null
   steps:
   - intent: faq_product_application_order
   - action: utter_faq_product_application_order
+  - action: utter_anything_else
 
-- rule: Respond to SPF usage inquiry
+- rule: Standalone Respond to SPF usage
+  condition:
+  - active_loop: null
   steps:
   - intent: faq_spf_usage
   - action: utter_faq_spf_usage
+  - action: utter_anything_else
 
-- rule: Respond to combining active ingredients inquiry
+- rule: Standalone Respond to combining active ingredients
+  condition:
+  - active_loop: null
   steps:
   - intent: faq_combining_actives
   - action: utter_faq_combining_actives
+  - action: utter_anything_else
 
-- rule: Respond to online consultation inquiry
+- rule: Standalone Respond to online consultation
+  condition:
+  - active_loop: null
   steps:
   - intent: faq_online_consultation
   - action: utter_faq_online_consultation
+  - action: utter_anything_else
 
-- rule: Respond to eshop payment options detail FAQ
-  steps:
-  - intent: faq_eshop_payment_options_detail
-  - action: utter_faq_eshop_payment_options_detail
-
-- rule: Respond to eshop shipping cost FAQ
+- rule: Standalone Respond to eshop shipping cost
+  condition:
+  - active_loop: null
   steps:
   - intent: faq_eshop_shipping_cost
   - action: utter_faq_eshop_shipping_cost
+  - action: utter_anything_else
 
-- rule: Respond to eshop returns procedure FAQ
-  steps:
-  - intent: faq_eshop_returns_procedure
-  - action: utter_faq_eshop_returns_procedure
-
-- rule: Respond to parabens FAQ
+- rule: Standalone Respond to parabens
+  condition:
+  - active_loop: null
   steps:
   - intent: faq_parabens
   - action: utter_faq_parabens
+  - action: utter_anything_else
 
-- rule: Respond to animal testing FAQ
+- rule: Standalone Respond to animal testing
+  condition:
+  - active_loop: null
   steps:
   - intent: faq_animal_testing
   - action: utter_faq_animal_testing
+  - action: utter_anything_else
 
-- rule: Respond to store pickup FAQ
+- rule: Standalone Respond to store pickup
+  condition:
+  - active_loop: null
   steps:
   - intent: faq_store_pickup
   - action: utter_faq_store_pickup
+  - action: utter_anything_else
 
-- rule: Respond to eshop complaint procedure FAQ
+- rule: Standalone Respond to eshop complaint procedure
+  condition:
+  - active_loop: null
   steps:
   - intent: faq_eshop_complaint_procedure
   - action: utter_faq_eshop_complaint_procedure
+  - action: utter_anything_else
 
-- rule: Respond to eshop product ingredients FAQ
-  steps:
-  - intent: faq_eshop_product_ingredients
-  - action: utter_faq_eshop_product_ingredients
-
-- rule: Respond to botox duration FAQ
+# --- FAQ pro kliniku (s podmínkou active_loop: null) ---
+- rule: Standalone Respond to botox duration
+  condition:
+  - active_loop: null
   steps:
   - intent: faq_clinic_botox_duration
   - action: utter_faq_clinic_botox_duration
+  - action: utter_anything_else
 
-- rule: Respond to laser epilation sessions FAQ
+- rule: Standalone Respond to laser epilation sessions
+  condition:
+  - active_loop: null
   steps:
   - intent: faq_clinic_laser_epilation_sessions
   - action: utter_faq_clinic_laser_epilation_sessions
+  - action: utter_anything_else
 
-- rule: Respond to laser epilation preparation FAQ
+- rule: Standalone Respond to laser epilation preparation
+  condition:
+  - active_loop: null
   steps:
   - intent: faq_clinic_laser_epilation_preparation
   - action: utter_faq_clinic_laser_epilation_preparation
+  - action: utter_anything_else
 
-- rule: Respond to chemical peel summer FAQ
+- rule: Standalone Respond to chemical peel summer
+  condition:
+  - active_loop: null
   steps:
   - intent: faq_clinic_chemical_peel_summer
   - action: utter_faq_clinic_chemical_peel_summer
+  - action: utter_anything_else
+
+# Pravidlo pro out-of-scope dotazy
+- rule: Handle out of scope queries
+  condition:
+  - active_loop: null # Jen pokud není aktivní formulář
+  steps:
+  - intent: out_of_scope
+  - action: utter_default
+  - action: utter_anything_else

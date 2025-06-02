@@ -13,6 +13,9 @@ nlu:
     - dobrý večer
     - dobré odpoledne
     - zdravíčko
+    - cus
+    - ahojky
+    - dobry den preju
 
 - intent: goodbye
   examples: |
@@ -26,6 +29,8 @@ nlu:
     - pa
     - tak zatím ahoj
     - dobrou noc
+    - diky, nashle
+    - loucim se
 
 - intent: affirm
   examples: |
@@ -39,6 +44,9 @@ nlu:
     - jasně
     - ovšem
     - je to tak
+    - presne
+    - jiste
+    - ano prosim
 
 - intent: deny
   examples: |
@@ -52,6 +60,8 @@ nlu:
     - nn
     - to ne
     - špatně
+    - ne e
+    - vubec ne
 
 - intent: mood_great
   examples: |
@@ -65,6 +75,8 @@ nlu:
     - perfektní
     - úžasně
     - mám se parádně
+    - mam se vyborne
+    - citim se skvele
 
 - intent: mood_unhappy
   examples: |
@@ -79,6 +91,8 @@ nlu:
     - je to na nic
     - dnes to není ono
     - mám den blbec
+    - spatne
+    - spatna nalada
 
 - intent: bot_challenge
   examples: |
@@ -90,8 +104,10 @@ nlu:
     - jsi umělá inteligence?
     - kdo jsi?
     - jsi jenom program?
+    - s kym mluvim?
+    - jsi AI?
 
-- intent: ask_product_recommendation # Intent pro spuštění formuláře nebo obecnou žádost o radu
+- intent: ask_product_recommendation
   examples: |
     - Chtěl bych poradit.
     - Poradíte mi?
@@ -112,6 +128,7 @@ nlu:
     - Doporučte mi něco na [vrásky](skin_concern:vrásky).
     - Co na [pigmentové skvrny](skin_concern:pigmentace)?
     - Hledám nějaký [krém](product_category:krém) na [suchou pleť](skin_type:suchá).
+    - Hledám nějakým [krémem](product_category:krém) na [suchou pleť](skin_type:suchá). # Přidáno "krémem"
     - Máte [čistící gel](product_category:čistící gel) pro [mastnou pleť](skin_type:mastná)?
     - Potřebuji [sérum](product_category:sérum) proti [vráskám](skin_concern:vrásky).
     - Doporučte mi [oční krém](product_category:oční krém).
@@ -131,8 +148,19 @@ nlu:
     - Doporučte mi od značky [FacEvolution](brand) něco na [vrásky](skin_concern:vrásky) [kolem očí](skin_area:oční okolí).
     - Chci poradit s výběrem [očního krému](product_category:oční krém) na [hydrataci](skin_concern:hydratace) a [proti otokům](skin_concern:otoky očí).
     - Doporučte mi [cokoli](product_category) od [Medik8](brand) co je [veganské](product_attribute:veganské) a na [akné](skin_concern:akné).
+    - Poradíte mi s výběrem produktu pro [velmi suchou pleť](skin_type:velmi suchá)?
+    - Co na [dehydrovanou pleť](skin_type:dehydrovaná)?
+    - Hledám [čistící pěnu](product_category:čistící pěna) pro [citlivou pleť](skin_type:citlivá).
+    - Máte nějaký [lehký krém](product_category:krém) [pro muže](product_attribute:pro muže)?
+    - Potřebuji [tonikum](product_category:tonikum) [bez alkoholu](product_attribute:bez alkoholu).
+    - Jaký [peeling](product_category:peeling) na [rozšířené póry](skin_concern:póry)?
+    - Chci [sérum na řasy](product_category:péče o řasy).
+    - Hledám [krém na ruce](product_category:krém na ruce) [intenzivní](product_attribute:intenzivní).
+    - Co byste mi doporučili na [mdlou pleť](skin_concern:mdlá pleť) od [Medik8](brand)?
+    - Potřebuji [fluid](product_category:fluid) [s SPF](product_attribute:s spf) [proti pigmentaci](skin_concern:pigmentace).
+    - Chtěla bych poradit s [krémem](product_category:krém).
 
-- intent: inform # Intent pro poskytování informací, typicky jako odpověď na otázku formuláře
+- intent: inform
   examples: |
     - mám [suchou pleť](skin_type:suchá)
     - [suchá](skin_type:suchá)
@@ -167,7 +195,8 @@ nlu:
     - [růst obočí](skin_concern:růst obočí)
     - [akné](skin_concern:akné) a také [póry](skin_concern:póry)
     - chtěl bych [krém](product_category:krém)
-    - chtěla bych [krému](product_category:krém)
+    - chtěla bych [krému](product_category:krém) # Bude zmapováno na "krém" přes synonymum
+    - chtěla bych poradit s [krémem](product_category:krém) # Bude zmapováno na "krém"
     - spíše [sérum](product_category:sérum)
     - [čistič](product_category:čistič)
     - [čistící gel](product_category:čistící gel)
@@ -223,6 +252,21 @@ nlu:
     - chci jen [oční krém](product_category:oční krém)
     - [péče o řasy](product_category:péče o řasy)
     - [sérum na řasy](product_category:péče o řasy)
+    - [čistící pěna](product_category:čistící pěna)
+    - [čistící olej](product_category:čistící olej)
+    - [pleťová voda](product_category:pleťová voda)
+    - [krém na ruce](product_category:krém na ruce)
+    - [oční sérum](product_category:oční sérum)
+    - [gelový krém](product_category:gelový krém)
+    - [olejové sérum](product_category:olejové sérum)
+    - [bez mýdla](product_attribute:bez mýdla)
+    - [bez sulfátů (SLS/SLES)](product_attribute:bez sulfátů (sls/sles))
+    - [s bakuchiolem](product_attribute:s bakuchiolem)
+    - [s peptidy](product_attribute:s peptidy)
+    - [jemný](product_attribute:jemný)
+    - pro [krém](product_category:krém)
+    - ano, [krém](product_category:krém)
+    - [krém](product_category:krém) by byl fajn
 
 - intent: stop_form
   examples: |
@@ -241,8 +285,21 @@ nlu:
     - změna
     - chci něco jiného
     - nevadí, zkusíme to jinak
+    - zrusit formular
+    - konec formulare
+    - nechci vyplnovat
 
-# --- FAQ intenty (ponechány jak máš, jen zkontrolovány) ---
+- intent: out_of_scope # Nový intent
+  examples: |
+    - Jaké bude počasí?
+    - Kolik je hodin?
+    - Umíš vařit?
+    - Řekni mi vtip.
+    - Co si myslíš o politice?
+    - Kdo vyhrál poslední volby?
+    - Můžeš mi objednat pizzu?
+
+# --- FAQ intenty (sjednocené a doplněné) ---
 - intent: faq_payment_options
   examples: |
     - Jaké jsou u vás způsoby platby?
@@ -252,8 +309,17 @@ nlu:
     - Chci se zeptat na možnosti úhrady.
     - Dá se platit převodem?
     - Berete hotovost při osobním odběru?
+    - Platba na eshopu.
+    - Moznosti platby.
+    - Jaké jsou u vás možnosti platby na eshopu?
+    - Jak mohu zaplatit na eshopu dermaestetik?
+    - Čím vším se dá na e-shopu platit?
+    - Přijímáte platební karty online na eshopu?
+    - Lze platit bankovním převodem na eshopu?
+    - Je možná platba na dobírku na eshopu?
+    - Jaké máte platební metody na eshopu?
 
-- intent: faq_product_ingredients_sensitive_skin
+- intent: faq_product_ingredients # Sjednocený intent
   examples: |
     - Je tento výrobek vhodný i pro citlivou pokožku?
     - Jaké je přesné složení toho krému?
@@ -263,8 +329,17 @@ nlu:
     - Co všechno je v tom séru?
     - Kde najdu detailní složení vašich výrobků?
     - Jsou vaše produkty testovány na citlivé pleti?
+    - Složení produktu pro citlivou pleť.
+    - Je to vhodné pro citlivou pleť?
+    - Kde najdu informace o složení produktu na eshopu?
+    - Jaké je složení toho denního krému od Medik8 na eshopu?
+    - Co přesně obsahuje sérum na hydrataci z eshopu?
+    - Zajímá mě kompletní složení výrobku z eshopu.
+    - Je ve složení parfemace u produktu na eshopu?
+    - Můžete mi poslat INCI list pro produkt X z eshopu?
+    - Kde zjistím ingredience na eshopu?
 
-- intent: faq_returns
+- intent: faq_returns # Sjednocený intent
   examples: |
     - Jak mohu vrátit zakoupené zboží z e-shopu?
     - Chci vrátit produkt, jaký je postup?
@@ -274,6 +349,13 @@ nlu:
     - Jak probíhá vrácení peněz za vrácené zboží?
     - Informace k reklamaci a vrácení produktů.
     - Kam mám poslat zboží, které chci vrátit?
+    - Vraceni zbozi.
+    - Mohu vratit kosmetiku?
+    - Jaký je postup pro vrácení zboží z eshopu?
+    - Jak můžu vrátit produkt z e-shopu?
+    - Co mám dělat, když chci vrátit kosmetiku z eshopu?
+    - Podmínky vrácení balíčku z eshopu.
+    - Chci vrátit objednávku z eshopu, jak na to?
 
 - intent: faq_vegan_products
   examples: |
@@ -285,6 +367,8 @@ nlu:
     - Můžete mi doporučit veganskou péči o pleť?
     - Jsou všechny produkty Medik8 veganské?
     - Chci si ověřit veganské složení.
+    - Veganska kosmetika.
+    - Mate veganske veci?
 
 - intent: faq_hypoallergenic
   examples: |
@@ -296,6 +380,8 @@ nlu:
     - Jaké máte hypoalergenní přípravky?
     - Co mi doporučíte, pokud mám sklon k alergiím?
     - Jsou hypoalergenní produkty 100% bezpečné?
+    - Hypoalergenni produkty.
+    - Pro alergiky.
 
 - intent: faq_order_status_delivery_time
   examples: |
@@ -308,6 +394,9 @@ nlu:
     - Nějaké info o doručení mé poslední objednávky?
     - Ještě mi nepřišel potvrzovací e-mail o odeslání.
     - Jak zjistím, kdy mi zboží přijde?
+    - Stav objednavky.
+    - Kdy mi prijde balik?
+    - Dodaci lhuta.
 
 - intent: faq_skin_cleansing
   examples: |
@@ -319,6 +408,8 @@ nlu:
     - Čím nejlépe čistit pleť se sklonem k akné?
     - Jaké produkty jsou vhodné na čištění suché pleti?
     - Co doporučujete na odlíčení voděodolného make-upu?
+    - Cisteni pleti.
+    - Jak cistit oblicej?
 
 - intent: faq_product_application_order
   examples: |
@@ -330,6 +421,8 @@ nlu:
     - Jak se liší pořadí produktů ráno a večer?
     - Můžete mi poradit s vrstvením produktů?
     - Pořadí aplikace produktů péče o pleť.
+    - Vrstveni kosmetiky.
+    - Poradi produktu.
 
 - intent: faq_spf_usage
   examples: |
@@ -341,6 +434,8 @@ nlu:
     - Co znamená číslo SPF na produktech?
     - Mám SPF použít před nebo po hydratačním krému?
     - Jak často bych měl SPF reaplikovat během dne?
+    - Pouzivani SPF.
+    - Kdy dat SPF?
 
 - intent: faq_combining_actives
   examples: |
@@ -352,6 +447,8 @@ nlu:
     - Existují nějaké látky, které spolu špatně reagují?
     - Mohu používat niacinamid s vitamínem C?
     - Jak vrstvit produkty s různými aktivními složkami?
+    - Kombinovani aktivnich latek.
+    - Co s cim nemichat?
 
 - intent: faq_online_consultation
   examples: |
@@ -363,47 +460,30 @@ nlu:
     - Chci se poradit s odborníkem přes internet, je to možné?
     - Je online poradenství zdarma?
     - Jak rychle odpovídáte na dotazy v online poradně?
-
-- intent: faq_eshop_payment_options_detail
-  examples: |
-    - Jaké jsou u vás možnosti platby?
-    - Jak mohu zaplatit na eshopu dermaestetik?
-    - Čím vším se dá na e-shopu platit?
-    - Přijímáte platební karty online?
-    - Lze platit bankovním převodem?
-    - Je možná platba na dobírku?
-    - Jaké máte platební metody?
+    - Online konzultace.
+    - Poradna online.
 
 - intent: faq_eshop_shipping_cost
   examples: |
-    - Kolik u vás stojí doprava?
-    - Jaká je cena poštovného?
-    - Na kolik vyjde doručení?
-    - Máte dopravu zdarma? Od jaké částky?
-    - Info o ceně dopravy.
-    - Kolik stojí poštovné u objednávky pod 1000 Kč?
-    - Jaká je cena dopravy pro nákup za 500 kč?
-    - Kolik zaplatím za dopravu, když objednám zboží za 1200 korun?
-    - Cena doručení u menších objednávek?
-    - Je poštovné jiné pro objednávky nad 1500 Kč?
-    - Chci vědět cenu dopravy.
-    - Informace o poštovném.
-    - Jaké nabízíte možnosti dopravy?
-    - Jakým způsobem posíláte zboží?
-    - Kolik u vás stojí doprava?
-    - Posíláte i přes Zásilkovnu?
-    - Jací jsou vaši dopravci?
-    - Chtěl bych vědět víc o ceně poštovného.
-    - Jak je to s doručením mé objednávky?
-    - Poskytujete informace o dopravě?
-
-- intent: faq_eshop_returns_procedure
-  examples: |
-    - Jaký je postup pro vrácení zboží?
-    - Jak můžu vrátit produkt z e-shopu?
-    - Co mám dělat, když chci vrátit kosmetiku?
-    - Podmínky vrácení balíčku.
-    - Chci vrátit objednávku, jak na to?
+    - Kolik u vás stojí doprava z eshopu?
+    - Jaká je cena poštovného z eshopu?
+    - Na kolik vyjde doručení z eshopu?
+    - Máte dopravu zdarma z eshopu? Od jaké částky?
+    - Info o ceně dopravy z eshopu.
+    - Kolik stojí poštovné u objednávky pod 1000 Kč z eshopu?
+    - Jaká je cena dopravy pro nákup za 500 kč z eshopu?
+    - Kolik zaplatím za dopravu, když objednám zboží za 1200 korun z eshopu?
+    - Cena doručení u menších objednávek z eshopu?
+    - Je poštovné jiné pro objednávky nad 1500 Kč z eshopu?
+    - Chci vědět cenu dopravy z eshopu.
+    - Informace o poštovném z eshopu.
+    - Jaké nabízíte možnosti dopravy z eshopu?
+    - Jakým způsobem posíláte zboží z eshopu?
+    - Posíláte i přes Zásilkovnu z eshopu?
+    - Jací jsou vaši dopravci pro eshop?
+    - Chtěl bych vědět víc o ceně poštovného z eshopu.
+    - Jak je to s doručením mé objednávky z eshopu?
+    - Poskytujete informace o dopravě z eshopu?
 
 - intent: faq_parabens
   examples: |
@@ -417,6 +497,8 @@ nlu:
     - Proč některé produkty obsahují parabeny?
     - Najdu u vás kosmetiku, co nemá parabeny?
     - Informace o parabenech ve vaší nabídce.
+    - Parabeny v kosmetice.
+    - Bezparabenova kosmetika.
 
 - intent: faq_animal_testing
   examples: |
@@ -430,6 +512,8 @@ nlu:
     - Máte certifikát Leaping Bunny nebo PETA pro vaše značky?
     - Jste proti testování na zvířatech?
     - Podporujete testování na zvířatech?
+    - Testovani na zviratech.
+    - Cruelty free.
 
 - intent: faq_store_pickup
   examples: |
@@ -443,72 +527,72 @@ nlu:
     - Nabízíte možnost click and collect?
     - Kde vás najdu pro osobní nákup?
     - Chci si objednávku vyzvednout osobně.
+    - Osobni odber.
+    - Prodejna Breclav.
 
 - intent: faq_eshop_complaint_procedure
   examples: |
-    - Jak postupovat při reklamaci produktu?
-    - Chci reklamovat zboží, co mám dělat?
-    - Jaká je reklamační procedura?
-    - Produkt je vadný, jak ho mohu reklamovat?
-    - Kam se obrátit s reklamací?
+    - Jak postupovat při reklamaci produktu z eshopu?
+    - Chci reklamovat zboží z eshopu, co mám dělat?
+    - Jaká je reklamační procedura na eshopu?
+    - Produkt z eshopu je vadný, jak ho mohu reklamovat?
+    - Kam se obrátit s reklamací z eshopu?
     - Jak probíhá reklamace na vašem e-shopu?
-    - Potřebuji informace k reklamaci.
-
-- intent: faq_eshop_product_ingredients
-  examples: |
-    - Kde najdu informace o složení produktu?
-    - Jaké je složení toho denního krému od Medik8?
-    - Co přesně obsahuje sérum na hydrataci?
-    - Zajímá mě kompletní složení výrobku.
-    - Je ve složení parfemace?
-    - Můžete mi poslat INCI list pro produkt X?
-    - Kde zjistím ingredience?
+    - Potřebuji informace k reklamaci z eshopu.
+    - Reklamace eshop.
 
 - intent: faq_clinic_botox_duration
   examples: |
-    - Jak dlouho vydrží účinek botulotoxinu?
-    - Na jak dlouho mi vydrží botox?
-    - Jaká je trvanlivost efektu po aplikaci botoxu?
-    - Kdy budu muset jít na botox znovu?
-    - Opakování aplikace botulotoxinu.
-    - Trvání účinku botoxu.
+    - Jak dlouho vydrží účinek botulotoxinu z kliniky?
+    - Na jak dlouho mi vydrží botox z kliniky?
+    - Jaká je trvanlivost efektu po aplikaci botoxu na klinice?
+    - Kdy budu muset jít na botox znovu na kliniku?
+    - Opakování aplikace botulotoxinu na klinice.
+    - Trvání účinku botoxu z kliniky.
+    - Botox vydrz.
+    - Jak casto na botox?
 
 - intent: faq_clinic_laser_epilation_sessions
   examples: |
-    - Kolik ošetření laserové epilace je potřeba?
-    - Kolikrát musím jít na laserovou epilaci?
-    - Stačí jedno sezení laserové epilace?
-    - Jaký je doporučený počet opakování pro laserovou epilaci?
-    - Počet sezení pro trvalou epilaci laserem.
+    - Kolik ošetření laserové epilace je potřeba na klinice?
+    - Kolikrát musím jít na laserovou epilaci na klinice?
+    - Stačí jedno sezení laserové epilace na klinice?
+    - Jaký je doporučený počet opakování pro laserovou epilaci na klinice?
+    - Počet sezení pro trvalou epilaci laserem na klinice.
     - Kolik návštěv kliniky vyžaduje laserová epilace?
+    - Laserova epilace pocet sezeni.
+    - Kolikrat na laser?
 
 - intent: faq_clinic_laser_epilation_preparation
   examples: |
-    - Jak se mám připravit na laserovou epilaci?
-    - Co mám dělat před laserovou epilací?
-    - Je nějaká speciální příprava před ošetřením laserem?
-    - Příprava na epilaci laserem.
-    - Co bych měl vědět před první laserovou epilací?
-    - Holení před laserovou epilací.
+    - Jak se mám připravit na laserovou epilaci na klinice?
+    - Co mám dělat před laserovou epilací na klinice?
+    - Je nějaká speciální příprava před ošetřením laserem na klinice?
+    - Příprava na epilaci laserem na klinice.
+    - Co bych měl vědět před první laserovou epilací na klinice?
+    - Holení před laserovou epilací na klinice.
+    - Priprava na laserovou epilaci.
+    - Co pred laserem?
 
 - intent: faq_clinic_chemical_peel_summer
   examples: |
-    - Provádí se chemický peeling i v létě?
-    - Mohu jít na chemický peeling v letních měsících?
-    - Je léto vhodné období pro chemický peeling?
-    - Chemický peeling a slunce.
-    - Letní chemický peeling.
-    - Dá se dělat peeling v létě?
+    - Provádí se chemický peeling i v létě na klinice?
+    - Mohu jít na chemický peeling v letních měsících na klinice?
+    - Je léto vhodné období pro chemický peeling na klinice?
+    - Chemický peeling a slunce na klinice.
+    - Letní chemický peeling na klinice.
+    - Dá se dělat peeling v létě na klinice?
+    - Chemicky peeling v lete.
+    - Peeling a slunce.
 
 # --- Synonyma ---
-# Normalizují různé tvary slov na jednu základní hodnotu pro entity
-- synonym: suchá # Základní hodnota
+- synonym: suchá
   examples: |
     - suchou
     - suché
     - vysušená
     - vysušenou
-    - velmi suchá 
+    - velmi suchá
     - extra suchou
 
 - synonym: mastná
@@ -556,6 +640,7 @@ nlu:
     - pupínky
     - pupínků
     - na pupínky
+    - proti akné
 
 - synonym: vrásky
   examples: |
@@ -564,11 +649,15 @@ nlu:
     - proti vráskám
     - hluboké vrásky
     - redukci vrásek
+    - jemné linky
+    - linky
 
 - synonym: pigmentace
   examples: |
     - pigmentové skvrny
     - skvrny
+    - hyperpigmentace
+    - proti pigmentaci
 
 - synonym: póry
   examples: |
@@ -576,11 +665,13 @@ nlu:
     - ucpané póry
     - čištění pórů
     - redukci pórů
+    - zúžení pórů
 
 - synonym: krém # Základní hodnota pro kategorii
   examples: |
     - krému
     - krémy
+    - krémem # DŮLEŽITÉ SYNONYMUM
     - denní krém
     - noční krém
     - noční péči
@@ -598,8 +689,9 @@ nlu:
     - noční sérum
     - retinol sérum
     - niacinamidové sérum
+    - hydratační sérum
 
-- synonym: spf # Kategorie pro produkty s ochranným faktorem
+- synonym: spf
   examples: |
     - opalovací krém
     - ochrana proti slunci
@@ -608,32 +700,54 @@ nlu:
     - krém s vysokým faktorem
     - tónovaný krém s SPF
     - krém s ochranným faktorem
+    - sluneční ochrana
 
-- synonym: čistič # Všeobecná kategorie pro čisticí produkty
+- synonym: čistič
   examples: |
     - čistící gel
     - čistící pěna
     - čistící olej
     - čistící přípravek
+    - odličovač
+    - micelární voda
 
-- synonym: péče o řasy # Kategorie pro produkty na řasy
+- synonym: péče o řasy
   examples: |
     - sérum na řasy
+    - růst řas
+    - výživa řas
 
 - synonym: zarudnutí
   examples: |
     - červená pleť
+    - podráždění
+    - zčervenání
 
 - synonym: hydratace
   examples: |
     - pro hydrataci
+    - na hydrataci
+    - zvlhčení
 
-- synonym: s vitamínem C # Atribut
+- synonym: s vitamínem C
   examples: |
-    - s vitaminem C 
+    - s vitaminem C
+    - vitamín C
+    - céčko
+
+- synonym: s retinalem
+  examples: |
+    - retinal
+    - s retinolem
+    - retinol
+
+- synonym: bez sulfátů (sls/sles) # Entity value
+  examples: |
+    - bez SLS # Synonym
+    - bez SLES # Synonym
+    - bez sulfátů # Synonym
 
 # --- Lookup Tables ---
-# Pomáhají NLU lépe rozpoznávat konkrétní hodnoty entit
 - lookup: skin_type
   examples: |
     - suchá
@@ -666,6 +780,10 @@ nlu:
     - šupinatá pleť
     - růst řas
     - růst obočí
+    - jemné linky
+    - podráždění
+    - ztráta elasticity
+    - nerovnoměrný tón pleti
 
 - lookup: product_category
   examples: |
@@ -692,15 +810,22 @@ nlu:
     - čistící olej
     - gelový krém
     - olejové sérum
+    - micelární voda
+    - odličovač
+    - balzám na rty
 
 - lookup: brand
   examples: |
     - Medik8
     - Heliocare
     - FacEvolution
-    # Doplň další značky, které nabízíš
+    - UkázkováZnačka
+    - Revitalash
+    - Dermalogica
+    - La Roche-Posay
+    - Bioderma
 
-- lookup: product_attribute # Klíčové atributy
+- lookup: product_attribute
   examples: |
     - veganské
     - bez parabenů
@@ -724,6 +849,10 @@ nlu:
     - s peptidy
     - jemný
     - PHA kyseliny
+    - s kyselinou hyaluronovou
+    - antioxidační
+    - proti stárnutí
+    - rozjasňující
 
 - lookup: skin_area
   examples: |
@@ -738,3 +867,6 @@ nlu:
     - lokty
     - kolena
     - ramena
+    - rty
+    - vlasy
+    - pokožka hlavy
