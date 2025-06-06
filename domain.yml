@@ -12,6 +12,7 @@ intents:
   - inform
   - stop_form
   - out_of_scope # Přidáno pro lepší fallback
+  - set_sort_preference
   # FAQ intenty (sjednocené)
   - faq_payment_options
   - faq_product_ingredients
@@ -41,6 +42,7 @@ entities:
   - product_attribute
   - brand
   - skin_area
+  - sort_preference
 
 slots:
   skin_type:
@@ -84,6 +86,13 @@ slots:
     influence_conversation: false # Důležité pro formuláře
     mappings:
     - type: custom
+  sort_preference: # PŘIDÁNO
+    type: text
+    influence_conversation: true
+    mappings:
+    - type: from_entity
+      entity: sort_preference
+      intent: set_sort_preference
 
 forms:
   product_recommendation_form:

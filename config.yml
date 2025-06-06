@@ -50,7 +50,7 @@ pipeline:
                          # Váš aktuální přístup s mnoha samostatnými faq_xxx intenty je také validní, ale ResponseSelector je silnější, pokud je struktura faq/sub_intent.
                          # Pro váš současný setup s mnoha `faq_` intenty, ResponseSelector je stále užitečný pro výběr správné `utter_faq_` odpovědi.
                          # Ujistěte se, že vaše `faq_` intenty jsou správně napojeny na `utter_` odpovědi v `domain.yml` a `rules.yml` nebo `stories.yml`.
-
+    constrain_similarities: true
   # 9. FallbackClassifier: Pokud žádný intent nedosáhne dostatečné spolehlivosti, tento klasifikátor přiřadí fallback intent.
   - name: FallbackClassifier
     threshold: 0.4  # Prahová hodnota spolehlivosti. Pokud je nejlepší intent pod touto hodnotou, aktivuje se fallback. Zvyšte pro méně fallbacků, snižte pro více.

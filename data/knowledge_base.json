@@ -1,0 +1,40 @@
+{
+  "KNOWN_BRANDS": [
+    "medik8", "heliocare", "facevolution", "ukázkováznačka",
+    "revitalash", "dermalogica", "la roche-posay", "bioderma"
+  ],
+  "KNOWN_SKIN_AREAS": [
+    "obličej", "oční okolí", "tělo", "ruce", "krk", "dekolt", "záda",
+    "lokální použití", "lokty", "kolena", "ramena", "rty", "vlasy", "pokožka hlavy"
+  ],
+  "KNOWN_SKIN_TYPES": [
+    "suchá", "mastná", "smíšená", "citlivá", "normální",
+    "velmi suchá", "problematická", "zralá", "dehydrovaná"
+  ],
+  "KNOWN_PRODUCT_CATEGORIES": [
+    "krém", "sérum", "čistič", "čistící gel", "oční krém", "maska", "tonikum",
+    "peeling", "spf", "lokální péče", "fluid", "emulze", "tělové mléko",
+    "pleťová voda", "make-up", "báze", "krém na ruce", "oční sérum",
+    "péče o řasy", "čistící pěna", "čistící olej", "gelový krém", "olejové sérum",
+    "micelární voda", "odličovač", "balzám na rty"
+  ],
+  "KNOWN_PRODUCT_ATTRIBUTES": [
+    "veganské", "bez parabenů", "s spf", "bez alkoholu", "bez parfemace",
+    "s niacinamidem", "s aha/bha", "matující", "intenzivní", "lehký",
+    "pro těhotné", "s vitamínem c", "s retinalem", "pro muže", "bez silikonů",
+    "nekomedogenní", "bez mýdla", "bez sulfátů (sls/sles)", "s bakuchiolem", "s peptidy",
+    "jemný", "s pha kyselinami", "s kyselinou hyaluronovou", "antioxidační", "proti stárnutí", "rozjasňující",
+    "stimulující růst",
+    "výživný",
+    "s kofeinem",
+    "proti pigmentaci",
+    "hydratační"
+  ],
+  "KNOWN_SKIN_CONCERNS": [
+    "akné", "vrásky", "pigmentace", "póry", "černé tečky", "zarudnutí",
+    "hydratace", "dehydratace", "citlivost", "stárnutí", "zpevnění",
+    "exfoliace", "mdlá pleť", "tmavé kruhy pod očima", "otoky očí",
+    "šupinatá pleť", "růst řas", "růst obočí", "jemné linky", "podráždění",
+    "ztráta elasticity", "nerovnoměrný tón pleti", "lesk pleti"
+  ]
+}
