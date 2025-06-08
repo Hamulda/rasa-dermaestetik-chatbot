@@ -210,3 +210,18 @@ rules:
   - intent: out_of_scope
   - action: utter_default
   - action: utter_anything_else
+
+- rule: Handle inquiry about opening hours
+  steps:
+  - intent: dotaz_na_oteviraci_dobu
+  - action: utter_oteviraci_doba
+
+- rule: Handle inquiry about services
+  steps:
+  - intent: dotaz_na_sluzbu
+  - action: utter_sluzby
+
+- rule: Handle inquiry about price
+  steps:
+  - intent: dotaz_na_cenu
+  - action: utter_cenik

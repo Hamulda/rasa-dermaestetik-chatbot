@@ -646,6 +646,31 @@ nlu:
     - jaké jsou možnosti řazení?
     - seřaď podle [ceny](sort_preference:price_asc)
 
+- intent: dotaz_na_sluzbu
+  examples: |
+    - co všechno děláte?
+    - jaké nabízíte služby?
+    - řekni mi víc o [botoxu](service)
+    - co je to [chemický peeling](service)?
+    - zajímá mě [laserové ošetření](service)
+    - máte v nabídce [výplně rtů](service)?
+
+- intent: dotaz_na_cenu
+  examples: |
+    - kolik to stojí?
+    - jaký je ceník?
+    - na kolik vyjde [botox](service)?
+    - cena za [výplně rtů](service)?
+    - kolik si mám připravit na [laser](service)?
+
+- intent: dotaz_na_oteviraci_dobu
+  examples: |
+    - kdy máte otevřeno?
+    - jaká je vaše otevírací doba?
+    - máte otevřeno i o víkendu?
+    - v kolik hodin otevíráte?
+    - do kdy tam jste?
+
 # --- Synonyma ---
 - synonym: suchá # Canonical value
   examples: |

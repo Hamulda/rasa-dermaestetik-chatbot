@@ -34,6 +34,9 @@ intents:
   - faq_clinic_laser_epilation_sessions
   - faq_clinic_laser_epilation_preparation
   - faq_clinic_chemical_peel_summer
+  - dotaz_na_sluzbu      # PŘIDAT
+  - dotaz_na_cenu         # PŘIDAT
+  - dotaz_na_oteviraci_dobu # PŘIDAT
 
 entities:
   - skin_type
@@ -149,6 +152,13 @@ responses:
   utter_greet:
     - text: "Dobrý den! Jsem Vaše virtuální asistentka pro DermaEstetik.cz. Jak Vám mohu dnes pomoci s výběrem produktů nebo informacemi o našich službách?"
     - text: "Krásný den! Vítejte na chatu DermaEstetik.cz. Ráda Vám poradím s produkty z našeho e-shopu nebo zodpovím dotazy týkající se naší kliniky. Co pro Vás mohu udělat?"
+      buttons:
+    - title: "Chci se objednat"
+      payload: /chci_se_objednat
+    - title: "Naše služby"
+      payload: /dotaz_na_sluzbu
+    - title: "Otevírací doba"
+      payload: /dotaz_na_oteviraci_dobu
   utter_cheer_up:
     - text: "Chápu. Někdy prostě není den. Třeba Vám zlepší náladu pohled na tento obrázek:"
       image: "https://i.imgur.com/nGF1K8f.jpg"
@@ -235,6 +245,23 @@ responses:
     - text: "Před laserovou epilací na klinice DermaEstetik je důležité chloupky v ošetřované oblasti nevytrhávat (voskem, epilátorem, pinzetou) alespoň 4-6 týdnů – pouze holit nebo stříhat. Den před ošetřením nebo v den ošetření je vhodné oblast hladce oholit. Pokožka by měla být čistá, bez krémů a deodorantů. Také se vyhněte slunění ošetřované oblasti před zákrokem."
   utter_faq_clinic_chemical_peel_summer:
     - text: "Některé typy chemického peelingu je možné na klinice DermaEstetik provádět i v letních měsících, jedná se o tzv. 'letní peelingy', které jsou šetrnější. Vždy je však nutná důsledná ochrana před sluncem (SPF 50+). O vhodnosti konkrétního peelingu pro Vaši pleť a dané roční období je nejlepší se poradit přímo s našimi odborníky na klinice."
+
+  utter_oteviraci_doba:
+  - text: "Naše klinika má otevřeno od pondělí do pátku, vždy od 8:00 do 18:00. Víkendy máme zavřeno. Mohu vám pomoci s něčím dalším?"
+
+  utter_sluzby:
+  - text: "Specializujeme se na širokou škálu ošetření. Mezi nejoblíbenější patří botox, výplně kyselinou hyaluronovou, chemický peeling a laserová ošetření. Zajímá vás něco konkrétního?"
+    buttons:
+    - title: "Ano, chci se objednat"
+      payload: /chci_se_objednat
+    - title: "Zobrazit ceník"
+      payload: /dotaz_na_cenu
+
+  utter_cenik:
+  - text: "Detailní ceník najdete na našem webu eshop.dermaestetik.cz. Ceny se liší podle rozsahu ošetření. Chcete si rovnou zarezervovat nezávaznou konzultaci?"
+    buttons:
+    - title: "Ano, rezervovat konzultaci"
+      payload: /chci_se_objednat
 
 session_config:
   session_expiration_time: 60
