@@ -2,110 +2,156 @@ version: "3.1"
 
 stories:
 
-- story: "Test 01: Základní úspěšná cesta formulářem"
+- story: "Test 01: Formulář - Základní úspěšná cesta (skin_type, skin_concern)"
   steps:
-  - user: "Chci poradit"
-    intent: ask_product_recommendation
+  - intent: greet
+  - action: utter_greet
+  - intent: ask_product_recommendation
   - action: product_recommendation_form
   - active_loop: product_recommendation_form
-  - user: "mám suchou pleť"
-    intent: inform
+  - intent: inform
+    entities:
+    - skin_type: "suchá"
+  - slot_was_set:
+    - skin_type: ["suchá"]
   - action: product_recommendation_form
   - active_loop: product_recommendation_form
-  - user: "a řeším vrásky"
-    intent: inform
-  - action: product_recommendation_form
-  - active_loop: product_recommendation_form
-  - user: "to je vše, hledej"
-    intent: trigger_recommendation
-  - action: utter_now_searching
+  - intent: inform
+    entities:
+    - skin_concern: "vrásky"
+  - slot_was_set:
+    - skin_concern: ["vrásky"]
   - action: product_recommendation_form
   - active_loop: null
   - action: action_recommend_product
 
-- story: "Test 02: Uživatel poskytne více informací najednou"
+- story: "Test 02: Formulář - Dynamicky povinný slot (růst řas -> product_category)"
   steps:
-  - user: "Hledám krém pro mastnou pleť od Medik8"
-    intent: inform
+  - intent: ask_product_recommendation
   - action: product_recommendation_form
   - active_loop: product_recommendation_form
-  - user: "to stačí"
-    intent: trigger_recommendation
-  - action: utter_now_searching
+  - intent: inform
+    entities:
+    - skin_type: "normální"
+  - slot_was_set:
+    - skin_type: ["normální"]
+  - action: product_recommendation_form
+  - active_loop: product_recommendation_form
+  - intent: inform
+    entities:
+    - skin_concern: "růst řas"
+  - slot_was_set:
+    - skin_concern: ["růst řas"]
+  - action: product_recommendation_form
+  - active_loop: product_recommendation_form
+  - intent: inform
+    entities:
+    - product_category: "péče o řasy"
+  - slot_was_set:
+    - product_category: ["péče o řasy"]
   - action: product_recommendation_form
   - active_loop: null
   - action: action_recommend_product
 
-- story: "Test 03: Zrušení formuláře"
+- story: "Test 03: Formulář - Nevalidní product_category a oprava"
   steps:
-  - user: "chci poradit"
-    intent: ask_product_recommendation
+  - intent: ask_product_recommendation
+    entities:
+    - skin_type: "suchá"
+    - skin_concern: "vrásky"
+    - product_category: "nesmyslnaKategorie"
   - action: product_recommendation_form
   - active_loop: product_recommendation_form
-  - user: "stop"
-    intent: stop_form
+  - slot_was_set:
+    - product_category: null
+  - intent: inform
+    entities:
+    - product_category: "krém"
+  - slot_was_set:
+    - product_category: ["krém"]
+  - action: product_recommendation_form
+  - active_loop: null
+  - action: action_recommend_product
+
+- story: "Test 04: Formulář - Zrušení formuláře uživatelem"
+  steps:
+  - intent: ask_product_recommendation
+  - action: product_recommendation_form
+  - active_loop: product_recommendation_form
+  - intent: stop_form
   - action: action_deactivate_loop
   - active_loop: null
   - action: utter_form_cancelled
 
-- story: "Test 04: Pokročilé funkce po doporučení (paginace, porovnání, wishlist)"
+- story: "Test 05: Samostatné FAQ"
   steps:
-  - story: "Test 01: Základní úspěšná cesta formulářem" # Navážeme na příběh, kde se něco doporučilo
-  - user: "ukaž další"
-    intent: show_more
-  - action: action_show_next_products
-  - user: "porovnej první a druhý"
-    intent: compare_products
-  - action: action_compare_products
-  - user: "přidej první do oblíbených"
-    intent: add_to_wishlist
-  - action: action_manage_wishlist
-  - user: "ukaž mi můj seznam přání"
-    intent: show_wishlist
-  - action: action_manage_wishlist
+  - intent: faq
+    entities:
+    - faq: "payment_options"
+  - action: utter_faq_payment_options
 
-- story: "Test 05: Správa filtrů"
+- story: "Test 06: Pozdrav a rozloučení"
   steps:
-  - user: "mám suchou pleť"
-    intent: inform
-  - action: product_recommendation_form
-  - active_loop: product_recommendation_form
-  - user: "jaké mám teď filtry?"
-    intent: show_current_filters
-  - action: action_show_current_filters
-  - action: product_recommendation_form
-  - active_loop: product_recommendation_form
-  - user: "resetovat hledání"
-    intent: reset_filters
-  - action: action_reset_filters
-  - action: product_recommendation_form
-  - active_loop: product_recommendation_form
-  - user: "stop"
-    intent: stop_form
-  - action: action_deactivate_loop
-  - active_loop: null
+  - intent: greet
+  - action: utter_greet
+  - intent: goodbye
+  - action: utter_goodbye
 
-- story: "Test 06: Zpracování negací"
+- story: "Test 07: Out of Scope dotaz"
   steps:
-  - user: "hledám něco na akné ale nechci krém"
-    intent: inform
+  - intent: out_of_scope
+  - action: utter_default
+
+- story: "Test 08: Formulář - Uživatel poskytne všechny základní informace najednou"
+  steps:
+  - intent: inform
+    entities:
+    - skin_type: "mastná"
+    - skin_concern: "póry"
   - action: product_recommendation_form
   - active_loop: product_recommendation_form
-  - user: "hledej"
-    intent: trigger_recommendation
-  - action: utter_now_searching
   - action: product_recommendation_form
   - active_loop: null
   - action: action_recommend_product
 
-- story: "Test 07: Přerušení formuláře (digression)"
+- story: "Test 09: Formulář - Uživatel poskytne informace pro jiný slot, než na který se bot ptá"
   steps:
-  - user: "chci poradit"
-    intent: ask_product_recommendation
+  - intent: ask_product_recommendation
   - action: product_recommendation_form
   - active_loop: product_recommendation_form
-  - user: "jaké máte možnosti platby?"
-    intent: faq/payment_options
-  - action: utter_faq_payment_options
-  - action: product_recommendation_form # Bot se správně vrátí k formuláři
+  - intent: inform
+    entities:
+    - skin_concern: "akné"
+  - slot_was_set:
+    - skin_concern: ["akné"]
+  - action: product_recommendation_form
   - active_loop: product_recommendation_form
+  - intent: inform
+    entities:
+    - skin_type: "mastná"
+  - slot_was_set:
+    - skin_type: ["mastná"]
+  - action: product_recommendation_form
+  - active_loop: null
+  - action: action_recommend_product
+
+- story: "Test 10: Změna řazení po doporučení (na cenu sestupně)"
+  steps:
+  # Začátek zkopírovaný z Testu 08
+  - intent: inform
+    entities:
+    - skin_type: "mastná"
+    - skin_concern: "póry"
+  - action: product_recommendation_form
+  - active_loop: product_recommendation_form
+  - action: product_recommendation_form
+  - active_loop: null
+  - action: action_recommend_product
+  # Konec zkopírovaný z Testu 08
+  # Pokračování specifické pro Test 10
+  - intent: set_sort_preference
+    entities:
+    - sort_preference: "price_desc"
+  - slot_was_set:
+    - sort_preference: "price_desc"
+  - action: action_recommend_product

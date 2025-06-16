@@ -1,10 +1,5 @@
 version: "3.1"
 
-# ==============================================================================
-# INTENTS & ENTITIES
-# Kompletní seznam všech intentů a entit, které chatbot zná.
-# Doplněno o chybějící položky pro 100% konzistenci.
-# ==============================================================================
 intents:
   - greet
   - goodbye
@@ -18,7 +13,8 @@ intents:
   - stop_form
   - out_of_scope
   - set_sort_preference
-  - faq
+  - faq:
+      is_retrieval_intent: true
   - dotaz_na_sluzbu
   - dotaz_na_cenu
   - dotaz_na_oteviraci_dobu
@@ -43,10 +39,6 @@ entities:
   - sort_preference
   - product_order
 
-# ==============================================================================
-# SLOTS
-# Paměť chatbota. Všechny sloty plněné z `actions.py` mají `type: custom`.
-# ==============================================================================
 slots:
   skin_type:
     type: list
@@ -124,18 +116,9 @@ slots:
     mappings:
     - type: custom
 
-# ==============================================================================
-# FORMS
-# --- ZMĚNA: Formulář je teď flexibilnější, bez `required_slots`. ---
-# Uživatel může zadat kolik chce informací a sám řekne, kdy má bot hledat.
-# ==============================================================================
 forms:
   product_recommendation_form: {}
 
-# ==============================================================================
-# ACTIONS & RESPONSES
-# Kompletní seznam všech akcí a odpovědí.
-# ==============================================================================
 actions:
   - action_recommend_product
   - validate_product_recommendation_form
@@ -193,7 +176,8 @@ actions:
 
 responses:
   utter_greet:
-  - text: "Dobrý den! Jsem Vaše virtuální asistentka pro DermaEstetik.cz. Řekněte mi, jaké máte požadavky na produkty (např. typ pleti, co řešíte, preferovanou značku), a já vám pomohu najít ty pravé. Až budete chtít, abych začala hledat, stačí napsat 'hledej'."
+  - text: |
+      Dobrý den! Jsem Vaše virtuální asistentka pro DermaEstetik.cz. Řekněte mi, jaké máte požadavky na produkty (např. typ pleti, co řešíte, preferovanou značku), a já vám pomohu najít ty pravé. Až budete chtít, abych začala hledat, stačí napsat 'hledej'.
   utter_cheer_up:
   - text: "Chápu. Někdy prostě není den. Třeba Vám zlepší náladu pohled na tento obrázek:"
     image: "https://i.imgur.com/nGF1K8f.jpg"
@@ -221,7 +205,6 @@ responses:
   - text: "Máte nějaké specifické požadavky na vlastnosti produktu? Například veganské, bez parfemace, s SPF..."
   utter_ask_brand: 
   - text: "Preferujete nějakou konkrétní značku? Například Medik8, Heliocare..."
-  utter_ask_skin_area: 
   - text: "Pro jakou oblast těla nebo obličeje produkt hledáte? Například obličej, oční okolí..."
   utter_now_searching:
   - text: "Dobře, děkuji za informace. Dívám se na produkty podle zadaných kritérií..."
@@ -234,43 +217,60 @@ responses:
   utter_faq_payment_options:
   - text: "Na našem e-shopu DermaEstetik.cz přijímáme platby kartou online (Visa, Mastercard), bankovním převodem a také na dobírku při převzetí zboží. Platba na dobírku je zpoplatněna částkou 30 Kč."
   utter_faq_product_ingredients:
-  - text: "Detailní složení (INCI) každého produktu naleznete přímo na stránce daného produktu v našem e-shopu eshop.dermaestetik.cz, obvykle v záložce 'Složení' nebo 'Popis produktu'. Pokud máte dotaz ke konkrétnímu produktu nebo citlivosti, dejte mi vědět název produktu."
+  - text: |
+      Detailní složení (INCI) každého produktu naleznete přímo na stránce daného produktu v našem e-shopu eshop.dermaestetik.cz, obvykle v záložce 'Složení' nebo 'Popis produktu'. Pokud máte dotaz ke konkrétnímu produktu nebo citlivosti, dejte mi vědět název produktu.
   utter_faq_returns:
-  - text: "Pokud chcete zboží zakoupené na eshop.dermaestetik.cz vrátit, můžete tak učinit do 14 dnů od převzetí, za předpokladu, že je nepoužité a v originálním obalu. Prosím, kontaktujte nás na e-mailu eshop@dermaestetik.cz pro domluvení detailů vrácení. Více informací naleznete také v našich obchodních podmínkách."
+  - text: |
+      Pokud chcete zboží zakoupené na eshop.dermaestetik.cz vrátit, můžete tak učinit do 14 dnů od převzetí, za předpokladu, že je nepoužité a v originálním obalu. Prosím, kontaktujte nás na e-mailu eshop@dermaestetik.cz pro domluvení detailů vrácení. Více informací naleznete také v našich obchodních podmínkách.
   utter_faq_vegan_products:
   - text: "Ano, na eshop.dermaestetik.cz máme širokou nabídku veganských produktů. Můžete je vyfiltrovat přímo na e-shopu, nebo mi řekněte, jaký typ produktu hledáte, a já se podívám po veganské variantě."
   utter_faq_hypoallergenic:
-  - text: "Označení 'hypoalergenní' znamená, že produkt byl formulován tak, aby minimalizoval riziko alergických reakcí. Přesto, pokud máte velmi citlivou pleť nebo známé alergie, doporučujeme vždy nejprve prostudovat složení (INCI) produktu a případně provést tzv. patch test na malé části pokožky."
+  - text: |
+      Označení 'hypoalergenní' znamená, že produkt byl formulován tak, aby minimalizoval riziko alergických reakcí. Přesto, pokud máte velmi citlivou pleť nebo známé alergie, doporučujeme vždy nejprve prostudovat složení (INCI) produktu a případně provést tzv. patch test na malé části pokožky.
   utter_faq_order_status_delivery_time:
-  - text: "Stav své objednávky z eshop.dermaestetik.cz a předpokládaný čas doručení můžete obvykle sledovat pomocí odkazu v potvrzovacím e-mailu, který jste obdržel(a) po objednání. Pokud odkaz nemáte nebo potřebujete pomoc, mohu se pokusit informace dohledat, pokud mi sdělíte číslo Vaší objednávky."
+  - text: |
+      Stav své objednávky z eshop.dermaestetik.cz a předpokládaný čas doručení můžete obvykle sledovat pomocí odkazu v potvrzovacím e-mailu, který jste obdržel(a) po objednání. Pokud odkaz nemáte nebo potřebujete pomoc, mohu se pokusit informace dohledat, pokud mi sdělíte číslo Vaší objednávky.
   utter_faq_skin_cleansing:
-  - text: "Správné čištění pleti je základ! Doporučujeme čistit pleť dvakrát denně – ráno a večer. Večer je ideální dvoufázové čištění, pokud používáte make-up nebo SPF: první fáze (např. olejový čistič) odstraní make-up a SPF, druhá fáze (např. gelový nebo pěnový čistič) dočistí samotnou pleť."
+  - text: |
+      Správné čištění pleti je základ! Doporučujeme čistit pleť dvakrát denně – ráno a večer. Večer je ideální dvoufázové čištění, pokud používáte make-up nebo SPF: první fáze (např. olejový čistič) odstraní make-up a SPF, druhá fáze (např. gelový nebo pěnový čistič) dočistí samotnou pleť.
   utter_faq_product_application_order:
-  - text: "Obecně platí pravidlo aplikace produktů od nejlehčí textury po nejtěžší. Typické pořadí ráno: čištění, tonikum (volitelně), sérum, oční krém, hydratační krém a nakonec SPF. Večer je postup podobný, jen bez SPF, a můžete zařadit produkty jako retinol nebo exfoliační přípravky (ne vždy ve stejný den)."
+  - text: |
+      Obecně platí pravidlo aplikace produktů od nejlehčí textury po nejtěžší. Typické pořadí ráno: čištění, tonikum (volitelně), sérum, oční krém, hydratační krém a nakonec SPF. Večer je postup podobný, jen bez SPF, a můžete zařadit produkty jako retinol nebo exfoliační přípravky (ne vždy ve stejný den).
   utter_faq_spf_usage:
-  - text: "SPF (ochranný sluneční faktor) by měl být posledním krokem Vaší ranní péče o pleť, po hydratačním krému a před aplikací make-upu. Je důležité ho používat každý den, po celý rok, i když je pod mrakem nebo trávíte většinu času uvnitř, protože UVA záření proniká i sklem."
+  - text: |
+      SPF (ochranný sluneční faktor) by měl být posledním krokem Vaší ranní péče o pleť, po hydratačním krému a před aplikací make-upu. Je důležité ho používat každý den, po celý rok, i když je pod mrakem nebo trávíte většinu času uvnitř, protože UVA záření proniká i sklem.
   utter_faq_combining_actives:
-  - text: "Při kombinování aktivních látek jako jsou retinoidy (retinol, retinal), vitamín C, AHA/BHA kyseliny, je potřeba postupovat opatrně. Některé kombinace mohou pleť podráždit. Například se obecně nedoporučuje používat silné exfolianty (AHA/BHA) ve stejné rutině jako retinoidy. Vitamín C se často používá ráno a retinoidy večer. Pokud si nejste jistá, je lepší se poradit nebo aktivní látky střídat v různé dny."
+  - text: |
+      Při kombinování aktivních látek jako jsou retinoidy (retinol, retinal), vitamín C, AHA/BHA kyseliny, je potřeba postupovat opatrně. Některé kombinace mohou pleť podráždit. Například se obecně nedoporučuje používat silné exfolianty (AHA/BHA) ve stejné rutině jako retinoidy. Vitamín C se často používá ráno a retinoidy večer. Pokud si nejste jistá, je lepší se poradit nebo aktivní látky střídat v různé dny.
   utter_faq_online_consultation:
   - text: "Ano, ráda Vám poradím s výběrem produktů přímo zde v chatu! Můžete mi popsat Vaši pleť a co od produktů očekáváte. Na našem webu eshop.dermaestetik.cz také naleznete sekci Poradna, kde jsou další informace a tipy."
   utter_faq_eshop_shipping_cost:
-  - text: "Cena dopravy na eshop.dermaestetik.cz se odvíjí od zvoleného dopravce a celkové hodnoty objednávky. Standardně nabízíme například Zásilkovnu nebo doručení kurýrem. Při objednávce nad určitou částku (např. 1500 Kč) bývá doprava zdarma. Přesné ceny a možnosti uvidíte vždy v košíku před dokončením objednávky."
+  - text: |
+      Cena dopravy na eshop.dermaestetik.cz se odvíjí od zvoleného dopravce a celkové hodnoty objednávky. Standardně nabízíme například Zásilkovnu nebo doručení kurýrem. Při objednávce nad určitou částku (např. 1500 Kč) bývá doprava zdarma. Přesné ceny a možnosti uvidíte vždy v košíku před dokončením objednávky.
   utter_faq_parabens:
-  - text: "Většina moderní kosmetiky, včetně značek, které nabízíme na eshop.dermaestetik.cz jako Medik8, se snaží parabeny nepoužívat nebo je nahrazovat jinými, šetrnějšími konzervanty. Přesné informace o složení, včetně (ne)přítomnosti parabenů, naleznete vždy v detailu každého produktu (INCI list)."
+  - text: |
+      Většina moderní kosmetiky, včetně značek, které nabízíme na eshop.dermaestetik.cz jako Medik8, se snaží parabeny nepoužívat nebo je nahrazovat jinými, šetrnějšími konzervanty. Přesné informace o složení, včetně (ne)přítomnosti parabenů, naleznete vždy v detailu každého produktu (INCI list).
   utter_faq_animal_testing:
-  - text: "Netestování na zvířatech je pro nás na DermaEstetik.cz prioritou. Všechny kosmetické produkty prodávané v EU musí splňovat legislativu, která zakazuje testování finálních produktů i jejich složek na zvířatech. Značky jako Medik8 a Heliocare, které u nás najdete, jsou známé svým cruelty-free přístupem."
+  - text: |
+      Netestování na zvířatech je pro nás na DermaEstetik.cz prioritou. Všechny kosmetické produkty prodávané v EU musí splňovat legislativu, která zakazuje testování finálních produktů i jejich složek na zvířatech. Značky jako Medik8 a Heliocare, které u nás najdete, jsou známé svým cruelty-free přístupem.
   utter_faq_store_pickup:
-  - text: "Ano, objednávky z e-shopu eshop.dermaestetik.cz si můžete po předchozí domluvě osobně vyzvednout na naší klinice DermaEstetik na adrese Jana Palacha 2923/21, 690 02 Břeclav. Doporučujeme si předem ověřit otevírací dobu a domluvit se na termínu vyzvednutí, aby bylo vše připraveno."
+  - text: |
+      Ano, objednávky z e-shopu eshop.dermaestetik.cz si můžete po předchozí domluvě osobně vyzvednout na naší klinice DermaEstetik na adrese Jana Palacha 2923/21, 690 02 Břeclav. Doporučujeme si předem ověřit otevírací dobu a domluvit se na termínu vyzvednutí, aby bylo vše připraveno.
   utter_faq_eshop_complaint_procedure:
-  - text: "Pokud potřebujete produkt zakoupený na eshop.dermaestetik.cz reklamovat, kontaktujte nás prosím nejprve e-mailem na eshop@dermaestetik.cz nebo telefonicky. Popište nám prosím vadu produktu a přiložte doklad o koupi. Detailní informace o reklamačním postupu naleznete v našich Obchodních podmínkách na webu."
+  - text: |
+      Pokud potřebujete produkt zakoupený na eshop.dermaestetik.cz reklamovat, kontaktujte nás prosím nejprve e-mailem na eshop@dermaestetik.cz nebo telefonicky. Popište nám prosím vadu produktu a přiložte doklad o koupi. Detailní informace o reklamačním postupu naleznete v našich Obchodních podmínkách na webu.
   utter_faq_clinic_botox_duration:
-  - text: "Účinek aplikace botulotoxinu na naší klinice DermaEstetik obvykle trvá 3 až 6 měsíců. Délka účinku je individuální a závisí na metabolismu klienta a ošetřované oblasti. Pro udržení efektu je vhodné aplikaci opakovat."
+  - text: |
+      Účinek aplikace botulotoxinu na naší klinice DermaEstetik obvykle trvá 3 až 6 měsíců. Délka účinku je individuální a závisí na metabolismu klienta a ošetřované oblasti. Pro udržení efektu je vhodné aplikaci opakovat.
   utter_faq_clinic_laser_epilation_sessions:
-  - text: "Počet potřebných ošetření laserové epilace na klinice DermaEstetik je individuální. Záleží na typu chloupků, barvě pleti a ošetřované oblasti. Obvykle se doporučuje série 6 až 8 ošetření v intervalech několika týdnů pro dosažení optimálního a dlouhodobého výsledku."
+  - text: |
+      Počet potřebných ošetření laserové epilace na klinice DermaEstetik je individuální. Záleží na typu chloupků, barvě pleti a ošetřované oblasti. Obvykle se doporučuje série 6 až 8 ošetření v intervalech několika týdnů pro dosažení optimálního a dlouhodobého výsledku.
   utter_faq_clinic_laser_epilation_preparation:
-  - text: "Před laserovou epilací na klinice DermaEstetik je důležité chloupky v ošetřované oblasti nevytrhávat (voskem, epilátorem, pinzetou) alespoň 4-6 týdnů – pouze holit nebo stříhat. Den před ošetřením nebo v den ošetření je vhodné oblast hladce oholit. Pokožka by měla být čistá, bez krémů a deodorantů. Také se vyhněte slunění ošetřované oblasti před zákrokem."
+  - text: |
+      Před laserovou epilací na klinice DermaEstetik je důležité chloupky v ošetřované oblasti nevytrhávat (voskem, epilátorem, pinzetou) alespoň 4-6 týdnů – pouze holit nebo stříhat. Den před ošetřením nebo v den ošetření je vhodné oblast hladce oholit. Pokožka by měla být čistá, bez krémů a deodorantů. Také se vyhněte slunění ošetřované oblasti před zákrokem.
   utter_faq_clinic_chemical_peel_summer:
-  - text: "Některé typy chemického peelingu je možné na klinice DermaEstetik provádět i v letních měsících, jedná se o tzv. 'letní peelingy', které jsou šetrnější. Vždy je však nutná důsledná ochrana před sluncem (SPF 50+). O vhodnosti konkrétního peelingu pro Vaši pleť a dané roční období je nejlepší se poradit přímo s našimi odborníky na klinice."
+  - text: |
+      Některé typy chemického peelingu je možné na klinice DermaEstetik provádět i v letních měsících, jedná se o tzv. 'letní peelingy', které jsou šetrnější. Vždy je však nutná důsledná ochrana před sluncem (SPF 50+). O vhodnosti konkrétního peelingu pro Vaši pleť a dané roční období je nejlepší se poradit přímo s našimi odborníky na klinice.
   utter_oteviraci_doba:
   - text: "Naše klinika v Břeclavi má otevřeno od pondělí do pátku, vždy od 8:00 do 18:00. Víkendy máme zavřeno. Mohu vám pomoci s něčím dalším?"
   utter_sluzby:
