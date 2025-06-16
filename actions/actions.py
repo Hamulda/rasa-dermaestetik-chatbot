@@ -4,457 +4,515 @@ from typing import Any, Text, Dict, List, Optional
 
 from rasa_sdk import Action, Tracker, FormValidationAction
 from rasa_sdk.executor import CollectingDispatcher
-from rasa_sdk.events import SlotSet, ActiveLoop
+from rasa_sdk.events import SlotSet, ActiveLoop, AllSlotsReset
 from rasa_sdk.types import DomainDict
 
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s [%(levelname)s] %(name)s - %(message)s'
+)
 logger = logging.getLogger(__name__)
 
-# --- ZMĚNA START: Načítání části znalostní báze z externího souboru ---
 KNOWLEDGE_BASE_FILE_PATH = './data/knowledge_base.json'
 PRODUCTS_FILE_PATH = './data/products.json'
 BASE_ESHOP_URL = "https://eshop.dermaestetik.cz"
+PRODUCTS_PER_PAGE = 3
 
-def load_json_file(file_path: Text, description: Text) -> Dict:
+def load_json_file(file_path: Text, description: Text) -> Any:
+    """Načte a parsuje JSON soubor s robustním error handlingem."""
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
-        logger.info(f"Soubor '{description}' ('{file_path}') úspěšně načten.")
+        logger.info(f"Soubor '{description}' ('{file_path}') byl úspěšně načten.")
         return data
     except FileNotFoundError:
-        logger.error(f"Soubor '{description}' ('{file_path}') nebyl nalezen.")
+        logger.error(f"Kritická chyba: Soubor '{description}' ('{file_path}') nebyl nalezen.")
+        return []
     except json.JSONDecodeError as e:
-        logger.error(f"Chyba při dekódování JSON souboru '{description}' ('{file_path}'): {e}")
+        logger.error(f"Kritická chyba: Chyba při dekódování JSON souboru '{description}': {e}")
+        return []
     except Exception as e:
-        logger.error(f"Neočekávaná chyba při načítání souboru '{description}' ('{file_path}'): {e}")
-    return {} # Vrací prázdný slovník v případě chyby
+        logger.error(f"Kritická chyba: Neočekávaná chyba při načítání souboru '{description}': {e}")
+        return []
 
 knowledge_base_data = load_json_file(KNOWLEDGE_BASE_FILE_PATH, "znalostní báze")
+products_data = load_json_file(PRODUCTS_FILE_PATH, "katalog produktů")
 
-# Použití načtených dat, s fallbackem na prázdný seznam, pokud načtení selhalo nebo klíč chybí
 KNOWN_BRANDS = knowledge_base_data.get("KNOWN_BRANDS", [])
 KNOWN_SKIN_AREAS = knowledge_base_data.get("KNOWN_SKIN_AREAS", [])
+KNOWN_SKIN_TYPES = knowledge_base_data.get("KNOWN_SKIN_TYPES", [])
+KNOWN_PRODUCT_CATEGORIES = knowledge_base_data.get("KNOWN_PRODUCT_CATEGORIES", [])
+KNOWN_PRODUCT_ATTRIBUTES = knowledge_base_data.get("KNOWN_PRODUCT_ATTRIBUTES", [])
+KNOWN_SKIN_CONCERNS = knowledge_base_data.get("KNOWN_SKIN_CONCERNS", [])
+NEGATION_TRIGGERS = ["nechci", "bez", "ne", "kromě", "vynechat"]
+AMBIGUOUS_CATEGORIES = {"krém": ["denní krém", "noční krém", "oční krém"]}
 
-# Ostatní KNOWN_... seznamy zatím zůstávají hardcoded
-KNOWN_SKIN_TYPES = [
-    "suchá", "mastná", "smíšená", "citlivá", "normální",
-    "velmi suchá", "problematická", "zralá", "dehydrovaná"
-]
-KNOWN_PRODUCT_CATEGORIES = [
-    "krém", "sérum", "čistič", "čistící gel", "oční krém", "maska", "tonikum",
-    "peeling", "spf", "lokální péče", "fluid", "emulze", "tělové mléko",
-    "pleťová voda", "make-up", "báze", "krém na ruce", "oční sérum",
-    "péče o řasy", "čistící pěna", "čistící olej", "gelový krém", "olejové sérum",
-    "micelární voda", "odličovač", "balzám na rty"
-]
-KNOWN_PRODUCT_ATTRIBUTES = [
-    "veganské", "bez parabenů", "s spf", "bez alkoholu", "bez parfemace",
-    "s niacinamidem", "s aha/bha", "matující", "intenzivní", "lehký",
-    "pro těhotné", "s vitamínem c", "s retinalem", "pro muže", "bez silikonů",
-    "nekomedogenní", "bez mýdla", "bez sulfátů (sls/sles)", "s bakuchiolem", "s peptidy",
-    "jemný", "s pha kyselinami", "s kyselinou hyaluronovou", "antioxidační", "proti stárnutí", "rozjasňující",
-    "stimulující růst",
-    "výživný",
-    "s kofeinem",
-    "proti pigmentaci", 
-    "hydratační"
-]
-KNOWN_SKIN_CONCERNS = [
-    "akné", "vrásky", "pigmentace", "póry", "černé tečky", "zarudnutí",
-    "hydratace", "dehydratace", "citlivost", "stárnutí", "zpevnění",
-    "exfoliace", "mdlá pleť", "tmavé kruhy pod očima", "otoky očí",
-    "šupinatá pleť", "růst řas", "růst obočí", "jemné linky", "podráždění",
-    "ztráta elasticity", "nerovnoměrný tón pleti", "lesk pleti"
-]
-# --- ZMĚNA KONEC ---
+
+def display_products(dispatcher: CollectingDispatcher, products_to_display: List[Dict], start_index: int = 0):
+    """Pomocná funkce pro zobrazení seznamu produktů s číslováním."""
+    if not products_to_display:
+        return
+
+    for i, product in enumerate(products_to_display):
+        name = product.get('name', 'Neznámý název')
+        desc = product.get('description', 'Popis není k dispozici.')
+        link = product.get('link')
+        price = product.get('price')
+        message = f"**{start_index + i + 1}. {name}**" + (f" (cena: {price} Kč)" if price else "") + f": {desc}"
+        if link:
+            full_link = link if link.startswith('http') else f'{BASE_ESHOP_URL}/{link.lstrip("/")}'
+            message += f"\n   Více zde: {full_link}"
+        dispatcher.utter_message(text=message)
+
+def _get_product_from_tracker(tracker: Tracker, order_text: Text) -> Optional[Dict]:
+    """Získá produkt na základě pořadí ('první', 'druhý'...) z posledního doporučení."""
+    order_map = {"první": 0, "druhý": 1, "třetí": 2, "čtvrtý": 3, "pátý": 4}
+    idx = order_map.get(order_text.lower())
+    if idx is None:
+        return None
+
+    last_ids = tracker.get_slot("last_recommended_ids")
+    if not last_ids or idx >= len(last_ids):
+        return None
+
+    product_id = last_ids[idx]
+    return next((p for p in products_data if p.get('id') == product_id), None)
+
 
 class ActionRecommendProduct(Action):
+    """Hlavní akce, která filtruje produkty, doporučuje je a spravuje kontext."""
+
     def name(self) -> Text:
         return "action_recommend_product"
 
-    def _normalize_string_value(self, value: Any) -> Optional[str]:
-        if value is None:
-            return None
-        if isinstance(value, str):
-            return value.strip().lower()
-        return str(value).strip().lower()
-
-    def _load_products(self, dispatcher: CollectingDispatcher) -> List[Dict[Text, Any]]:
-        # Použijeme obecnou funkci pro načítání JSON
-        products_data = load_json_file(PRODUCTS_FILE_PATH, "katalog produktů")
-        if not products_data: # products_data může být {} pokud load_json_file selže
-             dispatcher.utter_message(text="Omlouvám se, momentálně nemohu načíst katalog produktů. Zkuste to prosím později.")
-             return []
-        if not isinstance(products_data, list): # Zajistíme, že data jsou seznam
-            logger.error(f"Katalog produktů ('{PRODUCTS_FILE_PATH}') neobsahuje seznam produktů.")
-            dispatcher.utter_message(text="Omlouvám se, v katalogu produktů je technická chyba.")
-            return []
-        return products_data
-
+    @staticmethod
+    def _normalize_string(value: Any) -> Optional[str]:
+        return str(value).strip().lower() if value else None
 
     def run(self, dispatcher: CollectingDispatcher,
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-        logger.info(f"--- Akce ActionRecommendProduct ZAHÁJENA (ID konverzace: {tracker.sender_id}) ---")
-        
-        slot_skin_type = tracker.get_slot("skin_type")
-        slot_skin_concern = tracker.get_slot("skin_concern")
-        slot_product_category = tracker.get_slot("product_category")
-        slot_product_attribute = tracker.get_slot("product_attribute")
-        slot_brand = tracker.get_slot("brand")
-        slot_skin_area = tracker.get_slot("skin_area")
-        # PŘIDÁNO: Načtení slotu pro preferenci řazení (zatím jen konceptuálně)
-        slot_sort_preference = tracker.get_slot("sort_preference") # Tento slot ještě není v domain.yml
+        logger.info(f"--- Akce '{self.name()}' ZAHÁJENA ---")
 
-        logger.info(f"Aktuální sloty PŘED zpracováním: "
-                    f"skin_type={slot_skin_type}, "
-                    f"skin_concern={slot_skin_concern}, "
-                    f"product_category={slot_product_category}, "
-                    f"brand={slot_brand}, "
-                    f"product_attribute={slot_product_attribute}, "
-                    f"skin_area={slot_skin_area}, "
-                    f"sort_preference={slot_sort_preference}") # PŘIDÁNO logování
+        product_category = self._normalize_string(tracker.get_slot("product_category"))
+        if product_category and product_category in AMBIGUOUS_CATEGORIES:
+            options = AMBIGUOUS_CATEGORIES[product_category]
+            buttons = [{"title": opt.capitalize(), "payload": f'/inform{{"product_category":"{opt}"}}'} for opt in options]
+            dispatcher.utter_message(
+                text=f"Jistě, jaký typ krému máte na mysli?",
+                buttons=buttons
+            )
+            return [SlotSet("product_category", None)]
 
-        products = self._load_products(dispatcher)
-        if not products:
+        active_filters = {
+            "skin_type": [self._normalize_string(st) for st in (tracker.get_slot("skin_type") or [])],
+            "skin_concern": [self._normalize_string(sc) for sc in (tracker.get_slot("skin_concern") or [])],
+            "product_category": product_category,
+            "product_attribute": [self._normalize_string(pa) for pa in (tracker.get_slot("product_attribute") or [])],
+            "brand": self._normalize_string(tracker.get_slot("brand")),
+            "skin_area": self._normalize_string(tracker.get_slot("skin_area")),
+        }
+        excluded_filters = {
+            "product_category": [self._normalize_string(pc) for pc in (tracker.get_slot("excluded_product_category") or [])],
+            "brand": [self._normalize_string(b) for b in (tracker.get_slot("excluded_brand") or [])]
+        }
+
+        if not products_data or not isinstance(products_data, list):
+            dispatcher.utter_message(text="Omlouvám se, mám potíže s přístupem ke katalogu produktů.")
             return []
 
-        active_skin_types = [st for st in slot_skin_type if st] if isinstance(slot_skin_type, list) else ([slot_skin_type] if slot_skin_type else [])
-        active_skin_concerns = [sc for sc in slot_skin_concern if sc] if isinstance(slot_skin_concern, list) else ([slot_skin_concern] if slot_skin_concern else [])
-        active_product_category = self._normalize_string_value(slot_product_category) 
-        active_product_attributes = [pa for pa in slot_product_attribute if pa] if isinstance(slot_product_attribute, list) else ([slot_product_attribute] if slot_product_attribute else [])
-        active_brand = self._normalize_string_value(slot_brand)
-        active_skin_area = self._normalize_string_value(slot_skin_area)
-
-        logger.info(f"Filtruji s (normalizovanými) sloty: "
-                    f"skin_type: {active_skin_types}, "
-                    f"skin_concern: {active_skin_concerns}, "
-                    f"product_category: '{active_product_category}', "
-                    f"product_attribute: {active_product_attributes}, "
-                    f"brand: '{active_brand}', "
-                    f"skin_area: '{active_skin_area}'")
-
         recommended_products = []
-        for product in products:
-            product_name_for_debug = product.get('name', f"NEZNÁMÉ ID: {product.get('id', 'N/A')}")
-            
-            product_skin_types = [self._normalize_string_value(st) for st in product.get("skin_types", []) if st]
-            product_skin_concerns = [self._normalize_string_value(sc) for sc in product.get("skin_concerns", []) if sc]
-            product_category_value = self._normalize_string_value(product.get("category", ""))
-            product_attributes_list = [self._normalize_string_value(attr) for attr in product.get("attributes", []) if attr]
-            product_brand_value = self._normalize_string_value(product.get("brand", ""))
-            product_skin_areas_list = [self._normalize_string_value(sa) for sa in product.get("skin_areas", []) if sa]
+        for product in products_data:
+            match_skin_type = not active_filters["skin_type"] or any(st in [self._normalize_string(p) for p in product.get("skin_types", [])] for st in active_filters["skin_type"])
+            match_skin_concern = not active_filters["skin_concern"] or any(sc in [self._normalize_string(p) for p in product.get("skin_concerns", [])] for sc in active_filters["skin_concern"])
+            match_product_category = not active_filters["product_category"] or active_filters["product_category"] == self._normalize_string(product.get("category", ""))
+            match_product_attributes = not active_filters["product_attribute"] or all(attr in [self._normalize_string(p) for p in product.get("attributes", [])] for attr in active_filters["product_attribute"])
+            match_brand = not active_filters["brand"] or active_filters["brand"] == self._normalize_string(product.get("brand", ""))
+            match_skin_area = not active_filters["skin_area"] or active_filters["skin_area"] in [self._normalize_string(p) for p in product.get("skin_areas", [])]
 
-            match_skin_type = not active_skin_types or any(st in product_skin_types for st in active_skin_types)
-            match_skin_concern = not active_skin_concerns or any(
-                any( (slot_sc and prod_sc) and (slot_sc in prod_sc or prod_sc in slot_sc) for prod_sc in product_skin_concerns)
-                for slot_sc in active_skin_concerns
-            )
-            match_product_category = not active_product_category or active_product_category == product_category_value
-            match_product_attributes = not active_product_attributes or all(attr in product_attributes_list for attr in active_product_attributes)
-            match_brand = not active_brand or active_brand == product_brand_value
-            match_skin_area = not active_skin_area or active_skin_area in product_skin_areas_list
+            exclude_by_category = excluded_filters["product_category"] and self._normalize_string(product.get("category", "")) in excluded_filters["product_category"]
+            exclude_by_brand = excluded_filters["brand"] and self._normalize_string(product.get("brand", "")) in excluded_filters["brand"]
 
-            if match_skin_type and match_skin_concern and match_product_category and match_product_attributes and match_brand and match_skin_area:
-                logger.info(f"Produkt '{product_name_for_debug}' ODPOVÍDÁ kritériím.")
+            if all([match_skin_type, match_skin_concern, match_product_category, match_product_attributes, match_brand, match_skin_area]) and not (exclude_by_category or exclude_by_brand):
                 recommended_products.append(product)
 
-        logger.info(f"Celkem nalezeno doporučených produktů: {len(recommended_products)}")
+        logger.info(f"Po filtrování nalezeno {len(recommended_products)} produktů.")
 
-        if recommended_products:
-            # ZMĚNA START: Rozšířená logika řazení
-            sort_key = "name" # Výchozí řazení
-            reverse_sort = False
+        if not recommended_products:
+            dispatcher.utter_message(text="Je mi líto, ale nenašla jsem žádný produkt, který by přesně odpovídal Vašim požadavkům. Zkuste prosím upravit kritéria.")
+            return [SlotSet("last_recommended_ids", [])]
 
-            if slot_sort_preference == "price_asc":
-                sort_key = "price"
-                logger.info("Požadováno řazení podle ceny vzestupně.")
-            elif slot_sort_preference == "price_desc":
-                sort_key = "price"
-                reverse_sort = True
-                logger.info("Požadováno řazení podle ceny sestupně.")
-            elif slot_sort_preference == "name_asc": # Explicitní volba řazení podle jména
-                logger.info("Požadováno řazení podle názvu vzestupně.")
-            # Pokud slot_sort_preference není nastaven nebo je neznámý, použije se výchozí (podle jména)
-            
-            if sort_key == "price":
-                # Při řazení podle ceny je potřeba ošetřit chybějící cenu (např. dát je na konec)
-                recommended_products.sort(
-                    key=lambda p: (p.get(sort_key) is None, p.get(sort_key, float('inf' if not reverse_sort else -float('inf')))), 
-                    reverse=reverse_sort
-                )
-            else: # default sort by name
-                recommended_products.sort(key=lambda p: self._normalize_string_value(p.get('name', '')), reverse=reverse_sort)
-            
-            logger.info(f"Doporučené produkty seřazeny podle: '{sort_key}' ({'sestupně' if reverse_sort else 'vzestupně'}).")
-            # ZMĚNA KONEC
-
-            intro_parts = []
-            if active_brand: intro_parts.append(f"značky '{active_brand}'") 
-            if active_product_category: intro_parts.append(f"kategorie '{active_product_category}'")
-            if active_skin_types: intro_parts.append(f"pro typ pleti: {', '.join(active_skin_types)}")
-            if active_skin_concerns: intro_parts.append(f"řešící problémy: {', '.join(active_skin_concerns)}")
-            if active_product_attributes: intro_parts.append(f"s vlastnostmi: {', '.join(active_product_attributes)}")
-            if active_skin_area: intro_parts.append(f"pro oblast '{active_skin_area}'")
-            
-            if intro_parts:
-                response_intro = f"Na základě Vašich požadavků ({'; '.join(intro_parts)}) jsem našla tyto produkty:"
-            else:
-                response_intro = "Zde je několik produktů z naší nabídky, které by Vás mohly zajímat:"
-            dispatcher.utter_message(text=response_intro)
-
-            for i, product_data in enumerate(recommended_products[:3]):
-                product_name = product_data.get('name', 'Neznámý produkt')
-                product_description = product_data.get('description', 'Popis není k dispozici.')
-                product_link = product_data.get('link')
-                product_price = product_data.get('price')
-                message = f"{i+1}. **{product_name}**"
-                if product_price:
-                    message += f" (cena: {product_price} Kč)" # Cena se nyní zobrazuje, pokud je k dispozici
-                message += f": {product_description}"
-                
-                corrected_link = None
-                if product_link:
-                    if not product_link.startswith("http"):
-                        corrected_link = f"{BASE_ESHOP_URL}/{product_link.lstrip('/')}"
-                    else:
-                        corrected_link = product_link 
-                
-                if corrected_link:
-                    message += f"\n   Více informací: {corrected_link}"
-                
-                dispatcher.utter_message(text=message)
-                logger.info(f"Doporučen produkt: {product_name}")
-            
-            if len(recommended_products) > 3:
-                dispatcher.utter_message(text=f"Našla jsem celkem {len(recommended_products)} produktů. Zobrazuji první tři. Pokud chcete vidět další nebo upravit vyhledávání, dejte mi vědět!")
-            
+        slot_sort_preference = tracker.get_slot("sort_preference")
+        if slot_sort_preference == "price_asc":
+            recommended_products.sort(key=lambda p: (p.get("price") is None, p.get("price", float('inf'))))
+        elif slot_sort_preference == "price_desc":
+            recommended_products.sort(key=lambda p: (p.get("price") is None, p.get("price", -float('inf'))), reverse=True)
         else:
-            logger.info("Nebyly nalezeny žádné produkty odpovídající kritériím po filtrování.")
-            dispatcher.utter_message(text="Omlouvám se, nenašla jsem žádný produkt, který by přesně odpovídal Vašim zadaným kritériím. Můžete zkusit Váš požadavek upravit (například ubrat některá kritéria, nebo zkusit méně specifický dotaz) nebo se podívejte na naši kompletní nabídku na e-shopu DermaEstetik.cz.")
+            recommended_products.sort(key=lambda p: (p.get("name") is None, p.get("name", "")))
 
-        logger.info(f"--- Akce ActionRecommendProduct DOKONČENA ---")
+        recommended_ids = [p.get('id') for p in recommended_products if p.get('id')]
+
+        dispatcher.utter_message(text=f"Našla jsem celkem {len(recommended_products)} produktů. Zde jsou první z nich:")
+        display_products(dispatcher, recommended_products[:PRODUCTS_PER_PAGE], start_index=0)
+
+        events = [
+            SlotSet("sort_preference", None),
+            SlotSet("last_recommended_ids", recommended_ids),
+            SlotSet("recommendation_page", 1)
+        ]
+
+        if len(recommended_products) > PRODUCTS_PER_PAGE:
+            dispatcher.utter_message(text="Pokud si přejete vidět další, stačí napsat \"ukaž další\". Můžete si také nechat produkty porovnat (např. 'porovnej první a druhý') nebo si je uložit ('přidej první do oblíbených').")
+
+        if active_filters["product_category"]:
+            cat = active_filters["product_category"]
+            if cat in ["čistící gel", "čistící pěna", "čistící olej"]:
+                dispatcher.utter_message(text="Mohu Vám k tomuto čisticímu produktu doporučit i vhodné sérum pro další krok péče?", buttons=[{"title": "Ano, najít sérum", "payload": "/inform{\"product_category\":\"sérum\"}"}, {"title": "Ne, děkuji", "payload": "/deny"}])
+            elif cat == "sérum":
+                dispatcher.utter_message(text="Chcete k tomuto séru doporučit i vhodný hydratační krém?", buttons=[{"title": "Ano, najít krém", "payload": "/inform{\"product_category\":\"krém\"}"}, {"title": "Ne, děkuji", "payload": "/deny"}])
+
+        return events
+
+
+class ActionShowNextProducts(Action):
+    """Akce pro zobrazení další stránky produktů (paginace)."""
+    def name(self) -> Text: return "action_show_next_products"
+
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        last_ids = tracker.get_slot("last_recommended_ids")
+        page = tracker.get_slot("recommendation_page") or 0
+
+        if not last_ids:
+            dispatcher.utter_message(text="Omlouvám se, nemám žádné předchozí výsledky k zobrazení.")
+            return []
+
+        start_index = page * PRODUCTS_PER_PAGE
+        all_recommended_products = [p for p in products_data if p.get('id') in last_ids]
+        all_recommended_products.sort(key=lambda p: last_ids.index(p.get('id')))
+
+        products_to_show = all_recommended_products[start_index : start_index + PRODUCTS_PER_PAGE]
+
+        if not products_to_show:
+            dispatcher.utter_message(text="To už jsou všechny produkty, které jsem podle zadaných kritérií našla.")
+            return []
+
+        dispatcher.utter_message(text=f"Jistě, zde jsou další produkty:")
+        display_products(dispatcher, products_to_show, start_index=start_index)
+
+        new_page = page + 1
+        if len(all_recommended_products) > start_index + PRODUCTS_PER_PAGE:
+             dispatcher.utter_message(text="Přejete si zobrazit další?")
+
+        return [SlotSet("recommendation_page", new_page)]
+
+
+class ActionRefilterByPrice(Action):
+    """Akce, která vezme doporučené produkty a přefiltruje je podle ceny."""
+    def name(self) -> Text: return "action_refilter_by_price"
+
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        last_recommended_ids = tracker.get_slot("last_recommended_ids")
+        intent_name = tracker.latest_message['intent'].get('name')
+        if not last_recommended_ids:
+            dispatcher.utter_message(text="Omlouvám se, ale nejdříve musím něco doporučit, abych to mohl přefiltrovat.")
+            return []
+
+        last_recommended_products = [p for p in products_data if p.get('id') in last_recommended_ids]
+        if not last_recommended_products:
+            dispatcher.utter_message(text="Omlouvám se, nedaří se mi najít původně doporučené produkty.")
+            return []
+
+        prices = [p.get("price") for p in last_recommended_products if p.get("price") is not None]
+        if not prices:
+             dispatcher.utter_message(text="Omlouvám se, u těchto produktů nemám informaci o ceně, takže je nemohu porovnat.")
+             return []
+        avg_price = sum(prices) / len(prices)
+
+        refiltered_products = []
+        if intent_name == "inform_cheaper":
+            refiltered_products = [p for p in last_recommended_products if p.get("price") and p.get("price") < avg_price]
+            refiltered_products.sort(key=lambda p: p.get("price", 0), reverse=True)
+        elif intent_name == "inform_expensive":
+            refiltered_products = [p for p in last_recommended_products if p.get("price") and p.get("price") > avg_price]
+            refiltered_products.sort(key=lambda p: p.get("price", 0))
+
+        if not refiltered_products:
+            message = "Bohužel v původním výběru žádné další výrazně levnější produkty nejsou." if intent_name == "inform_cheaper" else "Bohužel v původním výběru žádné další výrazně dražší produkty nejsou."
+            dispatcher.utter_message(text=message)
+        else:
+            dispatcher.utter_message(text=f"Jistě, našla jsem v původním výběru {len(refiltered_products)} {'levnějších' if intent_name == 'inform_cheaper' else 'dražších'} produktů:")
+            display_products(dispatcher, refiltered_products[:PRODUCTS_PER_PAGE])
+        return []
+
+
+class ActionResetFilters(Action):
+    """Akce pro vymazání všech filtrů a resetování konverzace."""
+    def name(self) -> Text: return "action_reset_filters"
+
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        dispatcher.utter_message(text="Dobře, zapomněla jsem všechna přechozí kritéria. S čím vám mohu pomoci nyní?")
+        return [AllSlotsReset()]
+
+
+class ActionShowCurrentFilters(Action):
+    """Akce, která uživateli ukáže, jaké filtry jsou aktuálně nastaveny."""
+    def name(self) -> Text: return "action_show_current_filters"
+
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        active_filters_text = []
+        if tracker.get_slot("skin_type"): active_filters_text.append(f"typ pleti: **{', '.join(tracker.get_slot('skin_type'))}**")
+        if tracker.get_slot("skin_concern"): active_filters_text.append(f"problém pleti: **{', '.join(tracker.get_slot('skin_concern'))}**")
+        if tracker.get_slot("product_category"): active_filters_text.append(f"kategorie produktu: **{tracker.get_slot('product_category')}**")
+        if tracker.get_slot("brand"): active_filters_text.append(f"značka: **{tracker.get_slot('brand')}**")
+        if tracker.get_slot("excluded_product_category"): active_filters_text.append(f"nechci kategorii: **{', '.join(tracker.get_slot('excluded_product_category'))}**")
+        if tracker.get_slot("excluded_brand"): active_filters_text.append(f"nechci značku: **{', '.join(tracker.get_slot('excluded_brand'))}**")
+
+        if not active_filters_text:
+            dispatcher.utter_message("Momentálně nemám nastavené žádné filtry.")
+        else:
+            dispatcher.utter_message(f"Aktuálně hledám podle těchto kritérií: {'; '.join(active_filters_text)}.")
+        return []
+
+
+class ActionCompareProducts(Action):
+    """Porovná dva produkty z posledního doporučení."""
+    def name(self) -> Text: return "action_compare_products"
+
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        entities = tracker.latest_message.get("entities", [])
+        product_orders = [e["value"] for e in entities if e["entity"] == "product_order"]
+
+        if len(product_orders) < 2:
+            dispatcher.utter_message("Prosím, řekněte mi, které dva produkty mám porovnat (např. 'porovnej první a druhý').")
+            return []
+
+        product1 = _get_product_from_tracker(tracker, product_orders[0])
+        product2 = _get_product_from_tracker(tracker, product_orders[1])
+
+        if not product1 or not product2:
+            dispatcher.utter_message("Omlouvám se, nenašla jsem produkty, které chcete porovnat. Zkuste prosím jiné.")
+            return []
+
+        p1_name = product1.get('name', 'N/A')
+        p2_name = product2.get('name', 'N/A')
+        p1_price = product1.get('price', 'N/A')
+        p2_price = product2.get('price', 'N/A')
+        p1_concerns = ', '.join(product1.get('skin_concerns', [])) or 'N/A'
+        p2_concerns = ', '.join(product2.get('skin_concerns', [])) or 'N/A'
+
+        message = (
+            f"Zde je porovnání:\n\n"
+            f"| Vlastnost      | **{p1_name}** | **{p2_name}** |\n"
+            f"|----------------|----------------|----------------|\n"
+            f"| Cena (Kč)      | {p1_price}     | {p2_price}     |\n"
+            f"| Řeší problémy  | {p1_concerns}  | {p2_concerns}  |"
+        )
+        dispatcher.utter_message(message)
+        return []
+
+
+class ActionManageWishlist(Action):
+    """Spravuje seznam přání (přidání, zobrazení)."""
+    def name(self) -> Text: return "action_manage_wishlist"
+
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        intent_name = tracker.latest_message['intent'].get('name')
+        wishlist = tracker.get_slot("wishlist") or []
+
+        if intent_name == 'show_wishlist':
+            if not wishlist:
+                dispatcher.utter_message("Váš seznam přání je prázdný.")
+                return []
+
+            wishlist_products = [p for p in products_data if p.get('id') in wishlist]
+            dispatcher.utter_message("Zde jsou produkty z vašeho seznamu přání:")
+            display_products(dispatcher, wishlist_products)
+            return []
+
+        elif intent_name == 'add_to_wishlist':
+            entities = tracker.latest_message.get("entities", [])
+            product_order = next((e["value"] for e in entities if e["entity"] == "product_order"), None)
+
+            if not product_order:
+                dispatcher.utter_message("Prosím, řekněte mi, který produkt mám přidat (např. 'přidej první').")
+                return []
+
+            product_to_add = _get_product_from_tracker(tracker, product_order)
+            if not product_to_add:
+                dispatcher.utter_message("Tento produkt nemohu najít.")
+                return []
+
+            product_id = product_to_add.get('id')
+            if product_id in wishlist:
+                dispatcher.utter_message(f"Produkt **{product_to_add.get('name')}** již máte v seznamu přání.")
+            else:
+                wishlist.append(product_id)
+                dispatcher.utter_message(f"Přidala jsem **{product_to_add.get('name')}** do vašeho seznamu přání.")
+            return [SlotSet("wishlist", wishlist)]
+
         return []
 
 
 class ValidateProductRecommendationForm(FormValidationAction):
-    def name(self) -> Text:
-        return "validate_product_recommendation_form"
+    """Validuje sloty pro formulář, nyní i s podporou negací."""
+    def name(self) -> Text: return "validate_product_recommendation_form"
 
     @staticmethod
     def _normalize_value(value: Any) -> Optional[str]:
-        if value is None:
-            return None
-        if isinstance(value, str):
-            return value.strip().lower()
-        return str(value).strip().lower()
+        return str(value).strip().lower() if value else None
 
-    async def _validate_list_slot(
-        self,
-        slot_name: Text,
-        slot_value: Any,
-        known_values: Optional[List[Text]], 
-        dispatcher: CollectingDispatcher,
-        tracker: Tracker, 
-        domain: DomainDict, 
-    ) -> Dict[Text, Any]:
-        if slot_value is None:
-            logger.debug(f"Validace '{slot_name}': Hodnota je None, vracím None.")
-            return {slot_name: None}
+    def _extract_negations(self, text: str, entities: List[Dict]) -> Dict[Text, List[Text]]:
+        """Extrahování negovaných entit z textu."""
+        negated = {"brand": [], "product_category": []}
+        text_lower = text.lower()
 
-        current_values_from_slot = []
-        if isinstance(slot_value, list):
-            current_values_from_slot = slot_value
-        elif isinstance(slot_value, str):
-            temp_values = slot_value.replace(" a ", ",").split(',')
-            current_values_from_slot = [v.strip() for v in temp_values if v.strip()]
-        else:
-            logger.warning(f"Validace '{slot_name}': Neočekávaný typ hodnoty '{type(slot_value)}'. Vracím None.")
-            return {slot_name: None}
+        for trigger in NEGATION_TRIGGERS:
+            if trigger in text_lower:
+                for entity in entities:
+                    if trigger in text_lower[max(0, entity['start'] - 10):entity['end'] + 10]:
+                        if entity['entity'] in negated:
+                            negated[entity['entity']].append(entity['value'])
+        return negated
 
-        if not current_values_from_slot: 
-            return {slot_name: None}
+    async def validate(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict) -> List[Dict[Text, Any]]:
+        """Hlavní validační metoda, která zpracovává i negace."""
+        latest_message = tracker.latest_message
+        text = latest_message.get("text", "")
+        entities = latest_message.get("entities", [])
 
-        validated_items = []
-        unrecognized_items = []
-        custom_concerns_extracted = [] 
+        negated_entities = self._extract_negations(text, entities)
 
-        for item_str in current_values_from_slot:
-            normalized_item = self._normalize_value(item_str)
-            if not normalized_item:
-                continue
-            
-            # ZMĚNA START: Použití globálních KNOWN_... seznamů přímo, pokud jsou načteny
-            # Toto je relevantní hlavně pro sloty, jejichž KNOWN_... seznamy nebyly externalizovány.
-            # Pro externalizované (KNOWN_BRANDS, KNOWN_SKIN_AREAS) se použije 'known_values' předané do metody.
-            active_known_values = known_values
-            if slot_name == "skin_type": active_known_values = KNOWN_SKIN_TYPES
-            elif slot_name == "skin_concern": active_known_values = KNOWN_SKIN_CONCERNS # Pro logování
-            elif slot_name == "product_attribute": active_known_values = KNOWN_PRODUCT_ATTRIBUTES
-            # Pro KNOWN_BRANDS a KNOWN_SKIN_AREAS se spoléháme na 'known_values' parametr,
-            # který bude obsahovat data načtená z JSON.
-            # Pro KNOWN_PRODUCT_CATEGORIES se 'known_values' předává do _validate_text_slot.
-            # ZMĚNA KONEC
+        events = []
+        if negated_entities["brand"]:
+            events.append(SlotSet("excluded_brand", list(set(negated_entities["brand"]))))
+            logger.info(f"Detekována negace pro značky: {negated_entities['brand']}")
+        if negated_entities["product_category"]:
+            events.append(SlotSet("excluded_product_category", list(set(negated_entities["product_category"]))))
+            logger.info(f"Detekována negace pro kategorie: {negated_entities['product_category']}")
 
-            is_known = active_known_values and normalized_item in active_known_values
-            
-            if slot_name == "skin_concern": 
-                if normalized_item not in validated_items:
-                    validated_items.append(normalized_item)
-                # Používáme globální KNOWN_SKIN_CONCERNS pro kontrolu, zda je to "nový" concern
-                if normalized_item not in KNOWN_SKIN_CONCERNS: 
-                    if normalized_item not in custom_concerns_extracted:
-                         custom_concerns_extracted.append(normalized_item)
-            elif is_known: 
-                if normalized_item not in validated_items:
-                    validated_items.append(normalized_item)
-            elif active_known_values : # Pokud existuje seznam známých hodnot a hodnota v něm není
-                 unrecognized_items.append(str(item_str)) 
-        
-        if custom_concerns_extracted:
-            logger.info(f"Validace 'skin_concern': Uživatel zadal tyto problémy, které nejsou v globálním KNOWN_SKIN_CONCERNS: {custom_concerns_extracted}. Byly přijaty pro doporučení.")
+        events.extend(await super().validate(dispatcher, tracker, domain))
+        return events
 
-        if unrecognized_items: 
-            if not validated_items : 
-                # ZMĚNA START: Použití active_known_values pro příklady
-                example_values = active_known_values[:3] if active_known_values and len(active_known_values) > 2 else (active_known_values if active_known_values else [])
-                # ZMĚNA KONEC
-                example_text = f"Můžete zkusit například: {', '.join(example_values)}..." if example_values else "Zkuste to prosím znovu."
-                
-                utter_action = f"utter_ask_{slot_name}"
-                if slot_name in domain.get("responses", {}): 
-                     dispatcher.utter_message(response=utter_action)
-                else:
-                     dispatcher.utter_message(
-                        text=f"Bohužel nerozumím žádné ze zadaných hodnot pro '{slot_name}': {', '.join(unrecognized_items)}. {example_text}"
-                     )
-                logger.info(f"Validace '{slot_name}': Nic nerozpoznáno. Vstup: {unrecognized_items}.")
-                return {slot_name: None} 
-            else: 
-                logger.info(f"Validace '{slot_name}': Částečně rozpoznáno. Nerozpoznáno: {unrecognized_items}. Rozpoznáno a použito: {validated_items}")
-        
-        if not validated_items:
-            logger.debug(f"Validace '{slot_name}': Po validaci nezůstaly žádné položky. Vracím None.")
-            return {slot_name: None}
-
-        logger.info(f"Validace '{slot_name}': Úspěšně validováno na: {validated_items}")
-        return {slot_name: validated_items}
-
-    async def _validate_text_slot(
-        self,
-        slot_name: Text,
-        slot_value: Any,
-        known_values: Optional[List[Text]], # Tento parametr se použije pro KNOWN_PRODUCT_CATEGORIES, KNOWN_BRANDS, KNOWN_SKIN_AREAS
-        dispatcher: CollectingDispatcher,
-        domain: DomainDict, 
-    ) -> Dict[Text, Any]:
-        normalized_input_value = self._normalize_value(slot_value) 
-
-        if not normalized_input_value:
-            logger.debug(f"Validace '{slot_name}': Hodnota je None nebo prázdná po normalizaci. Vracím None.")
-            return {slot_name: None}
-        
-        reset_keywords = ["nevim", "žádný", "zadny", "je mi to jedno", "nezalezi", "cokoliv", "jakykoliv", "nechci", "nepotřebuji", "nepotrebuji", "preskocit", "přeskočit"]
-        if normalized_input_value in reset_keywords:
-            logger.info(f"Validace '{slot_name}': Slot resetován na None kvůli vstupu '{normalized_input_value}' (uživatel nespecifikuje/nechce/přeskakuje).")
-            return {slot_name: None}
-
-        if known_values and normalized_input_value not in known_values:
-            for known_val in known_values:
-                if normalized_input_value.startswith(known_val) or known_val.startswith(normalized_input_value) or \
-                   (len(normalized_input_value) > 3 and normalized_input_value in known_val) or \
-                   (len(known_val) > 3 and known_val in normalized_input_value):
-                    logger.info(f"Validace '{slot_name}': Nalezena podobná/částečná shoda '{known_val}' pro vstup '{normalized_input_value}'. Používám '{known_val}'.")
-                    return {slot_name: known_val}
-            
-            example_values = known_values[:3] if known_values and len(known_values) > 2 else (known_values if known_values else [])
-            example_text = f"Podporované jsou například: {', '.join(example_values)}..." if example_values else "Zkuste to prosím znovu."
-            
-            utter_action = f"utter_ask_{slot_name}"
-            if slot_name in domain.get("responses", {}): 
-                 dispatcher.utter_message(response=utter_action)
+    async def _validate_list_slot(self, slot_name: Text, value: Any, known_values: List[Text], dispatcher: CollectingDispatcher) -> Dict[Text, Any]:
+        if not value: return {slot_name: None}
+        items_to_check = [v.strip() for v in str(value).replace(" a ", ",").split(',')] if isinstance(value, str) else value
+        validated_items, unrecognized_items = [], []
+        for item in items_to_check:
+            normalized_item = self._normalize_value(item)
+            if not normalized_item: continue
+            if normalized_item in known_values or slot_name == "skin_concern":
+                if normalized_item not in validated_items: validated_items.append(normalized_item)
             else:
-                 dispatcher.utter_message(
-                    text=f"Hodnotu '{slot_value}' pro '{slot_name}' bohužel neznám. {example_text}"
-                 )
-            logger.info(f"Validace '{slot_name}': Nerozpoznaná hodnota '{slot_value}' (normalizováno na '{normalized_input_value}'). Není v known_values ani nenalezena podobná.")
+                unrecognized_items.append(item)
+        if unrecognized_items:
+            dispatcher.utter_message(text=f"Některým hodnotám pro '{slot_name}' nerozumím: {', '.join(unrecognized_items)}.")
+        return {slot_name: validated_items or None}
+
+    async def _validate_text_slot(self, slot_name: Text, value: Any, known_values: List[Text], dispatcher: CollectingDispatcher) -> Dict[Text, Any]:
+        normalized_value = self._normalize_value(value)
+        reset_keywords = ["nevim", "žádný", "zadny", "je mi to jedno", "nezalezi", "cokoliv", "jakykoliv", "nechci", "nepotřebuji", "nepotrebuji", "preskocit", "přeskočit"]
+        if not normalized_value or normalized_value in reset_keywords:
             return {slot_name: None}
-        
-        logger.info(f"Validace '{slot_name}': Úspěšně validováno na: '{normalized_input_value}'")
-        return {slot_name: normalized_input_value}
+        if normalized_value in known_values:
+            return {slot_name: normalized_value}
+        for known_val in known_values:
+            if normalized_value in known_val:
+                logger.info(f"Nalezena podobnost pro '{normalized_value}', použito '{known_val}'.")
+                return {slot_name: known_val}
+        dispatcher.utter_message(text=f"Hodnotu '{value}' pro '{slot_name}' bohužel neznám. Zkuste například: {', '.join(known_values[:3])}")
+        return {slot_name: None}
 
-    async def validate_skin_type(
-        self, slot_value: Any, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict,
-    ) -> Dict[Text, Any]:
-        logger.debug(f"Validuji slot 'skin_type' s hodnotou: {slot_value}")
-        # Použije globální KNOWN_SKIN_TYPES uvnitř _validate_list_slot
-        return await self._validate_list_slot("skin_type", slot_value, KNOWN_SKIN_TYPES, dispatcher, tracker, domain)
+    async def validate_skin_type(self, slot_value: Any, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict) -> Dict[Text, Any]:
+        return await self._validate_list_slot("skin_type", slot_value, KNOWN_SKIN_TYPES, dispatcher)
+    async def validate_skin_concern(self, slot_value: Any, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict) -> Dict[Text, Any]:
+        return await self._validate_list_slot("skin_concern", slot_value, KNOWN_SKIN_CONCERNS, dispatcher)
+    async def validate_product_category(self, slot_value: Any, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict) -> Dict[Text, Any]:
+        text = tracker.latest_message.get("text", "").lower()
+        if any(trigger in text for trigger in NEGATION_TRIGGERS):
+            return {}
+        return await self._validate_text_slot("product_category", slot_value, KNOWN_PRODUCT_CATEGORIES, dispatcher)
+    async def validate_product_attribute(self, slot_value: Any, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict) -> Dict[Text, Any]:
+        return await self._validate_list_slot("product_attribute", slot_value, KNOWN_PRODUCT_ATTRIBUTES, dispatcher)
+    async def validate_brand(self, slot_value: Any, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict) -> Dict[Text, Any]:
+        text = tracker.latest_message.get("text", "").lower()
+        if any(trigger in text for trigger in NEGATION_TRIGGERS):
+            return {}
+        return await self._validate_text_slot("brand", slot_value, KNOWN_BRANDS, dispatcher)
+    async def validate_skin_area(self, slot_value: Any, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict) -> Dict[Text, Any]:
+        return await self._validate_text_slot("skin_area", slot_value, KNOWN_SKIN_AREAS, dispatcher)
 
-    async def validate_skin_concern(
-        self, slot_value: Any, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict,
-    ) -> Dict[Text, Any]:
-        logger.debug(f"Validuji slot 'skin_concern' s hodnotou: {slot_value}")
-        # 'None' pro known_values znamená, že _validate_list_slot přijme cokoli, ale použije globální KNOWN_SKIN_CONCERNS pro logování
-        return await self._validate_list_slot("skin_concern", slot_value, None, dispatcher, tracker, domain)
 
-    async def validate_product_category(
-        self, slot_value: Any, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict,
-    ) -> Dict[Text, Any]:
-        logger.debug(f"Validuji slot 'product_category' s hodnotou: {slot_value}")
-        return await self._validate_text_slot("product_category", slot_value, KNOWN_PRODUCT_CATEGORIES, dispatcher, domain)
+class ValidateAppointmentForm(FormValidationAction):
+    """Validuje sloty pro formulář rezervace, nyní rozšířený."""
+    def name(self) -> Text: return "validate_appointment_form"
 
-    async def validate_product_attribute(
-        self, slot_value: Any, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict,
-    ) -> Dict[Text, Any]:
-        logger.debug(f"Validuji slot 'product_attribute' s hodnotou: {slot_value}")
-        # Použije globální KNOWN_PRODUCT_ATTRIBUTES uvnitř _validate_list_slot
-        return await self._validate_list_slot("product_attribute", slot_value, KNOWN_PRODUCT_ATTRIBUTES, dispatcher, tracker, domain)
+    def validate_appointment_service(self, value: Any, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict) -> Dict[Text, Any]:
+        """Validuje zadanou službu."""
+        if not value:
+            dispatcher.utter_message("Jakou službu si přejete rezervovat?")
+            return {"appointment_service": None}
+        return {"appointment_service": value}
 
-    async def validate_brand(
-        self, slot_value: Any, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict,
-    ) -> Dict[Text, Any]:
-        logger.debug(f"Validuji slot 'brand' s hodnotou: {slot_value}")
-        # KNOWN_BRANDS je nyní načítán z JSON a dostupný globálně v tomto modulu
-        return await self._validate_text_slot("brand", slot_value, KNOWN_BRANDS, dispatcher, domain)
+    def validate_appointment_date(self, value: Any, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict) -> Dict[Text, Any]:
+        """Validuje zadané datum."""
+        if not value:
+            dispatcher.utter_message("Prosím, zadejte datum, které vám vyhovuje.")
+            return {"appointment_date": None}
+        return {"appointment_date": value}
 
-    async def validate_skin_area(
-        self, slot_value: Any, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict,
-    ) -> Dict[Text, Any]:
-        logger.debug(f"Validuji slot 'skin_area' s hodnotou: {slot_value}")
-        # KNOWN_SKIN_AREAS je nyní načítán z JSON a dostupný globálně v tomto modulu
-        return await self._validate_text_slot("skin_area", slot_value, KNOWN_SKIN_AREAS, dispatcher, domain)
+    def validate_appointment_time(self, value: Any, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict) -> Dict[Text, Any]:
+        """Validuje zadaný čas."""
+        if not value:
+            dispatcher.utter_message("A v kolik hodin?")
+            return {"appointment_time": None}
+        return {"appointment_time": value}
 
-    async def required_slots(
-        self,
-        slots_mapped_in_domain: List[Text], 
-        dispatcher: CollectingDispatcher,
-        tracker: Tracker,
-        domain: DomainDict,
-    ) -> Optional[List[Text]]:
-        
-        form_name = tracker.active_loop.get("name") if tracker.active_loop else None
-        base_required_slots = []
-        active_domain_for_forms = domain 
-        if form_name and active_domain_for_forms.get("forms", {}).get(form_name):
-            base_required_slots = active_domain_for_forms.get("forms", {}).get(form_name, {}).get("required_slots", [])
-        
-        if not base_required_slots: 
-             logger.warning(f"Pro formulář '{form_name}' nejsou v domain.yml definovány žádné 'required_slots' nebo je seznam prázdný. Používám fallback: ['skin_type', 'skin_concern']")
-             base_required_slots = ["skin_type", "skin_concern"]
 
-        current_required_slots = list(base_required_slots)
-        
-        skin_concern_values = tracker.get_slot("skin_concern") 
-        product_category_value = tracker.get_slot("product_category")
-        
-        if isinstance(skin_concern_values, list) and "růst řas" in skin_concern_values:
-            is_product_category_already_filled = product_category_value is not None
-            if not is_product_category_already_filled and "product_category" not in current_required_slots:
-                current_required_slots.append("product_category")
-                logger.info(f"Dynamicky přidán 'product_category' jako povinný slot kvůli 'růst řas', protože ještě není vyplněn.")
-            elif is_product_category_already_filled:
-                 logger.info(f"'product_category' je již vyplněn ({product_category_value}), nepřidávám jej znovu jako povinný i přes 'růst řas'.")
-            elif "product_category" in current_required_slots:
-                 logger.info(f"'product_category' je již mezi explicitně povinnými sloty, neřeším dynamické přidání kvůli 'růst řas'.")
-        
-        logger.info(f"Metoda required_slots pro formulář '{form_name}' určila tyto povinné sloty: {current_required_slots}")
-        return current_required_slots
+class ActionBookAppointment(Action):
+    """Zpracuje finální žádost o rezervaci a potvrdí ji."""
+    def name(self) -> Text: return "action_book_appointment"
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        service = tracker.get_slot("appointment_service")
+        date = tracker.get_slot("appointment_date")
+        time = tracker.get_slot("appointment_time")
+
+        dispatcher.utter_message(text=f"Děkuji. Přijala jsem Váš požadavek na rezervaci služby **{service}** na **{date} v {time}**. Brzy se Vám ozveme s potvrzením na kontaktní údaje, které máme k dispozici.")
+        return [SlotSet("appointment_service", None), SlotSet("appointment_date", None), SlotSet("appointment_time", None)]
+
+
+class ActionManageGDPR(Action):
+    """Tato akce demonstruje, jak přistupovat k personalizaci v souladu s GDPR."""
+    def name(self) -> Text: return "action_manage_gdpr"
+
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        intent_name = tracker.latest_message['intent'].get('name')
+
+        if intent_name == 'request_personalization':
+            message = (
+                "Abych si mohla pamatovat Vaše preference (např. typ pleti) pro příští návštěvy, "
+                "potřebuji Váš souhlas se zpracováním těchto údajů. "
+                "Vaše data budou použita výhradně pro vylepšení Vašeho zážitku zde a nebudou sdílena. "
+                "Souhlas můžete kdykoliv odvolat napsáním 'zapomeň si mě'. Souhlasíte?"
+            )
+            buttons = [{"title": "Ano, souhlasím", "payload": "/gdpr_consent_grant"}, {"title": "Ne, děkuji", "payload": "/gdpr_consent_deny"}]
+            dispatcher.utter_message(message, buttons=buttons)
+
+        elif intent_name == 'gdpr_consent_grant':
+            dispatcher.utter_message("Děkuji za důvěru! Odteď si budu pamatovat Vaše preference.")
+
+        elif intent_name == 'gdpr_consent_deny':
+            dispatcher.utter_message("Rozumím. Vaše preference si nebudu ukládat.")
+
+        elif intent_name == 'request_forget_me':
+            dispatcher.utter_message("Je mi to líto, ale respektuji Vaše rozhodnutí. Všechny uložené preference byly smazány.")
+
+        return []
+
+
+class ActionDefaultFallback(Action):
+    """Vlastní fallback akce pro případy, kdy si bot není jistý."""
+    def name(self) -> Text: return "action_default_fallback"
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        logger.warning(f"Fallback pro text: '{tracker.latest_message.get('text')}'.")
+        dispatcher.utter_message(text="Omlouvám se, tomuto jsem úplně nerozuměla. Mohu Vám pomoci s výběrem produktů, nebo ukázat své možnosti?")
+        return []

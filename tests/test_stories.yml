@@ -1,91 +1,111 @@
-#### This file contains tests to evaluate that your bot behaves as expected.
-#### If you want to learn more, please see the docs: https://rasa.com/docs/rasa/testing-your-assistant
+version: "3.1"
 
 stories:
-- story: happy path 1
-  steps:
-  - user: |
-      hello there!
-    intent: greet
-  - action: utter_greet
-  - user: |
-      amazing
-    intent: mood_great
-  - action: utter_happy
 
-- story: happy path 2
+- story: "Test 01: Základní úspěšná cesta formulářem"
   steps:
-  - user: |
-      hello there!
-    intent: greet
-  - action: utter_greet
-  - user: |
-      amazing
-    intent: mood_great
-  - action: utter_happy
-  - user: |
-      bye-bye!
-    intent: goodbye
-  - action: utter_goodbye
+  - user: "Chci poradit"
+    intent: ask_product_recommendation
+  - action: product_recommendation_form
+  - active_loop: product_recommendation_form
+  - user: "mám suchou pleť"
+    intent: inform
+  - action: product_recommendation_form
+  - active_loop: product_recommendation_form
+  - user: "a řeším vrásky"
+    intent: inform
+  - action: product_recommendation_form
+  - active_loop: product_recommendation_form
+  - user: "to je vše, hledej"
+    intent: trigger_recommendation
+  - action: utter_now_searching
+  - action: product_recommendation_form
+  - active_loop: null
+  - action: action_recommend_product
 
-- story: sad path 1
+- story: "Test 02: Uživatel poskytne více informací najednou"
   steps:
-  - user: |
-      hello
-    intent: greet
-  - action: utter_greet
-  - user: |
-      not good
-    intent: mood_unhappy
-  - action: utter_cheer_up
-  - action: utter_did_that_help
-  - user: |
-      yes
-    intent: affirm
-  - action: utter_happy
+  - user: "Hledám krém pro mastnou pleť od Medik8"
+    intent: inform
+  - action: product_recommendation_form
+  - active_loop: product_recommendation_form
+  - user: "to stačí"
+    intent: trigger_recommendation
+  - action: utter_now_searching
+  - action: product_recommendation_form
+  - active_loop: null
+  - action: action_recommend_product
 
-- story: sad path 2
+- story: "Test 03: Zrušení formuláře"
   steps:
-  - user: |
-      hello
-    intent: greet
-  - action: utter_greet
-  - user: |
-      not good
-    intent: mood_unhappy
-  - action: utter_cheer_up
-  - action: utter_did_that_help
-  - user: |
-      not really
-    intent: deny
-  - action: utter_goodbye
+  - user: "chci poradit"
+    intent: ask_product_recommendation
+  - action: product_recommendation_form
+  - active_loop: product_recommendation_form
+  - user: "stop"
+    intent: stop_form
+  - action: action_deactivate_loop
+  - active_loop: null
+  - action: utter_form_cancelled
 
-- story: sad path 3
+- story: "Test 04: Pokročilé funkce po doporučení (paginace, porovnání, wishlist)"
   steps:
-  - user: |
-      hi
-    intent: greet
-  - action: utter_greet
-  - user: |
-      very terrible
-    intent: mood_unhappy
-  - action: utter_cheer_up
-  - action: utter_did_that_help
-  - user: |
-      no
-    intent: deny
-  - action: utter_goodbye
+  - story: "Test 01: Základní úspěšná cesta formulářem" # Navážeme na příběh, kde se něco doporučilo
+  - user: "ukaž další"
+    intent: show_more
+  - action: action_show_next_products
+  - user: "porovnej první a druhý"
+    intent: compare_products
+  - action: action_compare_products
+  - user: "přidej první do oblíbených"
+    intent: add_to_wishlist
+  - action: action_manage_wishlist
+  - user: "ukaž mi můj seznam přání"
+    intent: show_wishlist
+  - action: action_manage_wishlist
 
-- story: say goodbye
+- story: "Test 05: Správa filtrů"
   steps:
-  - user: |
-      bye-bye!
-    intent: goodbye
-  - action: utter_goodbye
+  - user: "mám suchou pleť"
+    intent: inform
+  - action: product_recommendation_form
+  - active_loop: product_recommendation_form
+  - user: "jaké mám teď filtry?"
+    intent: show_current_filters
+  - action: action_show_current_filters
+  - action: product_recommendation_form
+  - active_loop: product_recommendation_form
+  - user: "resetovat hledání"
+    intent: reset_filters
+  - action: action_reset_filters
+  - action: product_recommendation_form
+  - active_loop: product_recommendation_form
+  - user: "stop"
+    intent: stop_form
+  - action: action_deactivate_loop
+  - active_loop: null
 
-- story: bot challenge
+- story: "Test 06: Zpracování negací"
   steps:
-  - user: |
-      are you a bot?
-    intent: bot_challenge
-  - action: utter_iamabot
+  - user: "hledám něco na akné ale nechci krém"
+    intent: inform
+  - action: product_recommendation_form
+  - active_loop: product_recommendation_form
+  - user: "hledej"
+    intent: trigger_recommendation
+  - action: utter_now_searching
+  - action: product_recommendation_form
+  - active_loop: null
+  - action: action_recommend_product
+
+- story: "Test 07: Přerušení formuláře (digression)"
+  steps:
+  - user: "chci poradit"
+    intent: ask_product_recommendation
+  - action: product_recommendation_form
+  - active_loop: product_recommendation_form
+  - user: "jaké máte možnosti platby?"
+    intent: faq/payment_options
+  - action: utter_faq_payment_options
+  - action: product_recommendation_form # Bot se správně vrátí k formuláři
+  - active_loop: product_recommendation_form

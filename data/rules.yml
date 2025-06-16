@@ -2,23 +2,37 @@ version: "3.1"
 
 rules:
 
-- rule: Activate product_recommendation_form
-  condition:
-  - active_loop: null
+# ==============================================================================
+# PRAVIDLA PRO OVLÁDÁNÍ FORMULÁŘE
+# Tato pravidla řídí, jak se formulář spouští, jak se v něm pokračuje a jak se ukončuje.
+# Nová, flexibilní logika.
+# ==============================================================================
+
+- rule: Aktivace formuláře pro doporučení produktu
   steps:
   - intent: ask_product_recommendation
   - action: product_recommendation_form
   - active_loop: product_recommendation_form
 
-- rule: Handle user providing information while product_recommendation_form is active
+- rule: Zpracování informací od uživatele během aktivního formuláře
   condition:
   - active_loop: product_recommendation_form
   steps:
-  - intent: inform # User provides info for a slot
-  - action: product_recommendation_form # Form processes it
-  - active_loop: product_recommendation_form # Loop remains active if more slots needed
+  - intent: inform
+  - action: product_recommendation_form
+  - active_loop: product_recommendation_form
 
-- rule: User wants to stop the product_recommendation_form
+- rule: Odeslání formuláře a spuštění hledání na pokyn uživatele
+  condition:
+  - active_loop: product_recommendation_form
+  steps:
+  - intent: trigger_recommendation
+  - action: utter_now_searching
+  - action: product_recommendation_form
+  - active_loop: null
+  - action: action_recommend_product
+
+- rule: Zrušení formuláře uživatelem
   condition:
   - active_loop: product_recommendation_form
   steps:
@@ -26,202 +40,216 @@ rules:
   - action: action_deactivate_loop
   - active_loop: null
   - action: utter_form_cancelled
-  - action: utter_anything_else
 
-# --- Obecná pravidla ---
-- rule: Say goodbye anytime the user says goodbye
+# ==============================================================================
+# OBECNÁ PRAVIDLA (PLATÍ KDYKOLIV)
+# ==============================================================================
+
+- rule: Reakce na pozdrav
+  steps:
+  - intent: greet
+  - action: utter_greet
+
+- rule: Reakce na rozloučení
   steps:
   - intent: goodbye
   - action: utter_goodbye
 
-- rule: Respond to bot challenge
+- rule: Reakce na výzvu ("jsi bot?")
   steps:
   - intent: bot_challenge
-  - action: utter_iamabot # Bot answers and listens
+  - action: utter_iamabot
 
-# --- Pravidla pro FAQ - aktivují se jen když NENÍ aktivní žádná smyčka (např. formulář) ---
-# A po odpovědi nabídnou další pomoc.
-- rule: Standalone Respond to payment options
-  condition:
-  - active_loop: null
+# ==============================================================================
+# PRAVIDLA PRO POKROČILÉ FUNKCE (PO DOPORUČENÍ)
+# ==============================================================================
+
+- rule: Reakce na přání levnějšího produktu
   steps:
-  - intent: faq_payment_options
+  - intent: inform_cheaper
+  - action: action_refilter_by_price
+
+- rule: Reakce na přání dražšího produktu
+  steps:
+  - intent: inform_expensive
+  - action: action_refilter_by_price
+
+- rule: Zobrazení další stránky výsledků (paginace)
+  steps:
+  - intent: show_more
+  - action: action_show_next_products
+
+- rule: Resetování všech filtrů
+  steps:
+  - intent: reset_filters
+  - action: action_reset_filters
+
+- rule: Zobrazení aktuálně nastavených filtrů
+  steps:
+  - intent: show_current_filters
+  - action: action_show_current_filters
+
+- rule: Porovnání produktů
+  steps:
+  - intent: compare_products
+  - action: action_compare_products
+
+- rule: Přidání do seznamu přání
+  steps:
+  - intent: add_to_wishlist
+  - action: action_manage_wishlist
+
+- rule: Zobrazení seznamu přání
+  steps:
+  - intent: show_wishlist
+  - action: action_manage_wishlist
+
+# ==============================================================================
+# PRAVIDLA PRO FAQ A DALŠÍ DOTAZY (MOHOU PŘERUŠIT FORMULÁŘ)
+# Přidání 'action_listen' na konec zajišťuje, že se bot po odpovědi vrátí
+# k původní konverzaci (např. k formuláři).
+# ==============================================================================
+
+- rule: Reakce na FAQ o platbě
+  steps:
+  - intent: faq/payment_options
   - action: utter_faq_payment_options
-  - action: utter_anything_else
+  - action: action_listen
 
-- rule: Standalone Respond to product ingredients
-  condition:
-  - active_loop: null
+- rule: Reakce na FAQ o složení
   steps:
-  - intent: faq_product_ingredients
+  - intent: faq/product_ingredients
   - action: utter_faq_product_ingredients
-  - action: utter_anything_else
+  - action: action_listen
 
-- rule: Standalone Respond to returns
-  condition:
-  - active_loop: null
+- rule: Reakce na FAQ o vracení
   steps:
-  - intent: faq_returns
+  - intent: faq/returns
   - action: utter_faq_returns
-  - action: utter_anything_else
+  - action: action_listen
 
-- rule: Standalone Respond to vegan products
-  condition:
-  - active_loop: null
+- rule: Reakce na FAQ o veganských produktech
   steps:
-  - intent: faq_vegan_products
+  - intent: faq/vegan_products
   - action: utter_faq_vegan_products
-  - action: utter_anything_else
+  - action: action_listen
 
-- rule: Standalone Respond to hypoallergenic products
-  condition:
-  - active_loop: null
+- rule: Reakce na FAQ o hypoalergenních produktech
   steps:
-  - intent: faq_hypoallergenic
+  - intent: faq/hypoallergenic
   - action: utter_faq_hypoallergenic
-  - action: utter_anything_else
+  - action: action_listen
 
-- rule: Standalone Respond to order status or delivery time
-  condition:
-  - active_loop: null
+- rule: Reakce na FAQ o stavu objednávky
   steps:
-  - intent: faq_order_status_delivery_time
+  - intent: faq/order_status_delivery_time
   - action: utter_faq_order_status_delivery_time
-  - action: utter_anything_else
+  - action: action_listen
 
-- rule: Standalone Respond to skin cleansing
-  condition:
-  - active_loop: null
+- rule: Reakce na FAQ o čištění pleti
   steps:
-  - intent: faq_skin_cleansing
+  - intent: faq/skin_cleansing
   - action: utter_faq_skin_cleansing
-  - action: utter_anything_else
+  - action: action_listen
 
-- rule: Standalone Respond to product application order
-  condition:
-  - active_loop: null
+- rule: Reakce na FAQ o pořadí aplikace
   steps:
-  - intent: faq_product_application_order
+  - intent: faq/product_application_order
   - action: utter_faq_product_application_order
-  - action: utter_anything_else
+  - action: action_listen
 
-- rule: Standalone Respond to SPF usage
-  condition:
-  - active_loop: null
+- rule: Reakce na FAQ o SPF
   steps:
-  - intent: faq_spf_usage
+  - intent: faq/spf_usage
   - action: utter_faq_spf_usage
-  - action: utter_anything_else
+  - action: action_listen
 
-- rule: Standalone Respond to combining active ingredients
-  condition:
-  - active_loop: null
+- rule: Reakce na FAQ o kombinování látek
   steps:
-  - intent: faq_combining_actives
+  - intent: faq/combining_actives
   - action: utter_faq_combining_actives
-  - action: utter_anything_else
+  - action: action_listen
 
-- rule: Standalone Respond to online consultation
-  condition:
-  - active_loop: null
+- rule: Reakce na FAQ o online konzultaci
   steps:
-  - intent: faq_online_consultation
+  - intent: faq/online_consultation
   - action: utter_faq_online_consultation
-  - action: utter_anything_else
+  - action: action_listen
 
-- rule: Standalone Respond to eshop shipping cost
-  condition:
-  - active_loop: null
+- rule: Reakce na FAQ o ceně dopravy
   steps:
-  - intent: faq_eshop_shipping_cost
+  - intent: faq/eshop_shipping_cost
   - action: utter_faq_eshop_shipping_cost
-  - action: utter_anything_else
+  - action: action_listen
 
-- rule: Standalone Respond to parabens
-  condition:
-  - active_loop: null
+- rule: Reakce na FAQ o parabenech
   steps:
-  - intent: faq_parabens
+  - intent: faq/parabens
   - action: utter_faq_parabens
-  - action: utter_anything_else
+  - action: action_listen
 
-- rule: Standalone Respond to animal testing
-  condition:
-  - active_loop: null
+- rule: Reakce na FAQ o testování na zvířatech
   steps:
-  - intent: faq_animal_testing
+  - intent: faq/animal_testing
   - action: utter_faq_animal_testing
-  - action: utter_anything_else
+  - action: action_listen
 
-- rule: Standalone Respond to store pickup
-  condition:
-  - active_loop: null
+- rule: Reakce na FAQ o osobním odběru
   steps:
-  - intent: faq_store_pickup
+  - intent: faq/store_pickup
   - action: utter_faq_store_pickup
-  - action: utter_anything_else
+  - action: action_listen
 
-- rule: Standalone Respond to eshop complaint procedure
-  condition:
-  - active_loop: null
+- rule: Reakce na FAQ o reklamaci
   steps:
-  - intent: faq_eshop_complaint_procedure
+  - intent: faq/eshop_complaint_procedure
   - action: utter_faq_eshop_complaint_procedure
-  - action: utter_anything_else
+  - action: action_listen
 
-# --- FAQ pro kliniku (s podmínkou active_loop: null) ---
-- rule: Standalone Respond to botox duration
-  condition:
-  - active_loop: null
+- rule: Reakce na FAQ o trvání botoxu
   steps:
-  - intent: faq_clinic_botox_duration
+  - intent: faq/clinic_botox_duration
   - action: utter_faq_clinic_botox_duration
-  - action: utter_anything_else
+  - action: action_listen
 
-- rule: Standalone Respond to laser epilation sessions
-  condition:
-  - active_loop: null
+- rule: Reakce na FAQ o počtu sezení laseru
   steps:
-  - intent: faq_clinic_laser_epilation_sessions
+  - intent: faq/clinic_laser_epilation_sessions
   - action: utter_faq_clinic_laser_epilation_sessions
-  - action: utter_anything_else
+  - action: action_listen
 
-- rule: Standalone Respond to laser epilation preparation
-  condition:
-  - active_loop: null
+- rule: Reakce na FAQ o přípravě na laser
   steps:
-  - intent: faq_clinic_laser_epilation_preparation
+  - intent: faq/clinic_laser_epilation_preparation
   - action: utter_faq_clinic_laser_epilation_preparation
-  - action: utter_anything_else
+  - action: action_listen
 
-- rule: Standalone Respond to chemical peel summer
-  condition:
-  - active_loop: null
+- rule: Reakce na FAQ o chemickém peelingu v létě
   steps:
-  - intent: faq_clinic_chemical_peel_summer
+  - intent: faq/clinic_chemical_peel_summer
   - action: utter_faq_clinic_chemical_peel_summer
-  - action: utter_anything_else
+  - action: action_listen
 
-# Pravidlo pro out-of-scope dotazy
-- rule: Handle out of scope queries
-  condition:
-  - active_loop: null # Jen pokud není aktivní formulář
-  steps:
-  - intent: out_of_scope
-  - action: utter_default
-  - action: utter_anything_else
-
-- rule: Handle inquiry about opening hours
+- rule: Dotaz na otevírací dobu (mimo formulář)
   steps:
   - intent: dotaz_na_oteviraci_dobu
   - action: utter_oteviraci_doba
+  - action: action_listen
 
-- rule: Handle inquiry about services
+- rule: Dotaz na služby (mimo formulář)
   steps:
   - intent: dotaz_na_sluzbu
   - action: utter_sluzby
+  - action: action_listen
 
-- rule: Handle inquiry about price
+- rule: Dotaz na cenu (mimo formulář)
   steps:
   - intent: dotaz_na_cenu
   - action: utter_cenik
+  - action: action_listen
+
+- rule: Zpracování otázek mimo rozsah
+  steps:
+  - intent: out_of_scope
+  - action: utter_default
+  - action: action_listen

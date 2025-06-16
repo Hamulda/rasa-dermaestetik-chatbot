@@ -27,6 +27,9 @@ stories:
     - skin_concern: ["vrásky"]
   - action: product_recommendation_form
   - active_loop: null
+  - slot_was_set:
+    - skin_type: ["suchá"]
+    - skin_concern: ["vrásky"]
   - action: utter_submit_form
   - action: action_recommend_product
   - action: utter_anything_else
@@ -65,6 +68,10 @@ stories:
     - product_category: "péče o řasy"
   - action: product_recommendation_form
   - active_loop: null
+  - slot_was_set:
+      - skin_type: ["normální"]
+      - skin_concern: ["růst řas"]
+      - product_category: "péče o řasy"
   - action: utter_submit_form
   - action: action_recommend_product
   - action: utter_anything_else
@@ -81,7 +88,6 @@ stories:
   - slot_was_set:
     - skin_type: ["suchá"]
     - skin_concern: ["vrásky"]
-  - slot_was_set:
     - product_category: null
   - slot_was_set:
     - requested_slot: product_category
@@ -94,6 +100,10 @@ stories:
     - product_category: "krém"
   - action: product_recommendation_form
   - active_loop: null
+  - slot_was_set:
+      - skin_type: ["suchá"]
+      - skin_concern: ["vrásky"]
+      - product_category: "krém"
   - action: utter_submit_form
   - action: action_recommend_product
   - action: utter_anything_else
@@ -122,7 +132,7 @@ stories:
 
 - story: "Test 05: Samostatné FAQ"
   steps:
-  - intent: faq_payment_options
+  - intent: faq/payment_options
   - action: utter_faq_payment_options
   - action: utter_anything_else
 
@@ -152,6 +162,9 @@ stories:
     - skin_concern: ["póry"]
   - action: product_recommendation_form
   - active_loop: null
+  - slot_was_set:
+      - skin_type: ["mastná"]
+      - skin_concern: ["póry"]
   - action: utter_submit_form
   - action: action_recommend_product
   - action: utter_anything_else
@@ -179,19 +192,21 @@ stories:
     - skin_type: ["mastná"]
   - action: product_recommendation_form
   - active_loop: null
+  - slot_was_set:
+    - skin_type: ["mastná"]
+    - skin_concern: ["akné"]
   - action: utter_submit_form
   - action: action_recommend_product
   - action: utter_anything_else
 
-# --- PŘIDANÝ NOVÝ TESTOVACÍ PŘÍBĚH ---
 - story: "Test 10: Změna řazení po doporučení (na cenu sestupně)"
   steps:
-  - story: "Test 08: Formulář - Uživatel poskytne všechny základní informace najednou" # Znovu použijeme existující cestu k doporučení
+  - story: "Test 08: Formulář - Uživatel poskytne všechny základní informace najednou"
   - action: utter_anything_else
   - intent: set_sort_preference
     entities:
     - sort_preference: "price_desc"
   - slot_was_set:
     - sort_preference: "price_desc"
-  - action: action_recommend_product # Ověříme, že se akce znovu spustí s novým slotem
+  - action: action_recommend_product
   - action: utter_anything_else

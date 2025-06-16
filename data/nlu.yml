@@ -275,7 +275,7 @@ nlu:
     - [gelový krém](product_category:gelový krém)
     - [olejové sérum](product_category:olejové sérum)
     - [bez mýdla](product_attribute:bez mýdla)
-    - [bez sulfátů (SLS/SLES)](product_attribute:bez sulfátů (sls/sles)) # OPRAVENA ANOTACE
+    - [bez sulfátů (SLS/SLES)](product_attribute:bez sulfátů (sls/sles))
     - [s bakuchiolem](product_attribute:s bakuchiolem)
     - [s peptidy](product_attribute:s peptidy)
     - [jemný](product_attribute:jemný)
@@ -348,7 +348,8 @@ nlu:
     - Kdo vyhrál poslední volby?
     - Můžeš mi objednat pizzu?
 
-- intent: faq_payment_options
+# --- OPRAVENÁ SEKCE: FAQ INTENTY POUŽÍVAJÍ LOMÍTKO ---
+- intent: faq/payment_options
   examples: |
     - Jaké jsou u vás způsoby platby?
     - Mohu u vás zaplatit kartou?
@@ -367,7 +368,7 @@ nlu:
     - Je možná platba na dobírku na eshopu?
     - Jaké máte platební metody na eshopu?
 
-- intent: faq_product_ingredients
+- intent: faq/product_ingredients
   examples: |
     - Je tento výrobek vhodný i pro citlivou pokožku?
     - Jaké je přesné složení toho krému?
@@ -387,7 +388,7 @@ nlu:
     - Můžete mi poslat INCI list pro produkt X z eshopu?
     - Kde zjistím ingredience na eshopu?
 
-- intent: faq_returns
+- intent: faq/returns
   examples: |
     - Jak mohu vrátit zakoupené zboží z e-shopu?
     - Chci vrátit produkt, jaký je postup?
@@ -405,7 +406,7 @@ nlu:
     - Podmínky vrácení balíčku z eshopu.
     - Chci vrátit objednávku z eshopu, jak na to?
 
-- intent: faq_vegan_products
+- intent: faq/vegan_products
   examples: |
     - Máte v nabídce veganské produkty?
     - Prodáváte kosmetiku, která je veganská?
@@ -418,7 +419,7 @@ nlu:
     - Veganska kosmetika.
     - Mate veganske veci?
 
-- intent: faq_hypoallergenic
+- intent: faq/hypoallergenic
   examples: |
     - Co přesně znamená, když je produkt hypoalergenní?
     - Jsou vaše produkty označené jako hypoalergenní?
@@ -431,7 +432,7 @@ nlu:
     - Hypoalergenni produkty.
     - Pro alergiky.
 
-- intent: faq_order_status_delivery_time
+- intent: faq/order_status_delivery_time
   examples: |
     - Kde se nachází moje objednávka?
     - Jaký je aktuální stav mé objednávky?
@@ -446,7 +447,7 @@ nlu:
     - Kdy mi prijde balik?
     - Dodaci lhuta.
 
-- intent: faq_skin_cleansing
+- intent: faq/skin_cleansing
   examples: |
     - Jak si mám správně čistit pleť?
     - Jak často bych si měl čistit obličej?
@@ -459,7 +460,7 @@ nlu:
     - Cisteni pleti.
     - Jak cistit oblicej?
 
-- intent: faq_product_application_order
+- intent: faq/product_application_order
   examples: |
     - V jakém pořadí mám správně aplikovat kosmetické produkty?
     - Co se dává na pleť dříve, sérum nebo hydratační krém?
@@ -472,7 +473,7 @@ nlu:
     - Vrstveni kosmetiky.
     - Poradi produktu.
 
-- intent: faq_spf_usage
+- intent: faq/spf_usage
   examples: |
     - Kdy bych měl používat krém s SPF?
     - Jak správně aplikovat produkt s ochranným faktorem?
@@ -485,7 +486,7 @@ nlu:
     - Pouzivani SPF.
     - Kdy dat SPF?
 
-- intent: faq_combining_actives
+- intent: faq/combining_actives
   examples: |
     - Mohu bezpečně kombinovat vitamín C a retinol v jedné rutině?
     - Jaké aktivní látky v kosmetice bych neměl míchat dohromady?
@@ -498,7 +499,7 @@ nlu:
     - Kombinovani aktivnich latek.
     - Co s cim nemichat?
 
-- intent: faq_online_consultation
+- intent: faq/online_consultation
   examples: |
     - Poskytujete online konzultace ohledně výběru produktů?
     - Jak funguje vaše online poradna na webu?
@@ -511,7 +512,7 @@ nlu:
     - Online konzultace.
     - Poradna online.
 
-- intent: faq_eshop_shipping_cost
+- intent: faq/eshop_shipping_cost
   examples: |
     - Kolik u vás stojí doprava z eshopu?
     - Jaká je cena poštovného z eshopu?
@@ -533,7 +534,7 @@ nlu:
     - Jak je to s doručením mé objednávky z eshopu?
     - Poskytujete informace o dopravě z eshopu?
 
-- intent: faq_parabens
+- intent: faq/parabens
   examples: |
     - Obsahují vaše produkty parabeny?
     - Prodáváte kosmetiku bez parabenů?
@@ -548,7 +549,7 @@ nlu:
     - Parabeny v kosmetice.
     - Bezparabenova kosmetika.
 
-- intent: faq_animal_testing
+- intent: faq/animal_testing
   examples: |
     - Jsou vaše produkty testovány na zvířatech?
     - Testujete kosmetiku na zvířatech?
@@ -563,7 +564,7 @@ nlu:
     - Testovani na zviratech.
     - Cruelty free.
 
-- intent: faq_store_pickup
+- intent: faq/store_pickup
   examples: |
     - Máte kamennou prodejnu?
     - Kde si mohu produkty koupit osobně?
@@ -578,7 +579,7 @@ nlu:
     - Osobni odber.
     - Prodejna Breclav.
 
-- intent: faq_eshop_complaint_procedure
+- intent: faq/eshop_complaint_procedure
   examples: |
     - Jak postupovat při reklamaci produktu z eshopu?
     - Chci reklamovat zboží z eshopu, co mám dělat?
@@ -589,7 +590,7 @@ nlu:
     - Potřebuji informace k reklamaci z eshopu?
     - Reklamace eshop.
 
-- intent: faq_clinic_botox_duration
+- intent: faq/clinic_botox_duration
   examples: |
     - Jak dlouho vydrží účinek botulotoxinu z kliniky?
     - Na jak dlouho mi vydrží botox z kliniky?
@@ -600,7 +601,7 @@ nlu:
     - Botox vydrz.
     - Jak casto na botox?
 
-- intent: faq_clinic_laser_epilation_sessions
+- intent: faq/clinic_laser_epilation_sessions
   examples: |
     - Kolik ošetření laserové epilace je potřeba na klinice?
     - Kolikrát musím jít na laserovou epilaci na klinice?
@@ -611,7 +612,7 @@ nlu:
     - Laserova epilace pocet sezeni.
     - Kolikrat na laser?
 
-- intent: faq_clinic_laser_epilation_preparation
+- intent: faq/clinic_laser_epilation_preparation
   examples: |
     - Jak se mám připravit na laserovou epilaci na klinice?
     - Co mám dělat před laserovou epilací na klinice?
@@ -622,7 +623,7 @@ nlu:
     - Priprava na laserovou epilaci.
     - Co pred laserem?
 
-- intent: faq_clinic_chemical_peel_summer
+- intent: faq/clinic_chemical_peel_summer
   examples: |
     - Provádí se chemický peeling i v létě na klinice?
     - Mohu jít na chemický peeling v letních měsících na klinice?
@@ -671,8 +672,72 @@ nlu:
     - v kolik hodin otevíráte?
     - do kdy tam jste?
 
+- intent: inform_cheaper
+  examples: |
+    - to je moc drahé
+    - ukaž levnější
+
+- intent: inform_expensive
+  examples: |
+    - ukaž dražší
+    - a něco prémiovějšího?
+
+- intent: show_more
+  examples: |
+    - ukaž další
+    - další prosím
+
+- intent: reset_filters
+  examples: |
+    - chci začít znovu
+    - vymaž filtry
+    - resetovat hledání
+
+- intent: show_current_filters
+  examples: |
+    - jaké mám teď filtry?
+    - podle čeho teď hledáš?
+    - ukaž mi mé nastavení
+
+- intent: compare_products
+  examples: |
+    - porovnej [první](product_order) a [druhý](product_order)
+    - jaký je rozdíl mezi [prvním](product_order) a [třetím](product_order) produktem?
+    - srovnej [druhý](product_order) a [třetí](product_order)
+
+- intent: add_to_wishlist
+  examples: |
+    - přidej [první](product_order) do oblíbených
+    - ulož si [druhý](product_order) produkt
+    - chci si zapamatovat ten [třetí](product_order)
+
+- intent: show_wishlist
+  examples: |
+    - ukaž mi můj seznam přání
+    - co mám v oblíbených?
+    - zobrazit wishlist
+
+- intent: trigger_recommendation
+  examples: |
+    - hledej
+    - najdi mi něco
+    - ukaž mi výsledky
+    - to je vše, hledej
+    - co pro mě máš?
+    - zobrazit doporučení
+    - to stačí
+    - můžeš hledat
+    - spusť hledání
+
+- intent: deny_suggestion
+  examples: |
+    - ne, to je dobrý
+    - možná později
+    - teď ne, děkuji
+    - zatím nic dalšího
+
 # --- Synonyma ---
-- synonym: suchá # Canonical value
+- synonym: suchá
   examples: |
     - suchou
     - suché
@@ -681,7 +746,7 @@ nlu:
     - pro suchou
     - na suchou
 
-- synonym: mastná # Canonical value
+- synonym: mastná
   examples: |
     - mastnou
     - mastné
@@ -691,14 +756,14 @@ nlu:
     - pro mastnou
     - na mastnou
 
-- synonym: smíšená # Canonical value
+- synonym: smíšená
   examples: |
     - smíšenou
     - smíšené
     - smíšeného typu
     - smíšené pleti
 
-- synonym: citlivá # Canonical value
+- synonym: citlivá
   examples: |
     - citlivou
     - citlivé
@@ -707,7 +772,7 @@ nlu:
     - pro citlivou
     - na citlivou
 
-- synonym: normální # Canonical value
+- synonym: normální
   examples: |
     - normální pleť
     - normálního typu
@@ -715,7 +780,7 @@ nlu:
     - normální pokožka
     - normální pleti
 
-- synonym: problematická # Canonical value
+- synonym: problematická
   examples: |
     - problematickou
     - problematické
@@ -723,7 +788,7 @@ nlu:
     - problematicke pleti
     - se sklony k problémům
 
-- synonym: zralá # Canonical value
+- synonym: zralá
   examples: |
     - zralou
     - zralé
@@ -731,7 +796,7 @@ nlu:
     - zrale pleti
     - pro zralou
 
-- synonym: dehydrovaná # Canonical value (pro skin_type)
+- synonym: dehydrovaná
   examples: |
     - dehydrovanou
     - dehydrované
@@ -739,7 +804,7 @@ nlu:
     - dehydratovane pleti
     - málo hydratovaná
 
-- synonym: velmi suchá # Canonical value
+- synonym: velmi suchá
   examples: |
     - velmi suchou
     - velmi suché
@@ -750,7 +815,7 @@ nlu:
     - pro velmi suchou
     - na velmi suchou
 
-- synonym: akné # Canonical value (pro skin_concern)
+- synonym: akné
   examples: |
     - aknózní
     - pupínky
@@ -760,9 +825,9 @@ nlu:
     - s akné
     - na akné
     - zanícená místa
-    - vyrážka # pokud kontext sedí
+    - vyrážka
 
-- synonym: vrásky # Canonical value
+- synonym: vrásky
   examples: |
     - vráskám
     - vrásky oční
@@ -775,7 +840,7 @@ nlu:
     - proti linkám
     - vyhlazení vrásek
 
-- synonym: pigmentace # Canonical value (pro skin_concern)
+- synonym: pigmentace
   examples: |
     - pigmentové skvrny
     - skvrny
@@ -784,7 +849,7 @@ nlu:
     - proti skvrnám
     - sjednocení barvy pleti
 
-- synonym: póry # Canonical value
+- synonym: póry
   examples: |
     - rozšířené póry
     - ucpané póry
@@ -795,23 +860,23 @@ nlu:
     - velké póry
     - stahování pórů
 
-- synonym: černé tečky # Canonical value
+- synonym: černé tečky
   examples: |
     - na černé tečky
     - proti černým tečkám
     - komedony
     - na komedony
 
-- synonym: zarudnutí # Canonical value
+- synonym: zarudnutí
   examples: |
     - červená pleť
-    - podráždění # Může být i samostatný skin_concern, ale zde jako synonymum pro zarudnutí
+    - podráždění
     - zčervenání
     - na zarudnutí
     - proti zarudnutí
     - červenání pleti
 
-- synonym: hydratace # Canonical value (pro skin_concern)
+- synonym: hydratace
   examples: |
     - pro hydrataci
     - na hydrataci
@@ -820,29 +885,28 @@ nlu:
     - potřebuji hydratovat
     - doplnění vláhy
 
-- synonym: dehydratace # Canonical value (pro skin_concern)
+- synonym: dehydratace
   examples: |
     - proti dehydrataci
     - na dehydrataci
     - ztráta vody
     - vysušování
 
-- synonym: citlivost # Canonical value (pro skin_concern)
+- synonym: citlivost
   examples: |
     - pro citlivost
     - na citlivost
     - reaktivní pleť
     - přecitlivělost
 
-- synonym: stárnutí # Canonical value (pro skin_concern)
+- synonym: stárnutí
   examples: |
-    # - proti stárnutí # Toto je spíše product_attribute
     - známky stárnutí
     - anti-aging
     - omlazení
     - antiage
 
-- synonym: zpevnění # Canonical value
+- synonym: zpevnění
   examples: |
     - pro zpevnění
     - na zpevnění
@@ -850,42 +914,40 @@ nlu:
     - povadlá pleť
     - lifting
 
-- synonym: exfoliace # Canonical value
+- synonym: exfoliace
   examples: |
     - pro exfoliaci
     - na exfoliaci
     - odstranění odumřelých buněk
-    # - peeling (jako proces, ne produkt) # Komentář pro vyjasnění, toto není synonymum
 
-- synonym: mdlá pleť # Canonical value
+- synonym: mdlá pleť
   examples: |
     - na mdlou pleť
-    # - rozjasnění pleti # Toto je spíše product_attribute
     - bez jasu
     - unavená pleť
     - zašedlá pleť
 
-- synonym: tmavé kruhy pod očima # Canonical value
+- synonym: tmavé kruhy pod očima
   examples: |
     - na tmavé kruhy
     - proti tmavým kruhům
     - kruhy pod očima
 
-- synonym: otoky očí # Canonical value
+- synonym: otoky očí
   examples: |
     - na otoky očí
     - proti otokům
     - opuchlé oči
     - váčky pod očima
 
-- synonym: šupinatá pleť # Canonical value
+- synonym: šupinatá pleť
   examples: |
     - na šupinatou pleť
     - loupající se pleť
     - suché šupinky
     - šupinky
 
-- synonym: růst řas # Canonical value (pro skin_concern)
+- synonym: růst řas
   examples: |
     - pro růst řas
     - na delší řasy
@@ -893,27 +955,27 @@ nlu:
     - prodloužení řas
     - zahuštění řas
 
-- synonym: růst obočí # Canonical value
+- synonym: růst obočí
   examples: |
     - pro růst obočí
     - na hustší obočí
     - posílení obočí
     - zahuštění obočí
 
-- synonym: ztráta elasticity # Canonical value
+- synonym: ztráta elasticity
   examples: |
     - neelastická pleť
     - povolená pleť
     - zlepšení elasticity
 
-- synonym: nerovnoměrný tón pleti # Canonical value
+- synonym: nerovnoměrný tón pleti
   examples: |
     - sjednocení tónu
     - na nerovnoměrný tón
     - nevyrovnaný tón
     - barevné sjednocení pleti
 
-- synonym: krém # Canonical value (product_category)
+- synonym: krém
   examples: |
     - krému
     - krémy
@@ -922,20 +984,20 @@ nlu:
     - na krém
     - krémeček
 
-- synonym: sérum # Canonical value (product_category)
+- synonym: sérum
   examples: |
     - séra
     - sérem
     - na sérum
 
-- synonym: čistič # Canonical value (product_category)
+- synonym: čistič
   examples: |
     - čističe
     - čističem
     - na čistič
     - čistící přípravek
 
-- synonym: čistící gel # Canonical value (product_category)
+- synonym: čistící gel
   examples: |
     - čistícího gelu
     - čistícím gelem
@@ -943,7 +1005,7 @@ nlu:
     - gel na čištění
     - mycí gel
 
-- synonym: oční krém # Canonical value (product_category)
+- synonym: oční krém
   examples: |
     - očního krému
     - očním krémem
@@ -951,7 +1013,7 @@ nlu:
     - krém na oči
     - krém na oční okolí
 
-- synonym: maska # Canonical value (product_category)
+- synonym: maska
   examples: |
     - masky
     - maskou
@@ -959,21 +1021,21 @@ nlu:
     - na masku
     - obličejová maska
 
-- synonym: tonikum # Canonical value (product_category)
+- synonym: tonikum
   examples: |
     - tonika
     - tonikem
     - pleťové tonikum
     - tonizační voda
 
-- synonym: peeling # Canonical value (product_category)
+- synonym: peeling
   examples: |
     - peelingu
     - peelingem
     - na peeling
-    - exfoliační přípravek # OPRAVENO: Pokud má být synonymum, musí začínat pomlčkou
+    - exfoliační přípravek
 
-- synonym: spf # Canonical value (product_category)
+- synonym: spf
   examples: |
     - opalovací krém
     - ochrana proti slunci
@@ -985,7 +1047,7 @@ nlu:
     - sluneční ochrana
     - na opalování
 
-- synonym: lokální péče # Canonical value (product_category)
+- synonym: lokální péče
   examples: |
     - lokální péči
     - na lokální péči
@@ -994,141 +1056,141 @@ nlu:
     - na pupínek
     - bodová péče
 
-- synonym: fluid # Canonical value (product_category)
+- synonym: fluid
   examples: |
     - fluidu
     - fluidem
     - lehký fluid
 
-- synonym: emulze # Canonical value (product_category)
+- synonym: emulze
   examples: |
     - emulzi
     - emulzí
     - lehká emulze
 
-- synonym: tělové mléko # Canonical value (product_category)
+- synonym: tělové mléko
   examples: |
     - tělového mléka
     - tělovým mlékem
     - mléko na tělo
 
-- synonym: pleťová voda # Canonical value (product_category)
+- synonym: pleťová voda
   examples: |
     - pleťové vody
     - pleťovou vodou
     - voda na pleť
 
-- synonym: make-up # Canonical value (product_category)
+- synonym: make-up
   examples: |
     - makeup
     - makeupu
     - s makeupem
     - na make-up
 
-- synonym: báze # Canonical value (product_category)
+- synonym: báze
   examples: |
     - bázi pod make-up
     - podkladová báze
     - primer
 
-- synonym: krém na ruce # Canonical value (product_category)
+- synonym: krém na ruce
   examples: |
     - krému na ruce
     - krém pro ruce
     - na mazání rukou
 
-- synonym: oční sérum # Canonical value (product_category)
+- synonym: oční sérum
   examples: |
     - očního séra
     - očním sérem
     - sérum na oči
     - sérum na oční okolí
 
-- synonym: péče o řasy # Canonical value (product_category)
+- synonym: péče o řasy
   examples: |
     - na řasy
     - pro řasy
     - přípravek na řasy
-    - sérum na řasy # OPRAVENO: Pokud má být synonymum, musí začínat pomlčkou
+    - sérum na řasy
 
-- synonym: čistící pěna # Canonical value (product_category)
+- synonym: čistící pěna
   examples: |
     - čistící pěny
     - čistící pěnou
     - pěna na čištění
     - mycí pěna
 
-- synonym: čistící olej # Canonical value (product_category)
+- synonym: čistící olej
   examples: |
     - čistícího oleje
     - čistícím olejem
     - olej na čištění
     - odličovací olej
 
-- synonym: gelový krém # Canonical value (product_category)
+- synonym: gelový krém
   examples: |
     - gelového krému
     - gelovým krémem
     - krémový gel
     - gel-krém
 
-- synonym: olejové sérum # Canonical value (product_category)
+- synonym: olejové sérum
   examples: |
     - olejového séra
     - olejovým sérem
     - sérum na bázi oleje
 
-- synonym: micelární voda # Canonical value (product_category)
+- synonym: micelární voda
   examples: |
     - micelární vody
     - micelární vodou
     - micelárka
 
-- synonym: odličovač # Canonical value (product_category)
+- synonym: odličovač
   examples: |
     - odličovače
     - odličovačem
     - na odlíčení
     - odličovací přípravek
 
-- synonym: balzám na rty # Canonical value (product_category)
+- synonym: balzám na rty
   examples: |
     - balzámu na rty
     - balzámem na rty
     - pomáda na rty
     - jelení lůj
 
-- synonym: Medik8 # Canonical value (brand)
+- synonym: Medik8
   examples: |
-    - Mediku8 
+    - Mediku8
     - od Medik8
     - značky Medik8
 
-- synonym: Heliocare # Canonical value (brand)
+- synonym: Heliocare
   examples: |
-    - Heliocar 
+    - Heliocar
     - od Heliocare
     - značky Heliocare
 
-- synonym: FacEvolution # Canonical value (brand)
+- synonym: FacEvolution
   examples: |
     - Face Evolution
     - od FacEvolution
     - značky FacEvolution
 
-- synonym: Revitalash # Canonical value (brand)
+- synonym: Revitalash
   examples: |
     - Revitalashe
     - od Revitalash
     - značky Revitalash
 
-- synonym: Dermalogica # Canonical value (brand)
+- synonym: Dermalogica
   examples: |
     - Dermalogicy
     - od Dermalogica
     - značky Dermalogica
 
-- synonym: La Roche-Posay # Canonical value (brand)
+- synonym: La Roche-Posay
   examples: |
     - LaRoche Posay
     - LRP
@@ -1136,13 +1198,13 @@ nlu:
     - od La Roche-Posay
     - značky La Roche-Posay
 
-- synonym: Bioderma # Canonical value (brand)
+- synonym: Bioderma
   examples: |
     - Biodermy
     - od Bioderma
     - značky Bioderma
 
-- synonym: veganské # Canonical value (attribute)
+- synonym: veganské
   examples: |
     - veganský
     - veganská
@@ -1150,27 +1212,27 @@ nlu:
     - čistě rostlinné
     - vegan
 
-- synonym: bez parabenů # Canonical value (attribute)
+- synonym: bez parabenů
   examples: |
     - bez parabenu
     - neobsahuje parabeny
     - paraben-free
 
-- synonym: s spf # Canonical value (attribute)
+- synonym: s spf
   examples: |
     - s ochranným faktorem
     - s UV ochranou
     - obsahuje SPF
     - má SPF
 
-- synonym: bez alkoholu # Canonical value (attribute)
+- synonym: bez alkoholu
   examples: |
     - nealkoholické
     - alcohol-free
     - neobsahuje alkohol
     - bezalkoholový
 
-- synonym: bez parfemace # Canonical value (attribute)
+- synonym: bez parfemace
   examples: |
     - neparfemované
     - bez vůně
@@ -1178,7 +1240,7 @@ nlu:
     - bez přidané parfemace
     - bez přidaných vonných látek
 
-- synonym: s niacinamidem # Canonical value (attribute)
+- synonym: s niacinamidem
   examples: |
     - s niacinamidy
     - obsahuje niacinamid
@@ -1186,7 +1248,7 @@ nlu:
     - s vitaminem B3
     - niacinamid
 
-- synonym: s aha/bha # Canonical value (attribute)
+- synonym: s aha/bha
   examples: |
     - s AHA BHA kyselinami
     - s kyselinami AHA BHA
@@ -1195,7 +1257,7 @@ nlu:
     - obsahuje AHA
     - obsahuje BHA
 
-- synonym: matující # Canonical value (attribute)
+- synonym: matující
   examples: |
     - zmatňující
     - proti lesku
@@ -1203,14 +1265,14 @@ nlu:
     - zmatnění
     - zmatňuje
 
-- synonym: intenzivní # Canonical value (attribute)
+- synonym: intenzivní
   examples: |
     - intenzivně
     - silný
     - extra
     - pro intenzivní péči
 
-- synonym: lehký # Canonical value (attribute)
+- synonym: lehký
   examples: |
     - lehké
     - lehká
@@ -1218,7 +1280,7 @@ nlu:
     - s lehkou texturou
     - nemastný
 
-- synonym: pro těhotné # Canonical value (attribute)
+- synonym: pro těhotné
   examples: |
     - v těhotenství
     - pro těhulky
@@ -1226,7 +1288,7 @@ nlu:
     - vhodné pro těhotné
     - pro těhotné ženy
 
-- synonym: s vitamínem C # Canonical value (attribute)
+- synonym: s vitamínem C
   examples: |
     - s vitaminem C
     - vitamín C
@@ -1235,16 +1297,16 @@ nlu:
     - obsahuje vitamín C
     - s vitaminem c
 
-- synonym: s retinalem # Canonical value (attribute)
+- synonym: s retinalem
   examples: |
     - retinal
-    - s retinolem 
+    - s retinolem
     - retinol
     - obsahuje retinal
-    - s vitamínem A 
+    - s vitamínem A
     - s vitaminem A
 
-- synonym: pro muže # Canonical value (attribute)
+- synonym: pro muže
   examples: |
     - mužské
     - pánské
@@ -1252,26 +1314,26 @@ nlu:
     - for men
     - pro chlapy
 
-- synonym: bez silikonů # Canonical value (attribute)
+- synonym: bez silikonů
   examples: |
     - bez silikonu
     - neobsahuje silikony
     - silicone-free
 
-- synonym: nekomedogenní # Canonical value (attribute)
+- synonym: nekomedogenní
   examples: |
     - neucpávající póry
     - proti ucpávání pórů
     - non-comedogenic
     - nekomedonní
 
-- synonym: bez mýdla # Canonical value (attribute)
+- synonym: bez mýdla
   examples: |
     - soap-free
     - neobsahuje mýdlo
     - bezmýdlový
 
-- synonym: bez sulfátů (sls/sles) # Canonical value (attribute)
+- synonym: bez sulfátů (sls/sles)
   examples: |
     - bez SLS
     - bez SLES
@@ -1281,29 +1343,28 @@ nlu:
     - SLS free
     - SLES free
 
-- synonym: s bakuchiolem # Canonical value (attribute)
+- synonym: s bakuchiolem
   examples: |
     - obsahuje bakuchiol
     - bakuchiolové
     - bakuchiol
 
-- synonym: s peptidy # Canonical value (attribute)
+- synonym: s peptidy
   examples: |
     - peptidové
     - obsahuje peptidy
     - s peptidy komplexem
     - peptidy
 
-- synonym: jemný # Canonical value (attribute)
+- synonym: jemný
   examples: |
     - jemné
     - šetrný
     - šetrné
-    # - pro citlivou pleť # OPRAVENO: odstraněn tento komentář, který způsoboval chybu
     - gentle
     - zjemňující
 
-- synonym: s pha kyselinami # Canonical value (attribute)
+- synonym: s pha kyselinami
   examples: |
     - PHA kyseliny
     - s PHA
@@ -1312,7 +1373,7 @@ nlu:
     - s glukonolaktonem
     - s kyselinou laktobionovou
 
-- synonym: s kyselinou hyaluronovou # Canonical value (attribute)
+- synonym: s kyselinou hyaluronovou
   examples: |
     - s hyaluronem
     - obsahuje kyselinu hyaluronovou
@@ -1320,22 +1381,21 @@ nlu:
     - hyaluronové
     - s hyaluronátem sodným
 
-- synonym: antioxidační # Canonical value (attribute)
+- synonym: antioxidační
   examples: |
     - antioxidanty
     - s antioxidanty
     - proti volným radikálům
     - antioxidační účinky
 
-- synonym: proti stárnutí # Canonical value (attribute)
+- synonym: proti stárnutí
   examples: |
     - anti-age
     - omlazující
     - antiaging
-    # - proti vráskám # OPRAVENO: odstraněn tento komentář
     - anti-vráskový
 
-- synonym: rozjasňující # Canonical value (attribute)
+- synonym: rozjasňující
   examples: |
     - pro rozjasnění
     - na rozjasnění
@@ -1343,44 +1403,44 @@ nlu:
     - brightening
     - projasňující
 
-- synonym: stimulující růst # Canonical value (attribute)
+- synonym: stimulující růst
   examples: |
     - pro růst
     - na podporu růstu
     - podporující růst
     - růstový
 
-- synonym: výživný # Canonical value (attribute)
+- synonym: výživný
   examples: |
     - vyživující
     - pro výživu
     - s výživnými složkami
     - nutriční
 
-- synonym: s kofeinem # Canonical value (attribute)
+- synonym: s kofeinem
   examples: |
     - kofeinové
     - obsahuje kofein
     - s obsahem kofeinu
     - kofein
 
-- synonym: proti pigmentaci # Canonical value (attribute)
+- synonym: proti pigmentaci
   examples: |
-    - na pigmentové skvrny (jako vlastnost) 
+    - na pigmentové skvrny (jako vlastnost)
     - redukující pigmentaci
     - zesvětlující pigmentaci
     - proti skvrnám (jako vlastnost)
     - depigmentační
 
-- synonym: hydratační # Canonical value (attribute)
+- synonym: hydratační
   examples: |
-    - pro hydrataci (jako vlastnost) 
+    - pro hydrataci (jako vlastnost)
     - hydratující
     - zvlhčující
     - dodávající hydrataci
     - s hydratačním účinkem
 
-- synonym: obličej # Canonical value (skin_area)
+- synonym: obličej
   examples: |
     - na obličej
     - pro obličej
@@ -1388,7 +1448,7 @@ nlu:
     - na pleť
     - tvář
 
-- synonym: oční okolí # Canonical value (skin_area)
+- synonym: oční okolí
   examples: |
     - kolem očí
     - na oční okolí
@@ -1397,7 +1457,7 @@ nlu:
     - pod oči
     - na oči (v kontextu krému apod.)
 
-- synonym: tělo # Canonical value (skin_area)
+- synonym: tělo
   examples: |
     - na tělo
     - pro tělo
@@ -1405,64 +1465,64 @@ nlu:
     - na pokožku těla
     - tělová péče (pokud oblast)
 
-- synonym: ruce # Canonical value (skin_area)
+- synonym: ruce
   examples: |
     - na ruce
     - pro ruce
     - na pokožku rukou
 
-- synonym: krk # Canonical value (skin_area)
+- synonym: krk
   examples: |
     - na krk
     - pro krk
     - na pokožku krku
 
-- synonym: dekolt # Canonical value (skin_area)
+- synonym: dekolt
   examples: |
     - na dekolt
     - pro dekolt
     - na pokožku dekoltu
 
-- synonym: záda # Canonical value (skin_area)
+- synonym: záda
   examples: |
     - na záda
     - pro pokožku zad
 
-- synonym: lokální použití # Canonical value (skin_area)
+- synonym: lokální použití
   examples: |
     - lokálně
     - na konkrétní místa
     - bodová aplikace
     - na pupínek (jako oblast)
 
-- synonym: lokty # Canonical value (skin_area)
+- synonym: lokty
   examples: |
     - na lokty
     - pro lokty
 
-- synonym: kolena # Canonical value (skin_area)
+- synonym: kolena
   examples: |
     - na kolena
     - pro kolena
 
-- synonym: ramena # Canonical value (skin_area)
+- synonym: ramena
   examples: |
     - na ramena
     - pro ramena
 
-- synonym: rty # Canonical value (skin_area)
+- synonym: rty
   examples: |
     - na rty
     - pro rty
     - péče o rty (pokud myšleno jako oblast)
 
-- synonym: vlasy # Canonical value (skin_area)
+- synonym: vlasy
   examples: |
     - na vlasy
     - pro vlasy
     - vlasová péče (pokud myšleno jako oblast)
 
-- synonym: pokožka hlavy # Canonical value (skin_area)
+- synonym: pokožka hlavy
   examples: |
     - na pokožku hlavy
     - pro pokožku hlavy
@@ -1616,3 +1676,15 @@ nlu:
     - rty
     - vlasy
     - pokožka hlavy
+
+- intent: trigger_recommendation
+  examples: |
+    - hledej
+    - to je vše
+    - najdi mi něco
+    - ukaž mi výsledky
+    - můžeš hledat
+    - spusť hledání
+    - to stačí, děkuji
+    - ok, hledej
+    - teď hledej
