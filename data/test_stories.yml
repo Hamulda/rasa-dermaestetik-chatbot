@@ -1,152 +1,80 @@
 version: "3.1"
 
 stories:
-
-- story: "Test 01: Formulář - Základní úspěšná cesta (skin_type, skin_concern)"
+- story: "Test 01: Šťastná cesta - Uživatel vyjádří zájem"
   steps:
   - intent: greet
   - action: utter_greet
-  - intent: ask_product_recommendation
+  - intent: express_interest
   - action: product_recommendation_form
   - active_loop: product_recommendation_form
-  - slot_was_set:
-    - requested_slot: skin_type
-  - intent: inform
-    entities:
-    - skin_type: "suchá"
-  - slot_was_set:
-    - skin_type: ["suchá"]
-  - action: product_recommendation_form
-  - active_loop: product_recommendation_form
-  - slot_was_set:
-    - requested_slot: skin_concern
-  - intent: inform
-    entities:
-    - skin_concern: "vrásky"
-  - slot_was_set:
-    - skin_concern: ["vrásky"]
-  - action: product_recommendation_form
-  - active_loop: null
-  - slot_was_set:
-    - skin_type: ["suchá"]
-    - skin_concern: ["vrásky"]
-  - action: utter_submit_form
-  - action: action_recommend_product
-  - action: utter_anything_else
-  - intent: goodbye
-  - action: utter_goodbye
 
-- story: "Test 02: Formulář - Dynamicky povinný slot (růst řas -> product_category)"
+- story: "Test 02: Šťastná cesta - Uživatel poskytne typ pleti"
   steps:
-  - intent: ask_product_recommendation
+  - intent: inform
+    entities:
+    - skin_type: "mastná"
+  - action: product_recommendation_form
+  - active_loop: product_recommendation_form
+
+- story: "Test 03: Šťastná cesta - Uživatel poskytne problém pleti"
+  steps:
+  - intent: inform
+    entities:
+    - skin_concern: "póry"
+  - action: product_recommendation_form
+  - active_loop: product_recommendation_form
+
+- story: "Test 04: Šťastná cesta - Uživatel poskytne preferenci produktu"
+  steps:
+  - intent: inform
+    entities:
+    - product_preference: "sérum"
+  - action: product_recommendation_form
+  - active_loop: product_recommendation_form
+
+- story: "Test 05: Šťastná cesta - Formulář je kompletní"
+  steps:
+  - intent: inform # User provides skin_type
+    entities:
+    - skin_type: "mastná"
   - action: product_recommendation_form
   - active_loop: product_recommendation_form
   - slot_was_set:
-    - requested_slot: skin_type
-  - intent: inform
+    - skin_type: "mastná"
+  - intent: inform # User provides skin_concern
     entities:
-    - skin_type: "normální"
-  - slot_was_set:
-    - skin_type: ["normální"]
+    - skin_concern: "póry"
   - action: product_recommendation_form
   - active_loop: product_recommendation_form
   - slot_was_set:
-    - requested_slot: skin_concern
-  - intent: inform
+    - skin_concern: "póry"
+  - intent: inform # User provides product_preference
     entities:
-    - skin_concern: "růst řas"
+    - product_preference: "sérum"
+  - action: product_recommendation_form # Form processes last piece of info
+  - active_loop: null # Form deactivates
   - slot_was_set:
-    - skin_concern: ["růst řas"]
-  - action: product_recommendation_form
-  - active_loop: product_recommendation_form
-  - slot_was_set:
-    - requested_slot: product_category
-  - intent: inform
-    entities:
-    - product_category: "péče o řasy"
-  - slot_was_set:
-    - product_category: "péče o řasy"
-  - action: product_recommendation_form
-  - active_loop: null
-  - slot_was_set:
-      - skin_type: ["normální"]
-      - skin_concern: ["růst řas"]
-      - product_category: "péče o řasy"
+    - product_preference: "sérum"
   - action: utter_submit_form
   - action: action_recommend_product
   - action: utter_anything_else
 
-- story: "Test 03: Formulář - Nevalidní product_category a oprava"
-  steps:
-  - intent: ask_product_recommendation
-    entities:
-    - skin_type: "suchá"
-    - skin_concern: "vrásky"
-    - product_category: "nesmyslnaKategorie"
-  - action: product_recommendation_form
-  - active_loop: product_recommendation_form
-  - slot_was_set:
-    - skin_type: ["suchá"]
-    - skin_concern: ["vrásky"]
-    - product_category: null
-  - slot_was_set:
-    - requested_slot: product_category
-  - action: product_recommendation_form
-  - active_loop: product_recommendation_form
-  - intent: inform
-    entities:
-    - product_category: "krém"
-  - slot_was_set:
-    - product_category: "krém"
-  - action: product_recommendation_form
-  - active_loop: null
-  - slot_was_set:
-      - skin_type: ["suchá"]
-      - skin_concern: ["vrásky"]
-      - product_category: "krém"
-  - action: utter_submit_form
-  - action: action_recommend_product
-  - action: utter_anything_else
-
-- story: "Test 04: Formulář - Zrušení formuláře uživatelem"
-  steps:
-  - intent: ask_product_recommendation
-  - action: product_recommendation_form
-  - active_loop: product_recommendation_form
-  - slot_was_set:
-    - requested_slot: skin_type
-  - intent: inform
-    entities:
-    - skin_type: "citlivá"
-  - slot_was_set:
-    - skin_type: ["citlivá"]
-  - action: product_recommendation_form
-  - active_loop: product_recommendation_form
-  - slot_was_set:
-    - requested_slot: skin_concern
-  - intent: stop_form
-  - action: action_deactivate_loop
-  - active_loop: null
-  - action: utter_form_cancelled
-  - action: utter_anything_else
-
-- story: "Test 05: Samostatné FAQ"
-  steps:
-  - intent: faq/payment_options
-  - action: utter_faq_payment_options
-  - action: utter_anything_else
-
-- story: "Test 06: Pozdrav a rozloučení"
+- story: "Test 06: Nešťastná cesta - Uživatel je nerozhodný"
   steps:
   - intent: greet
   - action: utter_greet
-  - intent: goodbye
-  - action: utter_goodbye
+  - intent: inform # User says "nevím" for skin_type
+    entities:
+    - skin_type: "nevím" # Assuming "nevím" is handled to offer guidance
+  - action: utter_offer_guidance # Or product_recommendation_form which then utters guidance
 
-- story: "Test 07: Out of Scope dotaz"
+- story: "Test 07: Uživatel se ptá na možnosti platby (FAQ)"
   steps:
-  - intent: out_of_scope
-  - action: utter_default
+  - intent: faq
+    entities:
+    - faq: "payment_options"
+  - action: utter_faq
   - action: utter_anything_else
 
 - story: "Test 08: Formulář - Uživatel poskytne všechny základní informace najednou"
@@ -155,58 +83,101 @@ stories:
     entities:
     - skin_type: "mastná"
     - skin_concern: "póry"
+    # product_preference is not provided here
   - action: product_recommendation_form
   - active_loop: product_recommendation_form
-  - slot_was_set:
-    - skin_type: ["mastná"]
-    - skin_concern: ["póry"]
-  - action: product_recommendation_form
+  - slot_was_set: # Check that slots were picked up by the form
+    - skin_type: "mastná"
+    - skin_concern: "póry"
+  # Assuming the form might ask for product_preference or can complete without it
+  - action: product_recommendation_form # Form processes and potentially completes
   - active_loop: null
-  - slot_was_set:
-      - skin_type: ["mastná"]
-      - skin_concern: ["póry"]
+  - slot_was_set: # Re-check slots after form deactivation
+      - skin_type: "mastná"
+      - skin_concern: "póry"
+      # - product_preference: "some_default_or_null" # If applicable
   - action: utter_submit_form
   - action: action_recommend_product
   - action: utter_anything_else
 
-- story: "Test 09: Formulář - Uživatel poskytne informace pro jiný slot, než na který se bot ptá"
+- story: "Test 09: Změna preferencí po doporučení"
   steps:
-  - intent: ask_product_recommendation
-  - action: product_recommendation_form
-  - active_loop: product_recommendation_form
-  - slot_was_set:
-    - requested_slot: skin_type
-  - intent: inform
-    entities:
-    - skin_concern: "akné"
-  - slot_was_set:
-    - skin_concern: ["akné"]
-  - action: product_recommendation_form
-  - active_loop: product_recommendation_form
-  - slot_was_set:
-    - requested_slot: skin_type
-  - intent: inform
+  - intent: inform # Initial information
     entities:
     - skin_type: "mastná"
-  - slot_was_set:
-    - skin_type: ["mastná"]
+    - skin_concern: "póry"
   - action: product_recommendation_form
-  - active_loop: null
+  - active_loop: product_recommendation_form
   - slot_was_set:
-    - skin_type: ["mastná"]
-    - skin_concern: ["akné"]
+    - skin_type: "mastná"
+    - skin_concern: "póry"
+  - action: product_recommendation_form # Form completes
+  - active_loop: null
+  - slot_was_set: # Re-check slots
+      - skin_type: "mastná"
+      - skin_concern: "póry"
   - action: utter_submit_form
+  - action: action_recommend_product
+  - action: utter_anything_else
+  - intent: inform # User changes preference
+    entities:
+    - product_preference: "krém"
+  # This should likely re-trigger the form or a direct re-recommendation
+  # If it re-triggers the form:
+  - action: product_recommendation_form # Form re-activates or processes new preference
+  - active_loop: null # Assuming form updates and closes quickly
+  - slot_was_set:
+    - product_preference: "krém" # skin_type and skin_concern should persist
+    - skin_type: "mastná"
+    - skin_concern: "póry"
+  - action: utter_submit_form # Or a more direct re-recommendation message
   - action: action_recommend_product
   - action: utter_anything_else
 
 - story: "Test 10: Změna řazení po doporučení (na cenu sestupně)"
   steps:
-  - story: "Test 08: Formulář - Uživatel poskytne všechny základní informace najednou"
-  - action: utter_anything_else
+  - intent: inform
+    entities:
+    - skin_type: "mastná"
+    - skin_concern: "póry"
+    # product_preference is not provided here
+  - action: product_recommendation_form
+  - active_loop: product_recommendation_form
+  # Form is active. It has skin_type and skin_concern.
+  # It might ask for product_preference. If user doesn't provide it, and it's optional, form can proceed.
+  - action: product_recommendation_form # Form processes, potentially fills product_preference with 'any' or None if not given
+  - active_loop: null
+  - slot_was_set: # Verify slots filled by the form
+    - skin_type: "mastná"
+    - skin_concern: "póry"
+    # - product_preference: "any" # Or whatever the default/missing value is.
+  - action: action_recommend_product
   - intent: set_sort_preference
     entities:
     - sort_preference: "price_desc"
   - slot_was_set:
     - sort_preference: "price_desc"
   - action: action_recommend_product
+  - action: utter_anything_else # Good practice to ask if user needs more help
+
+- story: "Test 11: Zrušení formuláře uprostřed"
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: express_interest # User wants to start
+  - action: product_recommendation_form
+  - active_loop: product_recommendation_form
+  - intent: inform # User provides some info
+    entities:
+    - skin_type: "suchá"
+  - slot_was_set:
+    - skin_type: "suchá"
+  - action: product_recommendation_form # Form processes, asks for next
+  - active_loop: product_recommendation_form
+  - intent: cancel_form # User wants to cancel
+  - action: action_deactivate_loop # Form deactivates due to cancellation intent
+  - active_loop: null
+  - slot_was_set: # Check that the form is no longer active and slots might be reset or kept
+    - requested_slot: null # Or check specific slots are cleared if that's the behavior
+  - action: utter_form_cancelled # Bot confirms cancellation
   - action: utter_anything_else
