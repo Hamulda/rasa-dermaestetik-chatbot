@@ -1,1553 +1,209 @@
+# rasa-chatbot/data/nlu.yml
 version: "3.1"
 
 nlu:
+# ==============================================================================
+# ZÁKLADNÍ KONVERZAČNÍ INTENTY
+# ==============================================================================
 - intent: greet
   examples: |
-    - ahoj
-    - dobrý den
-    - zdravím
-    - čau
-    - hej
-    - nazdar
-    - dobré ráno
-    - dobrý večer
-    - dobré odpoledne
-    - zdravíčko
-    - cus
-    - ahojky
-    - dobry den preju
+    - Ahoj
+    - Dobrý den
+    - Zdravím
+    - Čau
+    - Potřeboval bych pomoc
+    - Dobré ráno
+    - Dobrý večer
 
 - intent: goodbye
   examples: |
-    - nashledanou
-    - na shledanou
-    - zatím
-    - mějte se
-    - sbohem
-    - čau čau
-    - uvidíme se
-    - pa
-    - tak zatím ahoj
-    - dobrou noc
-    - diky, nashle
-    - loucim se
+    - Děkuji, na shledanou
+    - Mějte se
+    - Nashle
+    - To je vše
+    - Sbohem
+    - Díky, čau
 
 - intent: affirm
   examples: |
     - ano
     - jo
-    - jj
-    - souhlasím
     - přesně tak
-    - správně
+    - super
+    - souhlasím
     - určitě
     - jasně
-    - ovšem
-    - je to tak
-    - presne
-    - jiste
-    - ano prosim
+    - v pořádku
 
 - intent: deny
   examples: |
     - ne
-    - nikoliv
+    - to nechci
+    - špatně
     - nesouhlasím
     - v žádném případě
-    - to není pravda
-    - ani ne
-    - ne, děkuji
-    - nn
-    - to ne
-    - špatně
-    - ne e
-    - vubec ne
+    - nikoliv
 
 - intent: mood_great
   examples: |
-    - skvěle
-    - výborně
-    - cítím se fantasticky
-    - mám se fajn
-    - super
-    - jde to dobře
-    - nemůžu si stěžovat
     - perfektní
-    - úžasně
-    - mám se parádně
-    - mam se vyborne
-    - citim se skvele
+    - skvělé
+    - super, děkuji
+    - to je úžasné
+    - jsem spokojený
 
 - intent: mood_unhappy
   examples: |
+    - to mi nepomohlo
+    - to není ono
+    - jsem nespokojený
     - nic moc
-    - mám se hrozně
-    - není mi dobře
-    - jsem smutný
-    - jsem smutná
-    - cítím se pod psa
-    - mám blbou náladu
-    - nic se nedaří
-    - je to na nic
-    - dnes to není ono
-    - mám den blbec
-    - spatne
-    - spatna nalada
+    - hrůza
 
 - intent: bot_challenge
   examples: |
-    - jsi bot?
-    - jsi robot?
-    - mluvím s člověkem nebo s programem?
+    - jsi bot nebo člověk?
+    - mluvím s umělou inteligencí?
     - jsi skutečný?
     - co jsi zač?
-    - jsi umělá inteligence?
-    - kdo jsi?
-    - jsi jenom program?
-    - s kym mluvim?
-    - jsi AI?
 
+# ==============================================================================
+# JÁDROVÉ OBCHODNÍ INTENTY
+# ==============================================================================
 - intent: ask_product_recommendation
   examples: |
-    - Chtěl bych poradit.
-    - Poradíte mi?
-    - Potřebuji doporučení.
-    - Můžete mi pomoct s výběrem?
-    - Co byste mi doporučili?
-    - Jaký produkt si mám vybrat?
-    - Potřeboval bych poradit s kosmetikou.
-    - Pomoc s výběrem.
-    - Poradit s produktem.
-    - Co byste mi doporučili na [suchou pleť](skin_type:suchá)?
-    - Potřebuji něco pro [suchou pleť](skin_type:suchá).
-    - Jaké produkty máte na [mastnou pleť](skin_type:mastná)?
-    - Poradíte mi s výběrem pro [citlivou pleť](skin_type:citlivá)?
-    - Co byste poradili na [akné](skin_concern:akné)?
-    - Hledám něco pro [citlivou pleť](skin_type:citlivá).
-    - Potřebuji pomoc s výběrem produktu na [smíšenou pleť](skin_type:smíšená).
-    - Doporučte mi něco na [vrásky](skin_concern:vrásky).
-    - Co na [pigmentové skvrny](skin_concern:pigmentace)?
-    - Hledám nějaký [krém](product_category:krém) na [suchou pleť](skin_type:suchá).
-    - Hledám nějakým [krémem](product_category:krém) na [suchou pleť](skin_type:suchá).
-    - Máte [čistící gel](product_category:čistící gel) pro [mastnou pleť](skin_type:mastná)?
-    - Potřebuji [sérum](product_category:sérum) proti [vráskám](skin_concern:vrásky).
-    - Doporučte mi [oční krém](product_category:oční krém).
-    - Jaké máte [pleťové masky](product_category:maska)?
-    - Jaký [opalovací krém](product_category:spf) máte?
-    - Jaké máte [SPF](product_category:spf)?
-    - Chci nějaký [dobrý opalovák](product_category:spf).
-    - Doporučte mi [veganské](product_attribute:veganské) [sérum](product_category:sérum).
-    - Máte nějaký [krém](product_category:krém) [bez parfemace](product_attribute:bez parfemace)?
-    - Hledám [krém](product_category:krém) od [Medik8](brand).
-    - Co máte od [Heliocare](brand)?
-    - Hledám něco na [ruce](skin_area:ruce).
-    - Co na [obličej](skin_area:obličej)?
-    - Potřebuji něco [na tělo](skin_area:tělo).
-    - Hledám [veganské](product_attribute:veganské) [sérum](product_category:sérum) od [Medik8](brand) pro [citlivou pleť](skin_type:citlivá) na [hydrataci](skin_concern:hydratace).
-    - Jaký [krém](product_category:krém) od [Heliocare](brand) [s SPF](product_attribute:s spf) je vhodný pro [mastnou](skin_type:mastná) a [problematickou pleť](skin_type:problematická)?
-    - Doporučte mi od značky [FacEvolution](brand) něco na [vrásky](skin_concern:vrásky) [kolem očí](skin_area:oční okolí).
-    - Chci poradit s výběrem [očního krému](product_category:oční krém) na [hydrataci](skin_concern:hydratace) a [proti otokům](skin_concern:otoky očí).
-    - Doporučte mi [cokoli](product_category) od [Medik8](brand) co je [veganské](product_attribute:veganské) a na [akné](skin_concern:akné).
-    - Poradíte mi s výběrem produktu pro [velmi suchou pleť](skin_type:velmi suchá)?
-    - Co na [dehydrovanou pleť](skin_type:dehydrovaná)?
-    - Hledám [čistící pěnu](product_category:čistící pěna) pro [citlivou pleť](skin_type:citlivá).
-    - Máte nějaký [lehký krém](product_category:krém) [pro muže](product_attribute:pro muže)?
-    - Potřebuji [tonikum](product_category:tonikum) [bez alkoholu](product_attribute:bez alkoholu).
-    - Jaký [peeling](product_category:peeling) na [rozšířené póry](skin_concern:póry)?
-    - Chci [sérum na řasy](product_category:péče o řasy).
-    - Hledám [krém na ruce](product_category:krém na ruce) [intenzivní](product_attribute:intenzivní).
-    - Co byste mi doporučili na [mdlou pleť](skin_concern:mdlá pleť) od [Medik8](brand)?
-    - Potřebuji [fluid](product_category:fluid) [s SPF](product_attribute:s spf) [proti pigmentaci](skin_concern:pigmentace).
-    - Chtěla bych poradit s [krémem](product_category:krém).
-    - Hledám něco [stimulující růst](product_attribute:stimulující růst) pro řasy.
-    - Potřebuji [výživný](product_attribute:výživný) krém.
-    - Máte něco [s kofeinem](product_attribute:s kofeinem) na oční okolí?
-    - Chci produkt [proti pigmentaci](product_attribute:proti pigmentaci).
-    - Je toto [hydratační](product_attribute:hydratační)?
-    - Existuje nějaký [pleťový krém](product_category:krém) na [extrémně suchou pleť](skin_type:velmi suchá)?
-    - Sháním [gelový krém](product_category:gelový krém) pro [mastnou pokožku](skin_type:mastná).
-    - Máte [balzám na rty](product_category:balzám na rty) [bez parfemace](product_attribute:bez parfemace)?
-    - Co byste mi doporučil(a) pro [normální pleť](skin_type:normální), která je trochu [dehydrovaná](skin_concern:dehydratace)?
-    - Existuje [sérum](product_category:sérum) od [Medik8](brand) [s vitamínem C](product_attribute:s vitamínem C)?
-    - Potřebovala bych [tonikum](product_category:tonikum) pro [zralou pleť](skin_type:zralá), která má sklony k [pigmentaci](skin_concern:pigmentace).
-    - Hledám [masku](product_category:maska) na [obličej](skin_area:obličej), která je [veganská](product_attribute:veganské) a [hydratační](product_attribute:hydratační).
-    - Máte nějakou [péči o řasy](product_category:péče o řasy) [stimulující růst](product_attribute:stimulující růst)?
-    - Doporučte [krém na ruce](product_category:krém na ruce) který je [výživný](product_attribute:výživný) a na [velmi suchou](skin_type:velmi suchá) pokožku.
-    - Existuje [pleťová voda](product_category:pleťová voda) [bez alkoholu](product_attribute:bez alkoholu) pro [citlivou](skin_type:citlivá) pleť?
+    - chci poradit s výběrem kosmetiky
+    - hledám nějaký produkt na pleť
+    - můžete mi něco doporučit?
+    - potřebuji pomoct s výběrem
+    - doporučení produktu
+    - chci vybrat krém
+    - poraďte mi sérum
+    - co byste mi doporučil?
 
 - intent: inform
   examples: |
-    - mám [suchou pleť](skin_type:suchá)
-    - [suchá](skin_type:suchá)
-    - je [mastná](skin_type:mastná)
-    - [citlivá](skin_type:citlivá)
-    - spíše [smíšená](skin_type:smíšená)
-    - [normální](skin_type:normální)
-    - [velmi suchá](skin_type:velmi suchá)
-    - [problematická](skin_type:problematická)
-    - typ pleti [zralá](skin_type:zralá)
-    - [dehydrovaná](skin_type:dehydrovaná)
-    - [suchá](skin_type:suchá) a [citlivá](skin_type:citlivá) zároveň
-    - [mastná](skin_type:mastná) se sklonem k [akné](skin_concern:akné)
-    - moje pleť je [normální](skin_type:normální) až [smíšená](skin_type:smíšená)
-    - trápí mě [akné](skin_concern:akné)
-    - [vrásky](skin_concern:vrásky)
-    - na [pigmentaci](skin_concern:pigmentace)
-    - mám [rozšířené póry](skin_concern:póry)
-    - [černé tečky](skin_concern:černé tečky)
-    - [zarudnutí](skin_concern:zarudnutí)
-    - [hydratace](skin_concern:hydratace)
-    - [dehydratace](skin_concern:dehydratace)
-    - [citlivost](skin_concern:citlivost)
-    - [stárnutí](skin_concern:stárnutí)
-    - [zpevnění](skin_concern:zpevnění)
-    - [exfoliace](skin_concern:exfoliace)
-    - [mdlá pleť](skin_concern:mdlá pleť)
-    - [tmavé kruhy pod očima](skin_concern:tmavé kruhy pod očima)
-    - [otoky očí](skin_concern:otoky očí)
-    - [šupinatá pleť](skin_concern:šupinatá pleť)
-    - [růst řas](skin_concern:růst řas)
-    - [růst obočí](skin_concern:růst obočí)
-    - [akné](skin_concern:akné) a také [póry](skin_concern:póry)
-    - chtěl bych [krém](product_category:krém)
-    - chtěla bych [krému](product_category:krém)
-    - chtěla bych poradit s [krémem](product_category:krém)
-    - spíše [sérum](product_category:sérum)
-    - [čistič](product_category:čistič)
-    - [čistící gel](product_category:čistící gel)
-    - [oční krém](product_category:oční krém)
-    - [pleťovou masku](product_category:maska)
-    - [tonikum](product_category:tonikum)
-    - [peeling](product_category:peeling)
-    - [opalovací krém](product_category:spf)
-    - [SPF](product_category:spf)
-    - [lokální péči](product_category:lokální péče)
-    - [fluid](product_category:fluid)
-    - [emulzi](product_category:emulze)
-    - [tělové mléko](product_category:tělové mléko)
-    - na [obličej](skin_area:obličej)
-    - pro [oční okolí](skin_area:oční okolí)
-    - na [tělo](skin_area:tělo)
-    - na [ruce](skin_area:ruce)
-    - [krk](skin_area:krk)
-    - [dekolt](skin_area:dekolt)
-    - na [záda](skin_area:záda)
-    - [lokální použití](skin_area:lokální použití)
-    - od [Medik8](brand)
-    - značku [Heliocare](brand)
-    - [FacEvolution](brand)
-    - preferuji [Medik8](brand)
-    - [veganské](product_attribute:veganské) prosím
-    - něco [bez parabenů](product_attribute:bez parabenů)
-    - [s SPF](product_attribute:s spf)
-    - [bez alkoholu](product_attribute:bez alkoholu)
-    - [bez parfemace](product_attribute:bez parfemace)
-    - [s niacinamidem](product_attribute:s niacinamidem)
-    - [s AHA/BHA](product_attribute:s aha/bha)
-    - [matující](product_attribute:matující)
-    - [intenzivní](product_attribute:intenzivní)
-    - [lehký](product_attribute:lehký)
-    - [pro těhotné](product_attribute:pro těhotné)
-    - [s vitamínem C](product_attribute:s vitamínem C)
-    - [s retinalem](product_attribute:s retinalem)
-    - [pro muže](product_attribute:pro muže)
-    - [bez silikonů](product_attribute:bez silikonů)
-    - [nekomedogenní](product_attribute:nekomedogenní)
-    - ano, mám [suchou pleť](skin_type:suchá) a trápí mě [vrásky](skin_concern:vrásky)
-    - chci [krém](product_category:krém) na [obličej](skin_area:obličej)
-    - [mastná](skin_type:mastná) a také [akné](skin_concern:akné)
-    - [citlivá pleť](skin_type:citlivá), hlavně [zarudnutí](skin_concern:zarudnutí)
-    - [sérum](product_category:sérum) od [Medik8](brand)
-    - [veganské](product_attribute:veganské) a [bez alkoholu](product_attribute:bez alkoholu)
-    - leskne se mi pleť
-    - mám pupínky
-    - červená pleť
-    - jen [krém](product_category:krém)
-    - pouze [sérum](product_category:sérum)
-    - chci jen [oční krém](product_category:oční krém)
-    - [péče o řasy](product_category:péče o řasy)
-    - [sérum na řasy](product_category:péče o řasy)
-    - [čistící pěna](product_category:čistící pěna)
-    - [čistící olej](product_category:čistící olej)
-    - [pleťová voda](product_category:pleťová voda)
-    - [krém na ruce](product_category:krém na ruce)
-    - [oční sérum](product_category:oční sérum)
-    - [gelový krém](product_category:gelový krém)
-    - [olejové sérum](product_category:olejové sérum)
-    - [bez mýdla](product_attribute:bez mýdla)
-    - [bez sulfátů (SLS/SLES)](product_attribute:bez sulfátů (sls/sles))
-    - [s bakuchiolem](product_attribute:s bakuchiolem)
-    - [s peptidy](product_attribute:s peptidy)
-    - [jemný](product_attribute:jemný)
-    - pro [krém](product_category:krém)
-    - ano, [krém](product_category:krém)
-    - [krém](product_category:krém) by byl fajn
-    - chtěl bych něco [stimulující růst](product_attribute:stimulující růst)
-    - je ten produkt [výživný](product_attribute:výživný)?
-    - má to [kofein](product_attribute:s kofeinem)?
-    - potřebuji něco [proti pigmentaci](product_attribute:proti pigmentaci) jako vlastnost
-    - je [hydratační](product_attribute:hydratační)
-    - [s pha kyselinami](product_attribute:s pha kyselinami)
-    - s [kyselinou hyaluronovou](product_attribute:s kyselinou hyaluronovou)
-    - [antioxidační](product_attribute:antioxidační)
-    - [proti stárnutí](product_attribute:proti stárnutí)
-    - [rozjasňující](product_attribute:rozjasňující)
-    - typ pleti mám [velmi suchý](skin_type:velmi suchá)
-    - moje [pokožka](skin_type:normální) je spíš [normálního](skin_type:normální) typu
-    - ohledně pleti, je [zralá](skin_type:zralá)
-    - co se týče kategorie, tak [pleťová voda](product_category:pleťová voda)
-    - chtěla bych [make-up](product_category:make-up)
-    - preferuji [bázi](product_category:báze) pod make-up
-    - pro [pleť](skin_area:obličej) na [obličeji](skin_area:obličej)
-    - na [rty](skin_area:rty)
-    - na [vlasy](skin_area:vlasy)
-    - něco pro [pokožku hlavy](skin_area:pokožka hlavy)
-    - ano, můj typ pleti je [normální](skin_type:normální)
-    - ohledně problému, tak hlavně [černé tečky](skin_concern:černé tečky)
-    - chci [pleťový krém](product_category:krém)
-    - od značky [La Roche-Posay](brand:La Roche-Posay)
-    - měl by být [lehký](product_attribute:lehký)
-    - a na [obličej](skin_area:obličej)
-    - potřebuji [hydrataci](skin_concern:hydratace), mám [suchou](skin_type:suchá) pleť a chci nějaký [krém](product_category:krém)
-    - mám [citlivou](skin_type:citlivá) a [zralou](skin_type:zralá) pleť
-    - řeším [vrásky](skin_concern:vrásky) a [ztrátu elasticity](skin_concern:ztráta elasticity)
-    - mám [mastnou pleť](skin_type:mastná) a potřebuju něco [matujícího](product_attribute:matující)
-    - pro [smíšenou pleť](skin_type:smíšená) s [rozšířenými póry](skin_concern:póry)
-    - moje pleť je [normální](skin_type:normální), ale někdy [citlivá](skin_type:citlivá)
-    - mám [problémy s akné](skin_concern:akné) a chci [čistící gel](product_category:čistící gel)
-    - pro [oční okolí](skin_area:oční okolí) hledám [oční sérum](product_category:oční sérum) [s peptidy](product_attribute:s peptidy)
+    - mám [suchou](skin_type) pleť
+    - trápí mě [akné](skin_concern)
+    - chci něco od značky [Medik8](brand)
+    - hledám [sérum](product_category)
+    - pro [citlivou](skin_type) pleť
+    - na [vrásky](skin_concern) a [pigmentaci](skin_concern)
+    - mám [mastnou](skin_type) pleť a [rozšířené póry](skin_concern)
+    - hledám [hydratační krém](product_category) pro [suchou](skin_type) pleť
+    - preferuji [REN](brand)
+    - mám [zralou](skin_type) pleť
+    - chci něco na [začervenání](skin_concern)
+    - zajímá mě [čisticí olej](product_category)
 
-- intent: stop_form
+- intent: stop
   examples: |
     - stop
     - zrušit
     - konec
-    - už nechci pokračovat
-    - to je vše
-    - stačí
-    - ne, děkuji, to je vše
-    - zruš to
-    - přerušit
+    - nechci pokračovat
     - zpět
-    - to stačí, děkuji
-    - už nic dalšího nepotřebuji
-    - změna
-    - chci něco jiného
-    - nevadí, zkusíme to jinak
-    - zrusit formular
-    - konec formulare
-    - nechci vyplnovat
-
-- intent: out_of_scope
-  examples: |
-    - Jaké bude počasí?
-    - Kolik je hodin?
-    - Umíš vařit?
-    - Řekni mi vtip.
-    - Co si myslíš o politice?
-    - Kdo vyhrál poslední volby?
-    - Můžeš mi objednat pizzu?
-
-# --- OPRAVENÁ SEKCE: FAQ INTENTY POUŽÍVAJÍ LOMÍTKO ---
-- intent: faq/payment_options
-  examples: |
-    - Jaké jsou u vás způsoby platby?
-    - Mohu u vás zaplatit kartou?
-    - Je možné platit na dobírku?
-    - Jaké platební metody akceptujete?
-    - Chci se zeptat na možnosti úhrady.
-    - Dá se platit převodem?
-    - Berete hotovost při osobním odběru?
-    - Platba na eshopu.
-    - Moznosti platby.
-    - Jaké jsou u vás možnosti platby na eshopu?
-    - Jak mohu zaplatit na eshopu dermaestetik?
-    - Čím vším se dá na e-shopu platit?
-    - Přijímáte platební karty online na eshopu?
-    - Lze platit bankovním převodem na eshopu?
-    - Je možná platba na dobírku na eshopu?
-    - Jaké máte platební metody na eshopu?
-
-- intent: faq/product_ingredients
-  examples: |
-    - Je tento výrobek vhodný i pro citlivou pokožku?
-    - Jaké je přesné složení toho krému?
-    - Obsahuje tento produkt nějaké parabeny nebo silikony?
-    - Mohu tento přípravek použít, když mám ekzém?
-    - Hledám něco šetrného pro velmi citlivou pleť, je toto ono?
-    - Co všechno je v tom séru?
-    - Kde najdu detailní složení vašich výrobků?
-    - Jsou vaše produkty testovány na citlivé pleti?
-    - Složení produktu pro citlivou pleť.
-    - Je to vhodné pro citlivou pleť?
-    - Kde najdu informace o složení produktu na eshopu?
-    - Jaké je složení toho denního krému od Medik8 na eshopu?
-    - Co přesně obsahuje sérum na hydrataci z eshopu?
-    - Zajímá mě kompletní složení výrobku z eshopu.
-    - Je ve složení parfemace u produktu na eshopu?
-    - Můžete mi poslat INCI list pro produkt X z eshopu?
-    - Kde zjistím ingredience na eshopu?
-
-- intent: faq/returns
-  examples: |
-    - Jak mohu vrátit zakoupené zboží z e-shopu?
-    - Chci vrátit produkt, jaký je postup?
-    - Do kdy mohu vrátit zboží? Jaká je lhůta?
-    - Jaké jsou podmínky pro vrácení zboží?
-    - Co když mi objednaný produkt nevyhovuje a chci ho vrátit?
-    - Jak probíhá vrácení peněz za vrácené zboží?
-    - Informace k reklamaci a vrácení produktů.
-    - Kam mám poslat zboží, které chci vrátit?
-    - Vraceni zbozi.
-    - Mohu vratit kosmetiku?
-    - Jaký je postup pro vrácení zboží z eshopu?
-    - Jak můžu vrátit produkt z e-shopu?
-    - Co mám dělat, když chci vrátit kosmetiku z eshopu?
-    - Podmínky vrácení balíčku z eshopu.
-    - Chci vrátit objednávku z eshopu, jak na to?
-
-- intent: faq/vegan_products
-  examples: |
-    - Máte v nabídce veganské produkty?
-    - Prodáváte kosmetiku, která je veganská?
-    - Jsou vaše výrobky čistě rostlinného původu?
-    - Hledám něco veganského z vaší nabídky.
-    - Které z vašich produktů jsou vhodné pro vegany?
-    - Můžete mi doporučit veganskou péči o pleť?
-    - Jsou všechny produkty Medik8 veganské?
-    - Chci si ověřit veganské složení.
-    - Veganska kosmetika.
-    - Mate veganske veci?
-
-- intent: faq/hypoallergenic
-  examples: |
-    - Co přesně znamená, když je produkt hypoalergenní?
-    - Jsou vaše produkty označené jako hypoalergenní?
-    - Mám velmi citlivou pleť, potřebuji hypoalergenní kosmetiku, máte?
-    - Nabízíte nějaké produkty pro alergiky?
-    - Je tato kosmetika vhodná pro lidi s alergiemi?
-    - Jaké máte hypoalergenní přípravky?
-    - Co mi doporučíte, pokud mám sklon k alergiím?
-    - Jsou hypoalergenní produkty 100% bezpečné?
-    - Hypoalergenni produkty.
-    - Pro alergiky.
-
-- intent: faq/order_status_delivery_time
-  examples: |
-    - Kde se nachází moje objednávka?
-    - Jaký je aktuální stav mé objednávky?
-    - Kdy mohu očekávat doručení balíčku?
-    - Jak dlouho obvykle trvá doručení?
-    - Kdy bude moje objednávka odeslána a doručena?
-    - Chtěl bych sledovat svou objednávku.
-    - Nějaké info o doručení mé poslední objednávky?
-    - Ještě mi nepřišel potvrzovací e-mail o odeslání.
-    - Jak zjistím, kdy mi zboží přijde?
-    - Stav objednavky.
-    - Kdy mi prijde balik?
-    - Dodaci lhuta.
-
-- intent: faq/skin_cleansing
-  examples: |
-    - Jak si mám správně čistit pleť?
-    - Jak často bych si měl čistit obličej?
-    - Je opravdu nutné provádět dvoufázové čištění?
-    - Jaký je správný postup pro čištění pleti ráno a večer?
-    - Můžete mi poradit, jak správně odstranit make-up?
-    - Čím nejlépe čistit pleť se sklonem k akné?
-    - Jaké produkty jsou vhodné na čištění suché pleti?
-    - Co doporučujete na odlíčení voděodolného make-upu?
-    - Cisteni pleti.
-    - Jak cistit oblicej?
-
-- intent: faq/product_application_order
-  examples: |
-    - V jakém pořadí mám správně aplikovat kosmetické produkty?
-    - Co se dává na pleť dříve, sérum nebo hydratační krém?
-    - Jaké je správné pořadí kroků v mé skincare rutině?
-    - Jak mám vrstvit kosmetiku, aby to bylo efektivní?
-    - Kdy přesně mám v ranní rutině použít SPF?
-    - Jak se liší pořadí produktů ráno a večer?
-    - Můžete mi poradit s vrstvením produktů?
-    - Pořadí aplikace produktů péče o pleť.
-    - Vrstveni kosmetiky.
-    - Poradi produktu.
-
-- intent: faq/spf_usage
-  examples: |
-    - Kdy bych měl používat krém s SPF?
-    - Jak správně aplikovat produkt s ochranným faktorem?
-    - Je nutné používat SPF i když je pod mrakem nebo v zimě?
-    - Jak funguje ochrana před UV zářením pomocí SPF?
-    - Jak zařadit opalovací krém na obličej do mé denní péče?
-    - Co znamená číslo SPF na produktech?
-    - Mám SPF použít před nebo po hydratačním krému?
-    - Jak často bych měl SPF reaplikovat během dne?
-    - Pouzivani SPF.
-    - Kdy dat SPF?
-
-- intent: faq/combining_actives
-  examples: |
-    - Mohu bezpečně kombinovat vitamín C a retinol v jedné rutině?
-    - Jaké aktivní látky v kosmetice bych neměl míchat dohromady?
-    - Je bezpečné používat AHA kyseliny ve stejný den jako retinol?
-    - Na co si dát pozor při kombinování různých kosmetických produktů?
-    - Jaké jsou doporučené kombinace aktivních látek pro nejlepší účinek?
-    - Existují nějaké látky, které spolu špatně reagují?
-    - Mohu používat niacinamid s vitamínem C?
-    - Jak vrstvit produkty s různými aktivními složkami?
-    - Kombinovani aktivnich latek.
-    - Co s cim nemichat?
-
-- intent: faq/online_consultation
-  examples: |
-    - Poskytujete online konzultace ohledně výběru produktů?
-    - Jak funguje vaše online poradna na webu?
-    - Potřeboval bych poradit s výběrem vhodné kosmetiky online.
-    - Nabízíte online konzultace k péči o pleť?
-    - Jak se mohu zeptat ve vaší internetové poradně?
-    - Chci se poradit s odborníkem přes internet, je to možné?
-    - Je online poradenství zdarma?
-    - Jak rychle odpovídáte na dotazy v online poradně?
-    - Online konzultace.
-    - Poradna online.
-
-- intent: faq/eshop_shipping_cost
-  examples: |
-    - Kolik u vás stojí doprava z eshopu?
-    - Jaká je cena poštovného z eshopu?
-    - Na kolik vyjde doručení z eshopu?
-    - Máte dopravu zdarma z eshopu? Od jaké částky?
-    - Info o ceně dopravy z eshopu.
-    - Kolik stojí poštovné u objednávky pod 1000 Kč z eshopu?
-    - Jaká je cena dopravy pro nákup za 500 kč z eshopu?
-    - Kolik zaplatím za dopravu, když objednám zboží za 1200 korun z eshopu?
-    - Cena doručení u menších objednávek z eshopu?
-    - Je poštovné jiné pro objednávky nad 1500 Kč z eshopu?
-    - Chci vědět cenu dopravy z eshopu.
-    - Informace o poštovném z eshopu.
-    - Jaké nabízíte možnosti dopravy z eshopu?
-    - Jakým způsobem posíláte zboží z eshopu?
-    - Posíláte i přes Zásilkovnu z eshopu?
-    - Jací jsou vaši dopravci pro eshop?
-    - Chtěl bych vědět víc o ceně poštovného z eshopu.
-    - Jak je to s doručením mé objednávky z eshopu?
-    - Poskytujete informace o dopravě z eshopu?
-
-- intent: faq/parabens
-  examples: |
-    - Obsahují vaše produkty parabeny?
-    - Prodáváte kosmetiku bez parabenů?
-    - Jaký je váš postoj k parabenům v kosmetice?
-    - Jsou ve vašich krémech parabeny?
-    - Chci se vyhnout produktům s parabeny, máte takové?
-    - Které vaše značky jsou bezparabenové?
-    - Jsou parabeny škodlivé?
-    - Proč některé produkty obsahují parabeny?
-    - Najdu u vás kosmetiku, co nemá parabeny?
-    - Informace o parabenech ve vaší nabídce.
-    - Parabeny v kosmetice.
-    - Bezparabenova kosmetika.
-
-- intent: faq/animal_testing
-  examples: |
-    - Jsou vaše produkty testovány na zvířatech?
-    - Testujete kosmetiku na zvířatech?
-    - Nabízíte cruelty-free kosmetiku?
-    - Je vaše kosmetika netestovaná na zvířatech?
-    - Jaká je vaše politika ohledně testování na zvířatech?
-    - Chci pouze produkty, které nejsou testované na zvířatech, máte je?
-    - Splňují vaše produkty EU legislativu o netestování?
-    - Máte certifikát Leaping Bunny nebo PETA pro vaše značky?
-    - Jste proti testování na zvířatech?
-    - Podporujete testování na zvířatech?
-    - Testovani na zviratech.
-    - Cruelty free.
-
-- intent: faq/store_pickup
-  examples: |
-    - Máte kamennou prodejnu?
-    - Kde si mohu produkty koupit osobně?
-    - Je u vás možný osobní odběr objednávky z e-shopu?
-    - Jaká je adresa vaší prodejny pro osobní vyzvednutí?
-    - Jaká je otevírací doba prodejny v Břeclavi?
-    - Mohu si zboží z e-shopu nechat poslat na prodejnu a tam si ho vyzvednout?
-    - Je osobní odběr zdarma?
-    - Nabízíte možnost click and collect?
-    - Kde vás najdu pro osobní nákup?
-    - Chci si objednávku vyzvednout osobně.
-    - Osobni odber.
-    - Prodejna Breclav.
-
-- intent: faq/eshop_complaint_procedure
-  examples: |
-    - Jak postupovat při reklamaci produktu z eshopu?
-    - Chci reklamovat zboží z eshopu, co mám dělat?
-    - Jaká je reklamační procedura na eshopu?
-    - Produkt z eshopu je vadný, jak ho mohu reklamovat?
-    - Kam se obrátit s reklamací z eshopu?
-    - Jak probíhá reklamace na vašem e-shopu?
-    - Potřebuji informace k reklamaci z eshopu?
-    - Reklamace eshop.
-
-- intent: faq/clinic_botox_duration
-  examples: |
-    - Jak dlouho vydrží účinek botulotoxinu z kliniky?
-    - Na jak dlouho mi vydrží botox z kliniky?
-    - Jaká je trvanlivost efektu po aplikaci botoxu na klinice?
-    - Kdy budu muset jít na botox znovu na kliniku?
-    - Opakování aplikace botulotoxinu na klinice.
-    - Trvání účinku botoxu z kliniky.
-    - Botox vydrz.
-    - Jak casto na botox?
-
-- intent: faq/clinic_laser_epilation_sessions
-  examples: |
-    - Kolik ošetření laserové epilace je potřeba na klinice?
-    - Kolikrát musím jít na laserovou epilaci na klinice?
-    - Stačí jedno sezení laserové epilace na klinice?
-    - Jaký je doporučený počet opakování pro laserovou epilaci na klinice?
-    - Počet sezení pro trvalou epilaci laserem na klinice?
-    - Kolik návštěv kliniky vyžaduje laserová epilace?
-    - Laserova epilace pocet sezeni.
-    - Kolikrat na laser?
-
-- intent: faq/clinic_laser_epilation_preparation
-  examples: |
-    - Jak se mám připravit na laserovou epilaci na klinice?
-    - Co mám dělat před laserovou epilací na klinice?
-    - Je nějaká speciální příprava před ošetřením laserem na klinice?
-    - Příprava na epilaci laserem na klinice?
-    - Co bych měl vědět před první laserovou epilací na klinice?
-    - Holení před laserovou epilací na klinice?
-    - Priprava na laserovou epilaci.
-    - Co pred laserem?
-
-- intent: faq/clinic_chemical_peel_summer
-  examples: |
-    - Provádí se chemický peeling i v létě na klinice?
-    - Mohu jít na chemický peeling v letních měsících na klinice?
-    - Je léto vhodné období pro chemický peeling na klinice?
-    - Chemický peeling a slunce na klinice?
-    - Letní chemický peeling na klinice?
-    - Dá se dělat peeling v létě na klinice?
-    - Chemicky peeling v lete.
-    - Peeling a slunce.
+    - začít znovu
 
 - intent: set_sort_preference
   examples: |
-    - chci seřadit od [nejlevnějšího](sort_preference:price_asc)
-    - seřaď podle [ceny vzestupně](sort_preference:price_asc)
-    - ukaž mi [nejdražší](sort_preference:price_desc) první
-    - seřaď podle [ceny sestupně](sort_preference:price_desc)
-    - jaké jsou [nejlevnější](sort_preference:price_asc) produkty
-    - chci to seřadit podle [jména](sort_preference:name_asc)
-    - seřaď to [abecedně](sort_preference:name_asc)
-    - můžeš to seřadit?
-    - jaké jsou možnosti řazení?
-    - seřaď podle [ceny](sort_preference:price_asc)
-
-- intent: dotaz_na_sluzbu
-  examples: |
-    - co všechno děláte?
-    - jaké nabízíte služby?
-    - řekni mi víc o [botoxu](service)
-    - co je to [chemický peeling](service)?
-    - zajímá mě [laserové ošetření](service)
-    - máte v nabídce [výplně rtů](service)?
-
-- intent: dotaz_na_cenu
-  examples: |
-    - kolik to stojí?
-    - jaký je ceník?
-    - na kolik vyjde [botox](service)?
-    - cena za [výplně rtů](service)?
-    - kolik si mám připravit na [laser](service)?
-
-- intent: dotaz_na_oteviraci_dobu
-  examples: |
-    - kdy máte otevřeno?
-    - jaká je vaše otevírací doba?
-    - máte otevřeno i o víkendu?
-    - v kolik hodin otevíráte?
-    - do kdy tam jste?
-
-- intent: inform_cheaper
-  examples: |
-    - to je moc drahé
-    - ukaž levnější
-
-- intent: inform_expensive
-  examples: |
-    - ukaž dražší
-    - a něco prémiovějšího?
+    - seřadit od [nejlevnějšího](sort_preference:price_asc)
+    - chci to seřadit podle ceny [sestupně](sort_preference:price_desc)
+    - od [nejdražšího](sort_preference:price_desc)
+    - ukaž mi nejlevnější produkty
+    - seřadit [vzestupně](sort_preference:price_asc)
 
 - intent: show_more
   examples: |
     - ukaž další
     - další prosím
-
-- intent: reset_filters
-  examples: |
-    - chci začít znovu
-    - vymaž filtry
-    - resetovat hledání
-
-- intent: show_current_filters
-  examples: |
-    - jaké mám teď filtry?
-    - podle čeho teď hledáš?
-    - ukaž mi mé nastavení
-
-- intent: compare_products
-  examples: |
-    - porovnej [první](product_order) a [druhý](product_order)
-    - jaký je rozdíl mezi [prvním](product_order) a [třetím](product_order) produktem?
-    - srovnej [druhý](product_order) a [třetí](product_order)
-
-- intent: add_to_wishlist
-  examples: |
-    - přidej [první](product_order) do oblíbených
-    - ulož si [druhý](product_order) produkt
-    - chci si zapamatovat ten [třetí](product_order)
-
-- intent: show_wishlist
-  examples: |
-    - ukaž mi můj seznam přání
-    - co mám v oblíbených?
-    - zobrazit wishlist
-
-- intent: trigger_recommendation
-  examples: |
-    - hledej
-    - najdi mi něco
-    - ukaž mi výsledky
-    - to je vše, hledej
-    - co pro mě máš?
-    - zobrazit doporučení
-    - to stačí
-    - můžeš hledat
-    - spusť hledání
-
-- intent: deny_suggestion
-  examples: |
-    - ne, to je dobrý
-    - možná později
-    - teď ne, děkuji
-    - zatím nic dalšího
-
-# --- Synonyma ---
-- synonym: suchá
-  examples: |
-    - suchou
-    - suché
-    - vysušená
-    - vysušenou
-    - pro suchou
-    - na suchou
-
-- synonym: mastná
-  examples: |
-    - mastnou
-    - mastné
-    - lesklá
-    - leskne se mi
-    - mastný typ pleti
-    - pro mastnou
-    - na mastnou
-
-- synonym: smíšená
-  examples: |
-    - smíšenou
-    - smíšené
-    - smíšeného typu
-    - smíšené pleti
-
-- synonym: citlivá
-  examples: |
-    - citlivou
-    - citlivé
-    - citlivá pleť
-    - citlivou pokožku
-    - pro citlivou
-    - na citlivou
-
-- synonym: normální
-  examples: |
-    - normální pleť
-    - normálního typu
-    - normálního
-    - normální pokožka
-    - normální pleti
-
-- synonym: problematická
-  examples: |
-    - problematickou
-    - problematické
-    - problematickou plet
-    - problematicke pleti
-    - se sklony k problémům
-
-- synonym: zralá
-  examples: |
-    - zralou
-    - zralé
-    - zralou plet
-    - zrale pleti
-    - pro zralou
-
-- synonym: dehydrovaná
-  examples: |
-    - dehydrovanou
-    - dehydrované
-    - dehydrovanou plet
-    - dehydratovane pleti
-    - málo hydratovaná
-
-- synonym: velmi suchá
-  examples: |
-    - velmi suchou
-    - velmi suché
-    - extrémně suchá
-    - extrémně suchou
-    - extremne sucha
-    - velmi suchý
-    - pro velmi suchou
-    - na velmi suchou
-
-- synonym: akné
-  examples: |
-    - aknózní
-    - pupínky
-    - pupínků
-    - na pupínky
-    - proti akné
-    - s akné
-    - na akné
-    - zanícená místa
-    - vyrážka
-
-- synonym: vrásky
-  examples: |
-    - vráskám
-    - vrásky oční
-    - proti vráskám
-    - hluboké vrásky
-    - redukci vrásek
-    - jemné linky
-    - linky
-    - na vrásky
-    - proti linkám
-    - vyhlazení vrásek
-
-- synonym: pigmentace
-  examples: |
-    - pigmentové skvrny
-    - skvrny
-    - hyperpigmentace
-    - na pigmentové skvrny
-    - proti skvrnám
-    - sjednocení barvy pleti
-
-- synonym: póry
-  examples: |
-    - rozšířené póry
-    - ucpané póry
-    - čištění pórů
-    - redukci pórů
-    - zúžení pórů
-    - na póry
-    - velké póry
-    - stahování pórů
-
-- synonym: černé tečky
-  examples: |
-    - na černé tečky
-    - proti černým tečkám
-    - komedony
-    - na komedony
-
-- synonym: zarudnutí
-  examples: |
-    - červená pleť
-    - podráždění
-    - zčervenání
-    - na zarudnutí
-    - proti zarudnutí
-    - červenání pleti
-
-- synonym: hydratace
-  examples: |
-    - pro hydrataci
-    - na hydrataci
-    - zvlhčení
-    - nedostatek hydratace
-    - potřebuji hydratovat
-    - doplnění vláhy
-
-- synonym: dehydratace
-  examples: |
-    - proti dehydrataci
-    - na dehydrataci
-    - ztráta vody
-    - vysušování
-
-- synonym: citlivost
-  examples: |
-    - pro citlivost
-    - na citlivost
-    - reaktivní pleť
-    - přecitlivělost
-
-- synonym: stárnutí
-  examples: |
-    - známky stárnutí
-    - anti-aging
-    - omlazení
-    - antiage
-
-- synonym: zpevnění
-  examples: |
-    - pro zpevnění
-    - na zpevnění
-    - ztráta pevnosti
-    - povadlá pleť
-    - lifting
-
-- synonym: exfoliace
-  examples: |
-    - pro exfoliaci
-    - na exfoliaci
-    - odstranění odumřelých buněk
-
-- synonym: mdlá pleť
-  examples: |
-    - na mdlou pleť
-    - bez jasu
-    - unavená pleť
-    - zašedlá pleť
-
-- synonym: tmavé kruhy pod očima
-  examples: |
-    - na tmavé kruhy
-    - proti tmavým kruhům
-    - kruhy pod očima
-
-- synonym: otoky očí
-  examples: |
-    - na otoky očí
-    - proti otokům
-    - opuchlé oči
-    - váčky pod očima
-
-- synonym: šupinatá pleť
-  examples: |
-    - na šupinatou pleť
-    - loupající se pleť
-    - suché šupinky
-    - šupinky
-
-- synonym: růst řas
-  examples: |
-    - pro růst řas
-    - na delší řasy
-    - posílení řas
-    - prodloužení řas
-    - zahuštění řas
-
-- synonym: růst obočí
-  examples: |
-    - pro růst obočí
-    - na hustší obočí
-    - posílení obočí
-    - zahuštění obočí
-
-- synonym: ztráta elasticity
-  examples: |
-    - neelastická pleť
-    - povolená pleť
-    - zlepšení elasticity
-
-- synonym: nerovnoměrný tón pleti
-  examples: |
-    - sjednocení tónu
-    - na nerovnoměrný tón
-    - nevyrovnaný tón
-    - barevné sjednocení pleti
-
-- synonym: krém
-  examples: |
-    - krému
-    - krémy
-    - krémem
-    - pleťový krém
-    - na krém
-    - krémeček
-
-- synonym: sérum
-  examples: |
-    - séra
-    - sérem
-    - na sérum
-
-- synonym: čistič
-  examples: |
-    - čističe
-    - čističem
-    - na čistič
-    - čistící přípravek
-
-- synonym: čistící gel
-  examples: |
-    - čistícího gelu
-    - čistícím gelem
-    - čistící gely
-    - gel na čištění
-    - mycí gel
-
-- synonym: oční krém
-  examples: |
-    - očního krému
-    - očním krémem
-    - oční krémy
-    - krém na oči
-    - krém na oční okolí
-
-- synonym: maska
-  examples: |
-    - masky
-    - maskou
-    - pleťová maska
-    - na masku
-    - obličejová maska
-
-- synonym: tonikum
-  examples: |
-    - tonika
-    - tonikem
-    - pleťové tonikum
-    - tonizační voda
-
-- synonym: peeling
-  examples: |
-    - peelingu
-    - peelingem
-    - na peeling
-    - exfoliační přípravek
-
-- synonym: spf
-  examples: |
-    - opalovací krém
-    - ochrana proti slunci
-    - opalovák
-    - SPF50
-    - krém s vysokým faktorem
-    - tónovaný krém s SPF
-    - krém s ochranným faktorem
-    - sluneční ochrana
-    - na opalování
-
-- synonym: lokální péče
-  examples: |
-    - lokální péči
-    - na lokální péči
-    - cílená péče
-    - SOS péče
-    - na pupínek
-    - bodová péče
-
-- synonym: fluid
-  examples: |
-    - fluidu
-    - fluidem
-    - lehký fluid
-
-- synonym: emulze
-  examples: |
-    - emulzi
-    - emulzí
-    - lehká emulze
-
-- synonym: tělové mléko
-  examples: |
-    - tělového mléka
-    - tělovým mlékem
-    - mléko na tělo
-
-- synonym: pleťová voda
-  examples: |
-    - pleťové vody
-    - pleťovou vodou
-    - voda na pleť
-
-- synonym: make-up
-  examples: |
-    - makeup
-    - makeupu
-    - s makeupem
-    - na make-up
-
-- synonym: báze
-  examples: |
-    - bázi pod make-up
-    - podkladová báze
-    - primer
-
-- synonym: krém na ruce
-  examples: |
-    - krému na ruce
-    - krém pro ruce
-    - na mazání rukou
-
-- synonym: oční sérum
-  examples: |
-    - očního séra
-    - očním sérem
-    - sérum na oči
-    - sérum na oční okolí
-
-- synonym: péče o řasy
-  examples: |
-    - na řasy
-    - pro řasy
-    - přípravek na řasy
-    - sérum na řasy
-
-- synonym: čistící pěna
-  examples: |
-    - čistící pěny
-    - čistící pěnou
-    - pěna na čištění
-    - mycí pěna
-
-- synonym: čistící olej
-  examples: |
-    - čistícího oleje
-    - čistícím olejem
-    - olej na čištění
-    - odličovací olej
-
-- synonym: gelový krém
-  examples: |
-    - gelového krému
-    - gelovým krémem
-    - krémový gel
-    - gel-krém
-
-- synonym: olejové sérum
-  examples: |
-    - olejového séra
-    - olejovým sérem
-    - sérum na bázi oleje
-
-- synonym: micelární voda
-  examples: |
-    - micelární vody
-    - micelární vodou
-    - micelárka
-
-- synonym: odličovač
-  examples: |
-    - odličovače
-    - odličovačem
-    - na odlíčení
-    - odličovací přípravek
-
-- synonym: balzám na rty
-  examples: |
-    - balzámu na rty
-    - balzámem na rty
-    - pomáda na rty
-    - jelení lůj
-
-- synonym: Medik8
-  examples: |
-    - Mediku8
-    - od Medik8
-    - značky Medik8
-
-- synonym: Heliocare
-  examples: |
-    - Heliocar
-    - od Heliocare
-    - značky Heliocare
-
-- synonym: FacEvolution
-  examples: |
-    - Face Evolution
-    - od FacEvolution
-    - značky FacEvolution
-
-- synonym: Revitalash
-  examples: |
-    - Revitalashe
-    - od Revitalash
-    - značky Revitalash
-
-- synonym: Dermalogica
-  examples: |
-    - Dermalogicy
-    - od Dermalogica
-    - značky Dermalogica
-
-- synonym: La Roche-Posay
-  examples: |
-    - LaRoche Posay
-    - LRP
-    - La Roche
-    - od La Roche-Posay
-    - značky La Roche-Posay
-
-- synonym: Bioderma
-  examples: |
-    - Biodermy
-    - od Bioderma
-    - značky Bioderma
-
-- synonym: veganské
-  examples: |
-    - veganský
-    - veganská
-    - pro vegany
-    - čistě rostlinné
-    - vegan
-
-- synonym: bez parabenů
-  examples: |
-    - bez parabenu
-    - neobsahuje parabeny
-    - paraben-free
-
-- synonym: s spf
-  examples: |
-    - s ochranným faktorem
-    - s UV ochranou
-    - obsahuje SPF
-    - má SPF
-
-- synonym: bez alkoholu
-  examples: |
-    - nealkoholické
-    - alcohol-free
-    - neobsahuje alkohol
-    - bezalkoholový
-
-- synonym: bez parfemace
-  examples: |
-    - neparfemované
-    - bez vůně
-    - fragrance-free
-    - bez přidané parfemace
-    - bez přidaných vonných látek
-
-- synonym: s niacinamidem
-  examples: |
-    - s niacinamidy
-    - obsahuje niacinamid
-    - s vitamínem B3
-    - s vitaminem B3
-    - niacinamid
-
-- synonym: s aha/bha
-  examples: |
-    - s AHA BHA kyselinami
-    - s kyselinami AHA BHA
-    - s ovocnými kyselinami
-    - se salicylovou kyselinou
-    - obsahuje AHA
-    - obsahuje BHA
-
-- synonym: matující
-  examples: |
-    - zmatňující
-    - proti lesku
-    - pro matný vzhled
-    - zmatnění
-    - zmatňuje
-
-- synonym: intenzivní
-  examples: |
-    - intenzivně
-    - silný
-    - extra
-    - pro intenzivní péči
-
-- synonym: lehký
-  examples: |
-    - lehké
-    - lehká
-    - light
-    - s lehkou texturou
-    - nemastný
-
-- synonym: pro těhotné
-  examples: |
-    - v těhotenství
-    - pro těhulky
-    - bezpečné v těhotenství
-    - vhodné pro těhotné
-    - pro těhotné ženy
-
-- synonym: s vitamínem C
-  examples: |
-    - s vitaminem C
-    - vitamín C
-    - céčko
-    - s céčkem
-    - obsahuje vitamín C
-    - s vitaminem c
-
-- synonym: s retinalem
-  examples: |
-    - retinal
-    - s retinolem
-    - retinol
-    - obsahuje retinal
-    - s vitamínem A
-    - s vitaminem A
-
-- synonym: pro muže
-  examples: |
-    - mužské
-    - pánské
-    - pro pány
-    - for men
-    - pro chlapy
-
-- synonym: bez silikonů
-  examples: |
-    - bez silikonu
-    - neobsahuje silikony
-    - silicone-free
-
-- synonym: nekomedogenní
-  examples: |
-    - neucpávající póry
-    - proti ucpávání pórů
-    - non-comedogenic
-    - nekomedonní
-
-- synonym: bez mýdla
-  examples: |
-    - soap-free
-    - neobsahuje mýdlo
-    - bezmýdlový
-
-- synonym: bez sulfátů (sls/sles)
-  examples: |
-    - bez SLS
-    - bez SLES
-    - bez sulfátů
-    - sulfate-free
-    - neobsahuje sulfáty
-    - SLS free
-    - SLES free
-
-- synonym: s bakuchiolem
-  examples: |
-    - obsahuje bakuchiol
-    - bakuchiolové
-    - bakuchiol
-
-- synonym: s peptidy
-  examples: |
-    - peptidové
-    - obsahuje peptidy
-    - s peptidy komplexem
-    - peptidy
-
-- synonym: jemný
-  examples: |
-    - jemné
-    - šetrný
-    - šetrné
-    - gentle
-    - zjemňující
-
-- synonym: s pha kyselinami
-  examples: |
-    - PHA kyseliny
-    - s PHA
-    - s polyhydroxykyselinami
-    - obsahuje PHA
-    - s glukonolaktonem
-    - s kyselinou laktobionovou
-
-- synonym: s kyselinou hyaluronovou
-  examples: |
-    - s hyaluronem
-    - obsahuje kyselinu hyaluronovou
-    - s HA
-    - hyaluronové
-    - s hyaluronátem sodným
-
-- synonym: antioxidační
-  examples: |
-    - antioxidanty
-    - s antioxidanty
-    - proti volným radikálům
-    - antioxidační účinky
-
-- synonym: proti stárnutí
-  examples: |
-    - anti-age
-    - omlazující
-    - antiaging
-    - anti-vráskový
-
-- synonym: rozjasňující
-  examples: |
-    - pro rozjasnění
-    - na rozjasnění
-    - pro zářivou pleť
-    - brightening
-    - projasňující
-
-- synonym: stimulující růst
-  examples: |
-    - pro růst
-    - na podporu růstu
-    - podporující růst
-    - růstový
-
-- synonym: výživný
-  examples: |
-    - vyživující
-    - pro výživu
-    - s výživnými složkami
-    - nutriční
-
-- synonym: s kofeinem
-  examples: |
-    - kofeinové
-    - obsahuje kofein
-    - s obsahem kofeinu
-    - kofein
-
-- synonym: proti pigmentaci
-  examples: |
-    - na pigmentové skvrny (jako vlastnost)
-    - redukující pigmentaci
-    - zesvětlující pigmentaci
-    - proti skvrnám (jako vlastnost)
-    - depigmentační
-
-- synonym: hydratační
-  examples: |
-    - pro hydrataci (jako vlastnost)
-    - hydratující
-    - zvlhčující
-    - dodávající hydrataci
-    - s hydratačním účinkem
-
-- synonym: obličej
-  examples: |
-    - na obličej
-    - pro obličej
-    - pleťový (v kontextu oblasti)
-    - na pleť
-    - tvář
-
-- synonym: oční okolí
-  examples: |
-    - kolem očí
-    - na oční okolí
-    - pro oční okolí
-    - oční partie
-    - pod oči
-    - na oči (v kontextu krému apod.)
-
-- synonym: tělo
-  examples: |
-    - na tělo
-    - pro tělo
-    - celotělový
-    - na pokožku těla
-    - tělová péče (pokud oblast)
-
-- synonym: ruce
-  examples: |
-    - na ruce
-    - pro ruce
-    - na pokožku rukou
-
-- synonym: krk
-  examples: |
-    - na krk
-    - pro krk
-    - na pokožku krku
-
-- synonym: dekolt
-  examples: |
-    - na dekolt
-    - pro dekolt
-    - na pokožku dekoltu
-
-- synonym: záda
-  examples: |
-    - na záda
-    - pro pokožku zad
-
-- synonym: lokální použití
-  examples: |
-    - lokálně
-    - na konkrétní místa
-    - bodová aplikace
-    - na pupínek (jako oblast)
-
-- synonym: lokty
-  examples: |
-    - na lokty
-    - pro lokty
-
-- synonym: kolena
-  examples: |
-    - na kolena
-    - pro kolena
-
-- synonym: ramena
-  examples: |
-    - na ramena
-    - pro ramena
-
-- synonym: rty
-  examples: |
-    - na rty
-    - pro rty
-    - péče o rty (pokud myšleno jako oblast)
-
-- synonym: vlasy
-  examples: |
-    - na vlasy
-    - pro vlasy
-    - vlasová péče (pokud myšleno jako oblast)
-
-- synonym: pokožka hlavy
-  examples: |
-    - na pokožku hlavy
-    - pro pokožku hlavy
-    - vlasová pokožka
-
-- synonym: price_asc
-  examples: |
-    - nejlevnějšího
-    - nejlevnější
-    - ceny vzestupně
-    - nejnižší ceny
-    - ceny
-- synonym: price_desc
-  examples: |
-    - nejdražšího
-    - nejdražší
-    - ceny sestupně
-    - nejvyšší ceny
-- synonym: name_asc
-  examples: |
-    - jména
-    - abecedně
-    - názvu
-
-# --- Lookup Tables ---
+    - co tam máš dál?
+    - zobrazit více
+    - další stránka
+
+- intent: get_product_details
+  examples: |
+    - řekni mi víc o [Liquid Peptides](product_name)
+    - co je to [C-Tetra](product_name)?
+    - detaily produktu [Crystal Retinal](product_name)
+    - chci informace o [Advanced Day Ultimate Protect](product_name)
+
+- intent: ask_for_routine
+  examples: |
+    - sestav mi kompletní rutinu
+    - chci [ranní](routine_type) rutinu na [akné](skin_concern)
+    - jaká je nejlepší péče o [suchou pleť](skin_type)
+    - doporuč mi [večerní](routine_type) rutinu
+    - jak se starat o [mastnou pleť](skin_type)
+    - chci celou péči
+
+- intent: book_consultation
+  examples: |
+    - chci se objednat na konzultaci
+    - mohu si zarezervovat termín?
+    - potřebuji mluvit s odborníkem
+    - chci se poradit s kosmetičkou
+    - objednat na konzultaci
+
+- intent: out_of_scope
+  examples: |
+    - jaké bude počasí?
+    - uvař mi kávu
+    - kolik je hodin
+    - řekni vtip
+
+# ==============================================================================
+# GDPR INTENTY
+# ==============================================================================
+- intent: gdpr_inquire
+  examples: |
+    - jaké informace o mně ukládáte?
+    - co o mně víš?
+    - ochrana osobních údajů
+    - GDPR
+    - jak chráníte mé údaje?
+- intent: gdpr_export
+  examples: |
+    - chci exportovat svá data
+    - pošlete mi historii konverzace
+    - chci výpis naší komunikace
+    - export mých dat
+- intent: gdpr_delete
+  examples: |
+    - chci smazat svá data
+    - zapomeňte na mě
+    - smažte moji historii
+    - nepřeji si, abyste o mně ukládali data
+    - odvolávám souhlas
+
+# ==============================================================================
+# FAQ INTENTY (PRO RESPONSESELECTOR)
+# ==============================================================================
+- intent: faq/payment_options
+  examples: |
+    - Jaké jsou možnosti platby?
+    - Jak se dá platit?
+    - Berete karty?
+    - Lze platit dobírkou?
+- intent: faq/product_ingredients
+  examples: |
+    - Jaké je složení produktu?
+    - Co obsahuje ten krém?
+    - Kde najdu INCI?
+- intent: faq/returns
+  examples: |
+    - Jak mohu vrátit zboží?
+    - Jak funguje reklamace?
+    - Lze vrátit otevřený produkt?
+- intent: faq/animal_testing
+  examples: |
+    - testujete na zvířatech?
+    - je kosmetika cruelty-free?
+    - jste testovaní na zvířatech?
+
+# ==============================================================================
+# LOOKUP TABLES (PRO ROBUSTNÍ ROZPOZNÁVÁNÍ ENTIT)
+# ==============================================================================
 - lookup: skin_type
   examples: |
     - suchá
@@ -1555,10 +211,10 @@ nlu:
     - smíšená
     - citlivá
     - normální
-    - velmi suchá
     - problematická
     - zralá
     - dehydrovaná
+    - aknózní
 
 - lookup: skin_concern
   examples: |
@@ -1566,125 +222,53 @@ nlu:
     - vrásky
     - pigmentace
     - póry
+    - rozšířené póry
     - černé tečky
-    - zarudnutí
-    - hydratace
-    - dehydratace
+    - začervenání
     - citlivost
-    - stárnutí
-    - zpevnění
-    - exfoliace
-    - mdlá pleť
-    - tmavé kruhy pod očima
-    - otoky očí
-    - šupinatá pleť
-    - růst řas
-    - růst obočí
-    - jemné linky
-    - podráždění
-    - ztráta elasticity
-    - nerovnoměrný tón pleti
-    - lesk pleti
-
-- lookup: product_category
-  examples: |
-    - krém
-    - sérum
-    - čistič
-    - čistící gel
-    - oční krém
-    - maska
-    - tonikum
-    - peeling
-    - spf
-    - lokální péče
-    - fluid
-    - emulze
-    - tělové mléko
-    - pleťová voda
-    - make-up
-    - báze
-    - krém na ruce
-    - oční sérum
-    - péče o řasy
-    - čistící pěna
-    - čistící olej
-    - gelový krém
-    - olejové sérum
-    - micelární voda
-    - odličovač
-    - balzám na rty
+    - ztráta pevnosti
+    - pigmentové skvrny
+    - suchost
+    - dehydratace
+    - nerovnoměrný tón
+    - ucpané póry
+    - pupínky
+    - hydratace
+    - rozjasnění
 
 - lookup: brand
   examples: |
     - Medik8
+    - REN
     - Heliocare
-    - FacEvolution
-    - UkázkováZnačka
-    - Revitalash
+    - Neostrata
     - Dermalogica
-    - La Roche-Posay
-    - Bioderma
+    - SkinCeuticals
 
-- lookup: product_attribute
+- lookup: product_category
   examples: |
-    - veganské
-    - bez parabenů
-    - s spf
-    - bez alkoholu
-    - bez parfemace
-    - s niacinamidem
-    - s aha/bha
-    - matující
-    - intenzivní
-    - lehký
-    - pro těhotné
-    - s vitamínem C
-    - s retinalem
-    - pro muže
-    - bez silikonů
-    - nekomedogenní
-    - bez mýdla
-    - bez sulfátů (sls/sles)
-    - s bakuchiolem
-    - s peptidy
-    - jemný
-    - s pha kyselinami
-    - s kyselinou hyaluronovou
-    - antioxidační
-    - proti stárnutí
-    - rozjasňující
-    - stimulující růst
-    - výživný
-    - s kofeinem
-    - proti pigmentaci
-    - hydratační
+    - sérum
+    - krém
+    - denní krém
+    - noční krém
+    - oční krém
+    - čisticí gel
+    - čisticí olej
+    - čisticí pěna
+    - čisticí mléko
+    - tonikum
+    - esence
+    - maska
+    - peeling
+    - SPF
+    - ochrana před sluncem
+    - balzám
 
-- lookup: skin_area
+- lookup: routine_type
   examples: |
-    - obličej
-    - oční okolí
-    - tělo
-    - ruce
-    - krk
-    - dekolt
-    - záda
-    - lokální použití
-    - lokty
-    - kolena
-    - ramena
-    - rty
-    - vlasy
-    - pokožka hlavy
-
-- intent: trigger_recommendation
-  examples: |
-    - hledej
-    - to je vše
-    - najdi mi něco
-    - ukaž mi výsledky
-    - můžeš hledat
-    - spusť hledání
-    - to stačí, děkuji
-    - ok, hledej
-    - teď hledej
+    - ranní
+    - večerní
+    - denní
+    - noční
+    - kompletní
+    - celá

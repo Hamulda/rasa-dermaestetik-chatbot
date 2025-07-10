@@ -1,143 +1,126 @@
+# rasa-chatbot/data/stories.yml
 version: "3.1"
 
 stories:
-
 # ==============================================================================
-# POZNÁMKA: Kde jsou všechny FAQ příběhy?
-#
-# Jednoduché interakce (intent -> odpověď) jsou nyní řešeny pomocí
-# pravidel v souboru `rules.yml`. Je to efektivnější a spolehlivější.
-# Tento soubor se soustředí pouze na komplexní, vícekrokové konverzace.
+# SCÉNÁŘ 1: IDEÁLNÍ PRODEJNÍ CESTA S CROSS-SELL DOPORUČENÍM
+# Ukazuje kompletní tok od pozdravu, přes souhlas, doporučení až po návrh
+# doplňkového produktu pro zvýšení hodnoty objednávky.
 # ==============================================================================
-
-- story: Pozdrav a navazující konverzace
+- story: Plná prodejní cesta s cross-sellem
   steps:
   - intent: greet
-  - action: utter_greet
-  - checkpoint: after_greet
-
-- story: Šťastná cesta po pozdravu
-  steps:
-  - checkpoint: after_greet
-  - intent: mood_great
-  - action: utter_happy
-  - action: utter_anything_else
-
-- story: Smutná cesta s nápravou po pozdravu
-  steps:
-  - checkpoint: after_greet
-  - intent: mood_unhappy
-  - action: utter_cheer_up
-  - action: utter_did_that_help
+  - action: utter_gdpr_consent_request
   - intent: affirm
-  - action: utter_happy
-  - action: utter_anything_else
-
-- story: Smutná cesta bez nápravy po pozdravu
-  steps:
-  - checkpoint: after_greet
-  - intent: mood_unhappy
-  - action: utter_cheer_up
-  - action: utter_did_that_help
-  - intent: deny
-  - action: utter_goodbye
-
-- story: Identifikace bota
-  steps:
-  - intent: bot_challenge
-  - action: utter_iamabot
-
-# ==============================================================================
-# HLAVNÍ SCÉNÁŘ PRO DOPORUČENÍ PRODUKTU ("ZLATÁ CESTA")
-# ==============================================================================
-
-- story: Formulář - základní úspěšná cesta
-  steps:
+  - action: action_set_gdpr_consent
+  - slot_was_set:
+    - gdpr_consent: true
+  - action: utter_gdpr_consent_given
   - intent: ask_product_recommendation
   - action: product_recommendation_form
   - active_loop: product_recommendation_form
-  - slot_was_set:
-    - requested_slot: skin_type
-  - intent: inform
-    entities:
-    - skin_type: "suchá"
-  - slot_was_set:
-    - skin_type: ["suchá"]
-  - action: product_recommendation_form
-  - active_loop: product_recommendation_form
-  - slot_was_set:
-    - requested_slot: skin_concern
-  - intent: inform
-    entities:
-    - skin_concern: "vrásky"
-  - slot_was_set:
-    - skin_concern: ["vrásky"]
-  - action: product_recommendation_form
-  - active_loop: null
-  - action: utter_submit_form
-  - action: action_recommend_product
-  - checkpoint: recommendation_given
-
-# ==============================================================================
-# VARIANTY SPUŠTĚNÍ A VYPLNĚNÍ FORMULÁŘE
-# ==============================================================================
-
-- story: Formulář - uživatel poskytne všechny informace najednou
-  steps:
   - intent: inform
     entities:
     - skin_type: "mastná"
-    - skin_concern: "póry"
+    - skin_concern: "akné"
+  - action: product_recommendation_form
+  - active_loop: null
+  - action: utter_submit_form
+  - action: action_recommend_product  # Tato akce nyní interně navrhne cross-sell produkt
+  - checkpoint: recommendation_flow
+  - intent: goodbye
+  - action: utter_goodbye
+
+# ==============================================================================
+# SCÉNÁŘ 2: DOPORUČENÍ KOMPLETNÍ RUTINY
+# Ukazuje, jak bot poskytuje vysokou přidanou hodnotu a prodává více
+# produktů najednou tím, že sestavuje péči na míru.
+# ==============================================================================
+- story: Cesta s doporučením kompletní rutiny
+  steps:
+  - intent: greet
+  - action: utter_gdpr_consent_request
+  - intent: affirm
+  - action: action_set_gdpr_consent
+  - action: utter_gdpr_consent_given
+  - intent: ask_for_routine
+    entities:
+    - skin_concern: "vrásky"
+  - action: action_recommend_routine
+  - action: utter_anything_else
+
+# ==============================================================================
+# SCÉNÁŘ 3: ZÁCHRANA PRODEJE A REZERVACE KONZULTACE
+# Ukazuje, jak bot promění neúspěšné hledání v cenný lead pro kliniku.
+# ==============================================================================
+- story: Neúspěšné hledání vede k nabídce konzultace
+  steps:
+  - intent: ask_product_recommendation
   - action: product_recommendation_form
   - active_loop: product_recommendation_form
-  - action: product_recommendation_form # Rasa si uvědomí, že má vše a formulář ukončí
+  - intent: inform
+    entities:
+    - skin_concern: "melasma" # Předpokládáme, že na toto nemáme jasný produkt
+  - intent: inform
+    entities:
+    - skin_type: "velmi citlivá"
+  - action: product_recommendation_form
+  - active_loop: null
+  - action: utter_submit_form
+  - action: action_recommend_product # Akce nenajde žádné produkty
+  - action: utter_suggest_consultation
+  - intent: affirm
+  - action: action_book_consultation # Zde by se spustil formulář pro sběr údajů
+
+# ==============================================================================
+# SCÉNÁŘ 4: POKRAČOVÁNÍ KONVERZACE PO DOPORUČENÍ
+# Ukazuje, jak bot reaguje na následné dotazy po prvním doporučení.
+# ==============================================================================
+- story: Pokračování po doporučení (stránkování a detail)
+  steps:
+  - checkpoint: recommendation_flow
+  - intent: show_more
+  - action: action_show_next_products
+  - intent: get_product_details
+    entities:
+    - product_name: "Liquid Peptides"
+  - action: action_get_product_details
+
+# ==============================================================================
+# SCÉNÁŘ 5: PŘERUŠENÍ FORMULÁŘE (DIGRESSION)
+# Demonstruje robustnost bota, který se umí vrátit k rozpracované úloze.
+# ==============================================================================
+- story: Přerušení formuláře FAQ otázkou a návrat
+  steps:
+  - intent: ask_product_recommendation
+  - action: product_recommendation_form
+  - active_loop: product_recommendation_form
+  - intent: inform
+    entities:
+      - skin_type: "smíšená"
+  - intent: faq/animal_testing
+  - action: utter_faq/animal_testing
+  - action: product_recommendation_form # Bot se sám vrátí k formuláři
+  - active_loop: product_recommendation_form
+  - intent: inform
+    entities:
+      - skin_concern: "póry"
+  - action: product_recommendation_form
   - active_loop: null
   - action: utter_submit_form
   - action: action_recommend_product
-  - checkpoint: recommendation_given
 
 # ==============================================================================
-# PŘERUŠENÍ KONVERZACE (DIGRESSIONS)
+# SCÉNÁŘ 6: ZPRACOVÁNÍ GDPR POŽADAVKU
 # ==============================================================================
-
-- story: Formulář - přerušení a návrat
+- story: Uživatel žádá o smazání dat
   steps:
-  - intent: ask_product_recommendation
-  - action: product_recommendation_form
-  - active_loop: product_recommendation_form
-  - intent: bot_challenge # Používáme běžný intent pro ukázku odbočení
-  - action: utter_iamabot
-  - action: product_recommendation_form # Bot se aktivně vrátí k formuláři
-  - active_loop: product_recommendation_form
-
-- story: Formulář - zrušení uživatelem
-  steps:
-  - intent: ask_product_recommendation
-  - action: product_recommendation_form
-  - active_loop: product_recommendation_form
-  - intent: stop_form
-  - action: action_deactivate_loop
-  - active_loop: null
-  - action: utter_form_cancelled
-  - action: utter_anything_else
-
-# ==============================================================================
-# AKCE PO DOPORUČENÍ (POUŽITÍ CHECKPOINTU)
-# ==============================================================================
-
-- story: Uživatel chce změnit řazení po doporučení
-  steps:
-  - checkpoint: recommendation_given
-  - intent: set_sort_preference
-    entities:
-    - sort_preference: "price_desc"
-  - action: action_recommend_product
-  - action: utter_anything_else
-
-- story: Uživatel chce jiné doporučení po odmítnutí
-  steps:
-  - checkpoint: recommendation_given
-  - intent: deny
-  - action: utter_please_rephrase
-  - action: product_recommendation_form
-  - active_loop: product_recommendation_form
+  - intent: greet
+  - action: utter_gdpr_consent_request
+  - intent: affirm
+  - action: action_set_gdpr_consent
+  - action: utter_gdpr_consent_given
+  - intent: gdpr_delete
+  - action: utter_gdpr_delete_confirm
+  - intent: affirm
+  - action: action_manage_gdpr # Tato akce smaže data a ukončí konverzaci

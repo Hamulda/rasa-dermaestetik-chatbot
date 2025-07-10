@@ -1,94 +1,32 @@
-# Verze receptu a jazyk
+# rasa-chatbot/config.yml
 recipe: default.v1
 language: cs
 
-# Pipeline pro NLU (Natural Language Understanding)
-# Komponenty jsou zpracovávány postupně.
 pipeline:
-  # 1. Tokenizer: Rozdělí vstupní text na tokeny (slova).
   - name: WhitespaceTokenizer
-    # "case_sensitive": false # Můžete přidat, pokud chcete ignorovat velikost písmen u tokenů (obvykle dobrý nápad pro češtinu)
-
-  # 2. RegexFeaturizer: Vytvoří příznaky na základě regulárních výrazů (pokud máte definované v NLU).
-  - name: RegexFeaturizer
-    # "case_sensitive": false # Pro konzistenci s tokenizerem
-
-  # 3. LexicalSyntacticFeaturizer: Vytváří příznaky založené na lexikálních a syntaktických vlastnostech (např. tvar slova, zda je velké písmeno).
   - name: LexicalSyntacticFeaturizer
-
-  # 4. CountVectorsFeaturizer (pro slova): Převede tokeny na numerické vektory pomocí "bag-of-words" (počet výskytů).
   - name: CountVectorsFeaturizer
-    # "analyzer": "word" # Explicitně, i když je to default
-    # "lowercase": true # Může být užitečné, pokud WhitespaceTokenizer není case_sensitive: false
-
-  # 5. CountVectorsFeaturizer (pro n-gramy znaků): Vytváří příznaky z n-gramů znaků, pomáhá s překlepy a morfologií.
   - name: CountVectorsFeaturizer
-    analyzer: "char_wb" # N-gramy znaků s hranicemi slov
-    min_ngram: 1
-    max_ngram: 4
-    # "lowercase": true
-
-  # 6. DIETClassifier: Hlavní komponenta pro rozpoznávání intentů a entit.
-  # DIET (Dual Intent and Entity Transformer) je víceúkolová architektura.
+    analyzer: "char_wb"
+    min_ngram: 3
+    max_ngram: 17
   - name: DIETClassifier
-    epochs: 100 # Počet trénovacích epoch. Může vyžadovat ladění.
-    constrain_similarities: true # Zvyšuje přesnost pro předtrénované embeddingy (pokud by byly použity).
-    # "learning_rate": 0.001 # Můžete experimentovat s learning rate
-    # "batch_size": [64, 256] # Velikost dávky
-    # "evaluate_on_number_of_examples": 100 # Pro průběžné vyhodnocování během tréninku
-    # "evaluate_every_number_of_epochs": 5
-    # "tensorboard_log_directory": "./logs/diet" # Pro vizualizaci tréninku v TensorBoard
-
-  # 7. EntitySynonymMapper: Mapuje extrahované entity na jejich kanonické hodnoty definované v NLU (synonyma).
+    epochs: 120
+    constrain_similarities: true
   - name: EntitySynonymMapper
-
-  # 8. ResponseSelector: Používá se pro chitchat a FAQ, kde odpověď je vybírána z předdefinovaného seznamu.
   - name: ResponseSelector
-    epochs: 100 # Počet trénovacích epoch.
-    retrieval_intent: faq # Název intentu, který bude ResponseSelector zpracovávat pro FAQ. Musíte mít v NLU intent 'faq' s pod-intenty (např. faq/payment_options)
-                         # Pokud máte více "skupin" FAQ (např. faq_eshop, faq_clinic), můžete mít více ResponseSelectorů nebo lépe strukturovat intenty.
-                         # Váš aktuální přístup s mnoha samostatnými faq_xxx intenty je také validní, ale ResponseSelector je silnější, pokud je struktura faq/sub_intent.
-                         # Pro váš současný setup s mnoha `faq_` intenty, ResponseSelector je stále užitečný pro výběr správné `utter_faq_` odpovědi.
-                         # Ujistěte se, že vaše `faq_` intenty jsou správně napojeny na `utter_` odpovědi v `domain.yml` a `rules.yml` nebo `stories.yml`.
-    constrain_similarities: true
-  # 9. FallbackClassifier: Pokud žádný intent nedosáhne dostatečné spolehlivosti, tento klasifikátor přiřadí fallback intent.
+    epochs: 120
   - name: FallbackClassifier
-    threshold: 0.4  # Prahová hodnota spolehlivosti. Pokud je nejlepší intent pod touto hodnotou, aktivuje se fallback. Zvyšte pro méně fallbacků, snižte pro více.
-    ambiguity_threshold: 0.1 # Pokud je rozdíl mezi spolehlivostí dvou nejlepších intentů menší než tato hodnota, také se může aktivovat fallback.
+    threshold: 0.65
+    ambiguity_threshold: 0.1
 
-# Policies pro řízení dialogu (Core)
-# Určují, jakou akci bot provede v dalším kroku.
 policies:
-  # 1. RulePolicy: Zpracovává pravidla definovaná v `rules.yml`. Má nejvyšší prioritu.
-  # KLÍČOVÉ: Musí být obvykle první, aby pravidla měla přednost.
-  - name: RulePolicy
-    # core_fallback_threshold: 0.3 # Můžete nastavit i zde, pokud chcete, aby RulePolicy sama aktivovala fallback akci
-    # core_fallback_action_name: "action_default_fallback" # Pokud používáte vlastní fallback akci
-    # enable_fallback_prediction: true
-
-  # 2. MemoizationPolicy: Zapamatuje si konverzace z trénovacích příběhů (`stories.yml`).
-  # Pokud aktuální konverzace odpovídá části příběhu, provede další akci z tohoto příběhu.
   - name: MemoizationPolicy
-    # max_history: 5 # Kolik předchozích kroků si má pamatovat.
-
-  # 3. UnexpecTEDIntentPolicy: Pomáhá s odbočkami v konverzaci, když uživatel řekne něco neočekávaného.
-  # Může být užitečné pro přerušení formulářů FAQ otázkou a návrat.
-  # Pokud způsobuje problémy, zkuste ho dočasně zakomentovat nebo ladit `max_history` a `epochs`.
-  - name: UnexpecTEDIntentPolicy
-    max_history: 5
-    epochs: 100 # Může být méně, např. 50-100, pro rychlejší trénink
-
-  # 4. TEDPolicy: (Transformer Embedding Dialogue Policy) Používá machine learning k zobecnění z příběhů.
-  # Je schopen處理ovat konverzace, které nejsou přesně v trénovacích datech.
+  - name: RulePolicy
+    core_fallback_threshold: 0.4
+    core_fallback_action_name: "action_default_fallback"
+    enable_fallback_prediction: true
   - name: TEDPolicy
-    max_history: 7 # Kolik předchozích kroků si má pamatovat. Experimentujte s hodnotami (např. 5-10).
-    epochs: 100    # Počet trénovacích epoch. Může vyžadovat ladění (např. 50-200).
+    max_history: 10
+    epochs: 120
     constrain_similarities: true
-    # "learning_rate": 0.001
-    # "batch_size": [64, 256]
-    # "evaluate_on_number_of_examples": 100
-    # "evaluate_every_number_of_epochs": 10
-    # "tensorboard_log_directory": "./logs/ted"
-
-# assistant_id je obvykle používán pro Rasa X/Enterprise. Pro lokální vývoj ho můžete ignorovat nebo odstranit.
-assistant_id: 20250528-131907-counting-charge

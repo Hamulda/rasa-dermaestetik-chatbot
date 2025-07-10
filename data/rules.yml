@@ -1,255 +1,89 @@
+# rasa-chatbot/data/rules.yml
 version: "3.1"
 
 rules:
+# ==============================================================================
+# PRAVIDLA PRO GDPR - NEJVYŠŠÍ PRIORITA
+# Tyto interakce musí být vždy pevně dané.
+# ==============================================================================
+- rule: Reakce na udělení souhlasu s GDPR
+  steps:
+  - intent: affirm
+  - action: action_set_gdpr_consent
+  - slot_was_set:
+    - gdpr_consent: true
+  - action: utter_gdpr_consent_given
+
+- rule: Reakce na odmítnutí souhlasu s GDPR
+  steps:
+  - intent: deny
+  - action: utter_gdpr_no_consent
+  - slot_was_set:
+    - gdpr_consent: false
+
+- rule: Zpracování dotazu na GDPR info
+  steps:
+  - intent: gdpr_inquire
+  - action: utter_gdpr_info
+
+- rule: Zpracování žádosti o GDPR export
+  steps:
+  - intent: gdpr_export
+  - action: action_manage_gdpr
 
 # ==============================================================================
 # PRAVIDLA PRO OVLÁDÁNÍ FORMULÁŘE
-# Tato pravidla řídí, jak se formulář spouští, jak se v něm pokračuje a jak se ukončuje.
-# Nová, flexibilní logika.
+# Zajišťují konzistentní chování formuláře.
 # ==============================================================================
-
-- rule: Aktivace formuláře pro doporučení produktu
+- rule: Aktivace formuláře POUZE po souhlasu
+  condition:
+  - slot_was_set:
+    - gdpr_consent: true
   steps:
   - intent: ask_product_recommendation
   - action: product_recommendation_form
   - active_loop: product_recommendation_form
 
-- rule: Zpracování informací od uživatele během aktivního formuláře
+- rule: Pokus o doporučení bez souhlasu
   condition:
-  - active_loop: product_recommendation_form
+  - slot_was_set:
+    - gdpr_consent: false
   steps:
-  - intent: inform
-  - action: product_recommendation_form
-  - active_loop: product_recommendation_form
+  - intent: ask_product_recommendation
+  - action: utter_must_consent_first
 
-- rule: Odeslání formuláře a spuštění hledání na pokyn uživatele
+- rule: Odeslání formuláře
   condition:
   - active_loop: product_recommendation_form
   steps:
-  - intent: trigger_recommendation
-  - action: utter_now_searching
   - action: product_recommendation_form
   - active_loop: null
+  - slot_was_set:
+    - requested_slot: null
+  - action: utter_submit_form
   - action: action_recommend_product
 
-- rule: Zrušení formuláře uživatelem
+- rule: Zrušení formuláře a reset
   condition:
   - active_loop: product_recommendation_form
   steps:
-  - intent: stop_form
-  - action: action_deactivate_loop
-  - active_loop: null
+  - intent: stop
+  - action: action_reset_slots
   - action: utter_form_cancelled
 
 # ==============================================================================
-# OBECNÁ PRAVIDLA (PLATÍ KDYKOLIV)
+# ZÁKLADNÍ PRAVIDLA
+# Pro obecné a jednoznačné reakce.
 # ==============================================================================
+- rule: Zpracování FAQ kdykoliv
+  steps:
+  - intent: faq
+  - action: utter_faq # Meta-akce, ResponseSelector vybere správnou odpověď
 
-- rule: Reakce na pozdrav
+- rule: Pozdrav, pokud ještě nebyl dán souhlas
+  condition:
+  - slot_was_set:
+    - gdpr_consent: null
   steps:
   - intent: greet
-  - action: utter_greet
-
-- rule: Reakce na rozloučení
-  steps:
-  - intent: goodbye
-  - action: utter_goodbye
-
-- rule: Reakce na výzvu ("jsi bot?")
-  steps:
-  - intent: bot_challenge
-  - action: utter_iamabot
-
-# ==============================================================================
-# PRAVIDLA PRO POKROČILÉ FUNKCE (PO DOPORUČENÍ)
-# ==============================================================================
-
-- rule: Reakce na přání levnějšího produktu
-  steps:
-  - intent: inform_cheaper
-  - action: action_refilter_by_price
-
-- rule: Reakce na přání dražšího produktu
-  steps:
-  - intent: inform_expensive
-  - action: action_refilter_by_price
-
-- rule: Zobrazení další stránky výsledků (paginace)
-  steps:
-  - intent: show_more
-  - action: action_show_next_products
-
-- rule: Resetování všech filtrů
-  steps:
-  - intent: reset_filters
-  - action: action_reset_filters
-
-- rule: Zobrazení aktuálně nastavených filtrů
-  steps:
-  - intent: show_current_filters
-  - action: action_show_current_filters
-
-- rule: Porovnání produktů
-  steps:
-  - intent: compare_products
-  - action: action_compare_products
-
-- rule: Přidání do seznamu přání
-  steps:
-  - intent: add_to_wishlist
-  - action: action_manage_wishlist
-
-- rule: Zobrazení seznamu přání
-  steps:
-  - intent: show_wishlist
-  - action: action_manage_wishlist
-
-# ==============================================================================
-# PRAVIDLA PRO FAQ A DALŠÍ DOTAZY (MOHOU PŘERUŠIT FORMULÁŘ)
-# Přidání 'action_listen' na konec zajišťuje, že se bot po odpovědi vrátí
-# k původní konverzaci (např. k formuláři).
-# ==============================================================================
-
-- rule: Reakce na FAQ o platbě
-  steps:
-  - intent: faq/payment_options
-  - action: utter_faq_payment_options
-  - action: action_listen
-
-- rule: Reakce na FAQ o složení
-  steps:
-  - intent: faq/product_ingredients
-  - action: utter_faq_product_ingredients
-  - action: action_listen
-
-- rule: Reakce na FAQ o vracení
-  steps:
-  - intent: faq/returns
-  - action: utter_faq_returns
-  - action: action_listen
-
-- rule: Reakce na FAQ o veganských produktech
-  steps:
-  - intent: faq/vegan_products
-  - action: utter_faq_vegan_products
-  - action: action_listen
-
-- rule: Reakce na FAQ o hypoalergenních produktech
-  steps:
-  - intent: faq/hypoallergenic
-  - action: utter_faq_hypoallergenic
-  - action: action_listen
-
-- rule: Reakce na FAQ o stavu objednávky
-  steps:
-  - intent: faq/order_status_delivery_time
-  - action: utter_faq_order_status_delivery_time
-  - action: action_listen
-
-- rule: Reakce na FAQ o čištění pleti
-  steps:
-  - intent: faq/skin_cleansing
-  - action: utter_faq_skin_cleansing
-  - action: action_listen
-
-- rule: Reakce na FAQ o pořadí aplikace
-  steps:
-  - intent: faq/product_application_order
-  - action: utter_faq_product_application_order
-  - action: action_listen
-
-- rule: Reakce na FAQ o SPF
-  steps:
-  - intent: faq/spf_usage
-  - action: utter_faq_spf_usage
-  - action: action_listen
-
-- rule: Reakce na FAQ o kombinování látek
-  steps:
-  - intent: faq/combining_actives
-  - action: utter_faq_combining_actives
-  - action: action_listen
-
-- rule: Reakce na FAQ o online konzultaci
-  steps:
-  - intent: faq/online_consultation
-  - action: utter_faq_online_consultation
-  - action: action_listen
-
-- rule: Reakce na FAQ o ceně dopravy
-  steps:
-  - intent: faq/eshop_shipping_cost
-  - action: utter_faq_eshop_shipping_cost
-  - action: action_listen
-
-- rule: Reakce na FAQ o parabenech
-  steps:
-  - intent: faq/parabens
-  - action: utter_faq_parabens
-  - action: action_listen
-
-- rule: Reakce na FAQ o testování na zvířatech
-  steps:
-  - intent: faq/animal_testing
-  - action: utter_faq_animal_testing
-  - action: action_listen
-
-- rule: Reakce na FAQ o osobním odběru
-  steps:
-  - intent: faq/store_pickup
-  - action: utter_faq_store_pickup
-  - action: action_listen
-
-- rule: Reakce na FAQ o reklamaci
-  steps:
-  - intent: faq/eshop_complaint_procedure
-  - action: utter_faq_eshop_complaint_procedure
-  - action: action_listen
-
-- rule: Reakce na FAQ o trvání botoxu
-  steps:
-  - intent: faq/clinic_botox_duration
-  - action: utter_faq_clinic_botox_duration
-  - action: action_listen
-
-- rule: Reakce na FAQ o počtu sezení laseru
-  steps:
-  - intent: faq/clinic_laser_epilation_sessions
-  - action: utter_faq_clinic_laser_epilation_sessions
-  - action: action_listen
-
-- rule: Reakce na FAQ o přípravě na laser
-  steps:
-  - intent: faq/clinic_laser_epilation_preparation
-  - action: utter_faq_clinic_laser_epilation_preparation
-  - action: action_listen
-
-- rule: Reakce na FAQ o chemickém peelingu v létě
-  steps:
-  - intent: faq/clinic_chemical_peel_summer
-  - action: utter_faq_clinic_chemical_peel_summer
-  - action: action_listen
-
-- rule: Dotaz na otevírací dobu (mimo formulář)
-  steps:
-  - intent: dotaz_na_oteviraci_dobu
-  - action: utter_oteviraci_doba
-  - action: action_listen
-
-- rule: Dotaz na služby (mimo formulář)
-  steps:
-  - intent: dotaz_na_sluzbu
-  - action: utter_sluzby
-  - action: action_listen
-
-- rule: Dotaz na cenu (mimo formulář)
-  steps:
-  - intent: dotaz_na_cenu
-  - action: utter_cenik
-  - action: action_listen
-
-- rule: Zpracování otázek mimo rozsah
-  steps:
-  - intent: out_of_scope
-  - action: utter_default
-  - action: action_listen
+  - action: utter_gdpr_consent_request
