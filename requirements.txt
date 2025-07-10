@@ -1,1 +1,1 @@
-rasa[full]
+rasa>=3.0.0
